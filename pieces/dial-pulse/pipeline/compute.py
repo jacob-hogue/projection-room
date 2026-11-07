@@ -121,6 +121,34 @@ def build_originals(areas, lineage: Lineage):
     return dissolved
 
 
+def build_1947(areas, lineage: Lineage, originals_csv: pathlib.Path, counties=None):
+    """The 1947 map. Each original comes from the dissolve of its descendants unless
+    originals_1947.csv lists county GEOIDs for it, in which case the union of those
+    counties is used instead. Returns (GeoDataFrame, report dict)."""
+    import geopandas as gpd
+    from shapely import make_valid
+
+    dissolved = build_originals(areas, lineage).set_index("original")
+    with open(originals_csv, encoding="utf-8", newline="") as f:
+        spec = {r["code"]: r for r in csv.DictReader(f)}
+    from_dissolve, from_counties, rows = [], [], []
+    for code in sorted(spec):
+        geoids = [g for g in spec[code]["county_geoids"].split(";") if g.strip()]
+        if geoids:
+            if counties is None:
+                raise ValueError(f"{code} needs counties but none were supplied")
+            geom = make_valid(counties[counties["GEOID"].isin(geoids)].geometry.union_all())
+            from_counties.append(code)
+        else:
+            if code not in dissolved.index:
+                raise KeyError(f"original {code} has no 2015 descendants in the data")
+            geom = dissolved.loc[code, "geometry"]
+            from_dissolve.append(code)
+        rows.append({"original": code, "territory": spec[code]["territory"], "geometry": geom})
+    out = gpd.GeoDataFrame(rows, geometry="geometry", crs=areas.crs)
+    return out, {"from_dissolve": from_dissolve, "from_counties": from_counties}
+
+
 def main() -> int:
     import geopandas as gpd
 
@@ -129,8 +157,9 @@ def main() -> int:
     if areas.crs is None:
         areas = areas.set_crs(5070)
     export_lineage_json(lineage, DATA / "lineage.json")
-    originals = build_originals(areas, lineage)
+    originals, report = build_1947(areas, lineage, HERE / "originals_1947.csv")
     originals.to_file(DATA / "originals_1947.geojson", driver="GeoJSON")
+    (DATA / "originals_1947_report.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
     print(f"lineage.json: {len(lineage)} codes; originals_1947.geojson: {len(originals)} areas")
     return 0
 

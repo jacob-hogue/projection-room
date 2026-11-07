@@ -33,3 +33,21 @@ def test_topojson_has_npa_property(areas, tmp_path):
     topo = json.load(open(tmp_path / "t.json", encoding="utf-8"))
     props = sorted(g["properties"]["npa"] for g in topo["objects"]["areas"]["geometries"])
     assert props == ["212", "718", "907"]
+
+
+def test_drop_overlays_dedupes_by_geometry_not_type_flag():
+    """The 2015 file's TYPE flag is unreliable (706 is flagged "O" but has its own
+    territory, and six true overlays have slightly different polygons from their parents),
+    so the lineage table decides: drop codes it marks as overlays, keep the rest."""
+    from shapely.geometry import box
+    from prepare import drop_overlays
+
+    square = box(0, 0, 1, 1)
+    other = box(2, 0, 3, 1)
+    gdf = gpd.GeoDataFrame(
+        {"NPA": ["917", "212", "706"], "TYPE": ["O", None, "O"]},
+        geometry=[square, square, other], crs=4326,
+    )
+    types = {"212": "original", "917": "overlay", "706": "split"}
+    out = drop_overlays(gdf, types)
+    assert sorted(out["npa"]) == ["212", "706"]

@@ -40,12 +40,24 @@ def normalize(gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     return out
 
 
-def drop_overlays(gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
-    """Overlay features in the 2015 file repeat their parent's polygon; keep territories only."""
+def drop_overlays(gdf: gpd.GeoDataFrame, lineage_types: dict[str, str] | None = None) -> gpd.GeoDataFrame:
+    """Keep territories, drop overlays. The lineage table decides (type == "overlay");
+    the file's TYPE flag is used only for codes the table does not know. The 2015 file
+    flags 706 as an overlay although it is a 1992 split with its own territory."""
     out = normalize(gdf)
-    if "TYPE" in out.columns:
-        out = out[out["TYPE"].fillna("") != "O"]
-    return out
+    types = lineage_types or {}
+    def is_overlay(row) -> bool:
+        if row["npa"] in types:
+            return types[row["npa"]] == "overlay"
+        return "TYPE" in out.columns and (row.get("TYPE") or "") == "O"
+    keep = ~out.apply(is_overlay, axis=1)
+    return out[keep.values]
+
+
+def lineage_types(path: pathlib.Path) -> dict[str, str]:
+    import csv
+    with open(path, encoding="utf-8", newline="") as f:
+        return {r["code"]: r["type"] for r in csv.DictReader(f)}
 
 
 def lower48(gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
@@ -107,7 +119,7 @@ def lower48_outline() -> gpd.GeoDataFrame:
 
 def main() -> int:
     areas = gpd.read_file(CACHE / "area-codes.geojson")
-    areas = lower48(drop_overlays(areas))
+    areas = lower48(drop_overlays(areas, lineage_types(HERE / "lineage.csv")))
     outline = lower48_outline()
     clipped = gpd.clip(areas, outline).explode(index_parts=False)
     clipped = clipped.dissolve(by="npa", as_index=False)[["npa", "geometry"]]
