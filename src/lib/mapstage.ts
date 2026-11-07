@@ -34,9 +34,11 @@ const SURFACE = '#0f1117';
 const TEXT = '#e8eaed';
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
+const AREA_SEAM = 0.6;
+
 const EMBEDDED_STYLE = [
   `.mapstage{background:${SURFACE}}`,
-  '.area{stroke:none}',
+  '.area{stroke-linejoin:round}',
   `.outline{fill:none;stroke:${SURFACE};stroke-width:.75;stroke-linejoin:round;pointer-events:none}`,
   '.hatch{pointer-events:none}',
   `.label{font:600 11px "JetBrains Mono",ui-monospace,monospace;fill:${TEXT};paint-order:stroke;stroke:${SURFACE};stroke-width:3px;stroke-linejoin:round;text-anchor:middle;dominant-baseline:middle;pointer-events:none}`,
@@ -246,6 +248,10 @@ export class MapStage {
       .attr('data-display', (e) => e.display)
       .attr('data-class', (e) => e.cls)
       .attr('fill', (e) => (e.kind === 'area' ? e.fill : 'url(#hatch)'))
+      // Stroking each area in its own fill closes the hairline seams between neighbours.
+      .attr('stroke', (e) => (e.kind === 'area' ? e.fill : null))
+      .attr('stroke-width', (e) => (e.kind === 'area' ? AREA_SEAM : null))
+      .attr('stroke-linejoin', (e) => (e.kind === 'area' ? 'round' : null))
       .attr('pointer-events', (e) => (e.kind === 'area' ? null : 'none'))
       .order();
 

@@ -47,6 +47,15 @@ describe('MapStage', () => {
     expect(svg.querySelector('path.area[data-npa="718"]')!.getAttribute('d')).toBe(d);
   });
 
+  test('area paths stroke in their own fill so adjacent polygons show no seam', () => {
+    stage.setYear(2000);
+    for (const p of svg.querySelectorAll('path.area')) {
+      expect(p.getAttribute('stroke')).toBe(p.getAttribute('fill'));
+      expect(Number(p.getAttribute('stroke-width'))).toBeGreaterThan(0);
+    }
+    for (const h of svg.querySelectorAll('path.hatch')) expect(h.getAttribute('stroke')).toBeNull();
+  });
+
   test('polygons that share a display code share a fill', () => {
     stage.setYear(1947);
     expect(fill('718')).toBe(fill('212'));
