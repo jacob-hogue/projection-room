@@ -1,0 +1,27 @@
+{
+  "name": "lab",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.23.4"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^5.18.2",
+    "culori": "^4.0.2",
+    "d3": "^7.9.2",
+    "topojson-client": "^3.1.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.0",
+    "@types/d3": "^7.4.3",
+    "@types/topojson-client": "^3.1.5",
+    "jsdom": "^29.1.1",
+    "vitest": "^5.1.0"
+  }
+}
