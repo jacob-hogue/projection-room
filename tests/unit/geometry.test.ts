@@ -6,12 +6,18 @@ import { loadLineage, originalOf } from '../../src/lib/lineage';
 
 /**
  * Guards the published TopoJSON. When neighbours' shared edges do not coincide exactly,
- * topojson.merge leaves open ring fragments; the renderer closes them with straight legs
- * that draw as spikes. Every ring, in every feature and every merge, must close on itself.
+ * or rings wind both ways, topojson.merge leaves open ring fragments; the renderer closes
+ * them with straight legs that draw as spikes. Every ring, in every feature and every
+ * merge, must close on itself.
  */
+type Props = { npa: string | number };
+type Area = Polygon<Props> | MultiPolygon<Props>;
+
 const topo = JSON.parse(readFileSync('pieces/dial-pulse/data/areas.topojson', 'utf8')) as Topology;
 const lineage = loadLineage(JSON.parse(readFileSync('pieces/dial-pulse/data/lineage.json', 'utf8')));
-const areas = topo.objects.areas as GeometryCollection<{ npa: string | number }>;
+const areas = topo.objects.areas as GeometryCollection<Props>;
+const polygons = areas.geometries.filter((g): g is Area => g.type === 'Polygon' || g.type === 'MultiPolygon');
+const npaOf = (g: Area) => String(g.properties?.npa);
 
 function openRings(geom: GeoJSON.Polygon | GeoJSON.MultiPolygon): number {
   const polys = geom.type === 'Polygon' ? [geom.coordinates] : geom.coordinates;
@@ -27,19 +33,22 @@ function openRings(geom: GeoJSON.Polygon | GeoJSON.MultiPolygon): number {
 }
 
 describe('published geometry', () => {
+  test('every geometry is a polygon with a code', () => {
+    expect(polygons.length).toBe(areas.geometries.length);
+    for (const g of polygons) expect(npaOf(g)).toMatch(/^\d{3}$/);
+  });
+
   test('every territory decodes to closed rings', () => {
-    const fc = feature(topo, areas);
-    const bad = fc.features
-      .map((f, i) => [String(areas.geometries[i].properties?.npa), openRings(f.geometry as GeoJSON.Polygon)] as const)
+    const bad = polygons
+      .map((g) => [npaOf(g), openRings(feature(topo, g).geometry as GeoJSON.Polygon)] as const)
       .filter(([, n]) => n > 0);
     expect(bad).toEqual([]);
   });
 
   test('merged 1947 outlines are closed rings', () => {
-    const groups = new Map<string, (Polygon | MultiPolygon)[]>();
-    for (const g of areas.geometries) {
-      if (g.type !== 'Polygon' && g.type !== 'MultiPolygon') continue;
-      const o = originalOf(String(g.properties?.npa), lineage);
+    const groups = new Map<string, Area[]>();
+    for (const g of polygons) {
+      const o = originalOf(npaOf(g), lineage);
       groups.set(o, [...(groups.get(o) ?? []), g]);
     }
     const bad = [...groups].map(([o, gs]) => [o, openRings(merge(topo, gs))] as const).filter(([, n]) => n > 0);
@@ -47,15 +56,12 @@ describe('published geometry', () => {
   });
 
   test('every territory merges to closed rings on its own', () => {
-    const bad = areas.geometries
-      .filter((g): g is Polygon | MultiPolygon => g.type === 'Polygon' || g.type === 'MultiPolygon')
-      .map((g) => [String(g.properties?.npa), openRings(merge(topo, [g]))] as const)
-      .filter(([, n]) => n > 0);
+    const bad = polygons.map((g) => [npaOf(g), openRings(merge(topo, [g]))] as const).filter(([, n]) => n > 0);
     expect(bad).toEqual([]);
   });
 
   test('territory count matches the lineage table', () => {
-    const npas = new Set(areas.geometries.map((g) => String(g.properties?.npa)));
+    const npas = new Set(polygons.map(npaOf));
     for (const npa of npas) expect(lineage.codes[npa], npa).toBeDefined();
     expect(npas.size).toBeGreaterThan(230);
   });
