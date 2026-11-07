@@ -73,7 +73,7 @@ code,parent,year,type,note,source
 319,,1947,original,Eastern Iowa,https://en.wikipedia.org/wiki/Original_North_American_area_codes
 320,612,1996,split,,https://reports.nanpa.com/public/npa_report.csv
 321,407,1999,split,,https://reports.nanpa.com/public/npa_report.csv
-323,213,1998,overlay,,https://reports.nanpa.com/public/npa_report.csv
+323,213,1998,split,,https://reports.nanpa.com/public/npa_report.csv
 324,904,2024,overlay,,https://reports.nanpa.com/public/npa_report.csv
 325,915,2003,split,,https://reports.nanpa.com/public/npa_report.csv
 326,937,2020,overlay,,https://reports.nanpa.com/public/npa_report.csv
@@ -159,7 +159,7 @@ code,parent,year,type,note,source
 475,203,2009,overlay,,https://reports.nanpa.com/public/npa_report.csv
 478,912,2000,split,,https://reports.nanpa.com/public/npa_report.csv
 479,501,2002,split,,https://reports.nanpa.com/public/npa_report.csv
-480,602,1999,overlay,,https://reports.nanpa.com/public/npa_report.csv
+480,602,1999,split,,https://reports.nanpa.com/public/npa_report.csv
 483,334,2026,overlay,,https://reports.nanpa.com/public/npa_report.csv
 484,610,1999,overlay,,https://reports.nanpa.com/public/npa_report.csv
 501,,1947,original,Arkansas,https://en.wikipedia.org/wiki/Original_North_American_area_codes
@@ -230,7 +230,7 @@ code,parent,year,type,note,source
 619,714,1982,split,,https://reports.nanpa.com/public/npa_report.csv
 620,316,2001,split,,https://reports.nanpa.com/public/npa_report.csv
 621,346,2025,overlay,,https://reports.nanpa.com/public/npa_report.csv
-623,602,1999,overlay,,https://reports.nanpa.com/public/npa_report.csv
+623,602,1999,split,,https://reports.nanpa.com/public/npa_report.csv
 624,716,2023,overlay,,https://reports.nanpa.com/public/npa_report.csv
 626,818,1997,split,,https://reports.nanpa.com/public/npa_report.csv
 628,415,2015,overlay,,https://reports.nanpa.com/public/npa_report.csv
@@ -356,7 +356,7 @@ code,parent,year,type,note,source
 854,843,2015,overlay,,https://reports.nanpa.com/public/npa_report.csv
 856,609,1999,split,,https://reports.nanpa.com/public/npa_report.csv
 857,617,2001,overlay,,https://reports.nanpa.com/public/npa_report.csv
-858,619,1999,overlay,,https://reports.nanpa.com/public/npa_report.csv
+858,619,1999,split,,https://reports.nanpa.com/public/npa_report.csv
 859,606,2000,split,,https://reports.nanpa.com/public/npa_report.csv
 860,203,1995,split,,https://reports.nanpa.com/public/npa_report.csv
 861,309,2023,overlay,,https://reports.nanpa.com/public/npa_report.csv
