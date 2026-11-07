@@ -1,0 +1,8 @@
+{
+  "codes": {
+    "212": { "parent": null, "year": 1947, "type": "original" },
+    "718": { "parent": "212", "year": 1984, "type": "split" },
+    "917": { "parent": "212", "year": 1992, "type": "overlay" },
+    "347": { "parent": "718", "year": 1999, "type": "overlay" }
+  }
+}

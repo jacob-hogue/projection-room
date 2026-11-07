@@ -1,0 +1,5 @@
+code,parent,year,type,note,source
+212,,1947,original,New York City,https://example.test/originals
+718,212,1984,split,,https://example.test/718
+917,212,1992,overlay,,https://example.test/917
+347,718,1999,overlay,,https://example.test/347
