@@ -37,3 +37,19 @@ def test_polygon_codes_with_overlays(L):
 def test_missing_code_raises(L):
     with pytest.raises(KeyError, match="999"):
         polygon_codes("999", 2000, L)
+
+
+def test_build_originals_repairs_invalid_geometry(L):
+    import geopandas as gpd
+    from shapely.geometry import Polygon
+    from compute import build_originals
+
+    bowtie = Polygon([(0, 0), (10, 10), (10, 0), (0, 10), (0, 0)])  # self-intersecting
+    square = Polygon([(20, 0), (30, 0), (30, 10), (20, 10), (20, 0)])
+    areas = gpd.GeoDataFrame({"npa": ["718", "917"]}, geometry=[bowtie, square], crs=5070)
+    out = build_originals(areas, L)
+    assert list(out["original"]) == ["212"]
+    assert out.geometry.is_valid.all()
+    from shapely import make_valid
+    # make_valid keeps both lobes of the bow-tie (buffer(0) would drop one)
+    assert out.geometry.iloc[0].area == pytest.approx(make_valid(bowtie).area + square.area)

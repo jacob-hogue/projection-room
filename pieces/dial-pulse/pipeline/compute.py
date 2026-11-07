@@ -104,6 +104,23 @@ def export_lineage_json(lineage: Lineage, path: pathlib.Path) -> None:
     path.write_text(json.dumps(payload, separators=(",", ":")), encoding="utf-8")
 
 
+def build_originals(areas, lineage: Lineage):
+    """Dissolve 2015 territories by their 1947 original. Repairs geometry first, because
+    simplified polygons can self-intersect and GEOS refuses to union those."""
+    from shapely import make_valid
+
+    out = areas.copy()
+    out["npa"] = out["npa"].astype(str)
+    missing = sorted(c for c in out["npa"] if c not in lineage)
+    if missing:
+        raise KeyError(f"2015 codes missing from lineage.csv: {', '.join(missing)}")
+    out["geometry"] = out.geometry.apply(make_valid)
+    out["original"] = out["npa"].map(lambda c: original_of(c, lineage))
+    dissolved = out.dissolve(by="original", as_index=False)[["original", "geometry"]]
+    dissolved["geometry"] = dissolved.geometry.apply(make_valid)
+    return dissolved
+
+
 def main() -> int:
     import geopandas as gpd
 
@@ -111,12 +128,8 @@ def main() -> int:
     areas = gpd.read_file(DATA / "areas.topojson")
     if areas.crs is None:
         areas = areas.set_crs(5070)
-    missing = sorted(c for c in areas["npa"].astype(str) if c not in lineage)
-    if missing:
-        raise KeyError(f"2015 codes missing from lineage.csv: {', '.join(missing)}")
     export_lineage_json(lineage, DATA / "lineage.json")
-    areas["original"] = areas["npa"].astype(str).map(lambda c: original_of(c, lineage))
-    originals = areas.dissolve(by="original", as_index=False)[["original", "geometry"]]
+    originals = build_originals(areas, lineage)
     originals.to_file(DATA / "originals_1947.geojson", driver="GeoJSON")
     print(f"lineage.json: {len(lineage)} codes; originals_1947.geojson: {len(originals)} areas")
     return 0
