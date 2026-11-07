@@ -97,15 +97,66 @@ describe('MapStage', () => {
     expect(stage.state().palette).toBe('mono');
   });
 
-  test('labels mark the fastest 1947 codes at their centroids', () => {
-    stage.setYear(1947);
+  test('labels name the fastest 1947 codes with their city, placed inside the territory', () => {
+    stage.setYear(2000);
     stage.setLabels(true);
     const labels = svg.querySelectorAll('text.label');
     expect(labels.length).toBe(1);
-    expect(labels[0].textContent).toBe('212');
-    expect(Number(labels[0].getAttribute('x'))).toBeGreaterThan(0);
+    expect(labels[0].querySelector('.label-city')?.textContent).toBe('New York');
+    expect(labels[0].querySelector('.label-code')?.textContent).toBe('212');
+    // In 2000 the 212 territory is the left square only: the left third of a 600 px stage.
+    const x = Number(labels[0].getAttribute('x'));
+    const y = Number(labels[0].getAttribute('y'));
+    expect(x).toBeGreaterThan(0);
+    expect(x).toBeLessThan(200);
+    expect(y).toBeGreaterThan(0);
+    expect(y).toBeLessThan(300);
     stage.setLabels(false);
     expect(svg.querySelectorAll('text.label').length).toBe(0);
+  });
+
+  test('water sits under the land and the coast is cased', () => {
+    stage.setYear(1947);
+    const water = svg.querySelector('rect.water');
+    expect(water).not.toBeNull();
+    expect(water!.getAttribute('fill')).not.toBe('#0f1117');
+    const coast = svg.querySelectorAll('path.coast');
+    expect(coast.length).toBe(2); // soft outer casing, then the thin light edge
+    for (const c of coast) {
+      expect(c.getAttribute('d')).toMatch(/^M/);
+      expect(c.getAttribute('fill')).toBe('none');
+    }
+    // Drawn above the areas so the edge is never covered by a fill.
+    const order = [...svg.querySelectorAll('g')].map((g) => g.getAttribute('class'));
+    expect(order.indexOf('coast')).toBeGreaterThan(order.indexOf('areas'));
+  });
+
+  test('territory outlines are cased: a dark casing under a light line per group', () => {
+    stage.setYear(2000);
+    expect(svg.querySelectorAll('path.outline-casing').length).toBe(3);
+    expect(svg.querySelectorAll('path.outline').length).toBe(3);
+    const casing = svg.querySelector('path.outline-casing')!;
+    const line = svg.querySelector('path.outline')!;
+    expect(Number(casing.getAttribute('stroke-width'))).toBeGreaterThan(Number(line.getAttribute('stroke-width')));
+    expect(casing.getAttribute('d')).toBe(line.getAttribute('d'));
+  });
+
+  test('legend shows one swatch per pulse count and can be hidden', () => {
+    stage.setLegend(true);
+    expect(svg.querySelectorAll('.legend rect.swatch').length).toBe(24);
+    expect(svg.querySelector('.legend')?.textContent).toContain('5');
+    expect(svg.querySelector('.legend')?.textContent).toContain('28');
+    stage.setLegend(false);
+    expect(svg.querySelectorAll('.legend rect.swatch').length).toBe(0);
+  });
+
+  test('hover marks the polygon', () => {
+    stage.setYear(2000);
+    const p = svg.querySelector('path.area[data-npa="718"]')!;
+    p.dispatchEvent(new MouseEvent('mouseenter'));
+    expect(p.classList.contains('is-hover')).toBe(true);
+    p.dispatchEvent(new MouseEvent('mouseleave'));
+    expect(p.classList.contains('is-hover')).toBe(false);
   });
 
   test('hover reports the polygon and clears on leave', () => {

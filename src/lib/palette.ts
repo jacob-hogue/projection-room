@@ -1,4 +1,4 @@
-/** Color ramps for the pulse scale, interpolated in OKLab so steps are perceptually even. */
+/** Color ramps for the pulse scale, interpolated in OKLab or OKLCH so steps are perceptually even. */
 import { formatHex, interpolate } from 'culori';
 
 export interface Palette {
@@ -10,19 +10,21 @@ export interface Palette {
   middle: { whole: string; subdivided: string; later: string };
 }
 
+export type RampSpace = 'oklab' | 'oklch';
+
 export const PULSE_MIN = 5; // 212
 export const PULSE_MAX = 28; // 900-series: 9 + 10 + 9
 export const RAMP_STEPS = PULSE_MAX - PULSE_MIN + 1;
 
-const SURFACE_GRAY = '#8b8fa3';
+const LATER_GRAY = '#8b8fa3';
 
-export function rampFromStops(stops: string[], steps: number): string[] {
-  const f = interpolate(stops, 'oklab');
+export function rampFromStops(stops: string[], steps: number, space: RampSpace = 'oklab'): string[] {
+  const f = interpolate(stops, space);
   return Array.from({ length: steps }, (_, i) => formatHex(f(steps === 1 ? 0 : i / (steps - 1))));
 }
 
-function stepped(stops: string[]): (t: number) => string {
-  const colors = rampFromStops(stops, RAMP_STEPS);
+function stepped(stops: string[], space: RampSpace): (t: number) => string {
+  const colors = rampFromStops(stops, RAMP_STEPS, space);
   return (t) => colors[Math.round(Math.min(1, Math.max(0, t)) * (RAMP_STEPS - 1))];
 }
 
@@ -35,20 +37,23 @@ export const PALETTES = {
   signature: {
     name: 'signature',
     label: 'Signature',
-    // The site accent family, lightest first so lightness falls with every extra click.
-    ramp: stepped(['#7dd3fc', '#34d399', '#d9137f']),
-    middle: { whole: '#38bdf8', subdivided: '#34d399', later: SURFACE_GRAY },
+    // Speed reads as brightness: gold for five pulses down to a near-black plum for
+    // twenty-eight. Chroma stays moderate through the middle so the common twelve to
+    // twenty pulse territories read as a quiet rose and the gold highlights carry the map.
+    ramp: stepped(['#f5d98a', '#e2876f', '#c04a84', '#5b2a7a', '#2a1a4a'], 'oklch'),
+    middle: { whole: '#f5d98a', subdivided: '#e2876f', later: LATER_GRAY },
   },
-  'warm-cool': {
-    name: 'warm-cool',
-    label: 'Warm to cool',
-    ramp: stepped(['#fcd34d', '#f97316', '#6366f1']),
-    middle: { whole: '#fcd34d', subdivided: '#f97316', later: SURFACE_GRAY },
+  accent: {
+    name: 'accent',
+    label: 'Accent',
+    // The site's own family: light sky through the accent and violet to the Lab magenta.
+    ramp: stepped(['#7dd3fc', '#38bdf8', '#8b5cf6', '#d9137f'], 'oklch'),
+    middle: { whole: '#38bdf8', subdivided: '#d9137f', later: LATER_GRAY },
   },
   mono: {
     name: 'mono',
     label: 'Mono',
-    ramp: stepped(['#e8eaed', '#9aa0b4', '#5c6178']),
+    ramp: stepped(['#e8eaed', '#9aa0b4', '#5c6178'], 'oklab'),
     middle: { whole: '#e8eaed', subdivided: '#9aa0b4', later: '#5c6178' },
   },
 } satisfies Record<string, Palette>;

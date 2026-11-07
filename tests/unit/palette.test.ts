@@ -1,4 +1,4 @@
-import { oklab, wcagContrast } from 'culori';
+import { oklab, oklch, wcagContrast } from 'culori';
 import { describe, expect, test } from 'vitest';
 import { PALETTES, pulseColor, rampFromStops } from '../../src/lib/palette';
 
@@ -43,7 +43,23 @@ describe('palette', () => {
       expect(p.name).toBe(key);
       expect(p.label.length).toBeGreaterThan(0);
     }
-    expect(Object.keys(PALETTES)).toEqual(['signature', 'warm-cool', 'mono']);
+    expect(Object.keys(PALETTES)).toEqual(['signature', 'accent', 'mono']);
+  });
+
+  test('colored ramps never pass through gray', () => {
+    for (const p of [PALETTES.signature, PALETTES.accent]) {
+      const chroma = Array.from({ length: 24 }, (_, i) => oklch(p.ramp(i / 23))!.c ?? 0);
+      expect(Math.min(...chroma), p.name).toBeGreaterThan(0.08);
+    }
+  });
+
+  test('signature reads speed as brightness: gold at five pulses, deep at twenty-eight', () => {
+    const fast = oklch(pulseColor(PALETTES.signature, 5))!;
+    const slow = oklch(pulseColor(PALETTES.signature, 28))!;
+    expect(fast.l).toBeGreaterThan(0.88);
+    expect(slow.l).toBeLessThan(0.45);
+    expect(fast.h).toBeGreaterThan(70);
+    expect(fast.h).toBeLessThan(110);
   });
 
   test('ramp output is a hex string', () => {
