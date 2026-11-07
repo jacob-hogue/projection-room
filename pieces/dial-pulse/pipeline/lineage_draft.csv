@@ -1,0 +1,446 @@
+code,parent,year,type,note,source,confidence
+201,,1947,original,New Jersey,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+202,,1947,original,District of Columbia,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+203,,1947,original,Connecticut,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+204,,1947,original,Manitoba; Canada,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+205,,1947,original,Alabama,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+206,,1947,original,Washington,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+207,,1947,original,Maine,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+208,,1947,original,Idaho,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+209,415,1958,split,,https://reports.nanpa.com/public/npa_report.csv,high
+210,512,1992,split,,https://reports.nanpa.com/public/npa_report.csv,high
+212,,1947,original,New York City,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+213,,1947,original,"Southern California, including Los Angeles and San Diego",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+214,,1947,original,"Northeastern Texas, including Dallas/Fort Worth",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+215,,1947,original,"Southeastern Pennsylvania, including Philadelphia",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+216,,1947,original,"Northeastern Ohio, including Cleveland",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+217,,1947,original,Central Illinois,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+218,,1947,original,"Minnesota, excluding southeastern part with Minneapolis",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+219,,1948,split,no parent in NANPA report; fill from the Wikipedia article,https://reports.nanpa.com/public/npa_report.csv,low
+220,740,2015,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+223,717,2017,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+224,847,2002,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+225,504,1998,split,,https://reports.nanpa.com/public/npa_report.csv,high
+226,519,2006,overlay,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+227,301,2023,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+228,601,1997,split,,https://reports.nanpa.com/public/npa_report.csv,high
+229,912,2000,split,,https://reports.nanpa.com/public/npa_report.csv,high
+231,616,1999,split,,https://reports.nanpa.com/public/npa_report.csv,high
+234,330,2000,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+235,573,2024,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+236,604,2013,overlay,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+239,941,2002,split,,https://reports.nanpa.com/public/npa_report.csv,high
+240,301,1997,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+248,810,1997,split,,https://reports.nanpa.com/public/npa_report.csv,high
+249,705,2011,overlay,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+250,604,1996,split,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+251,334,2001,split,,https://reports.nanpa.com/public/npa_report.csv,high
+252,919,1998,split,,https://reports.nanpa.com/public/npa_report.csv,high
+253,206,1997,split,,https://reports.nanpa.com/public/npa_report.csv,high
+254,817,1997,split,,https://reports.nanpa.com/public/npa_report.csv,high
+256,205,1998,split,,https://reports.nanpa.com/public/npa_report.csv,high
+257,604,2025,overlay,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+260,219,2002,split,,https://reports.nanpa.com/public/npa_report.csv,high
+262,414,1999,split,,https://reports.nanpa.com/public/npa_report.csv,high
+263,514,2022,overlay,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+267,215,1999,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+269,616,2002,split,,https://reports.nanpa.com/public/npa_report.csv,high
+270,502,1999,split,,https://reports.nanpa.com/public/npa_report.csv,high
+272,570,2013,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+274,920,2023,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+276,540,2001,split,,https://reports.nanpa.com/public/npa_report.csv,high
+279,916,2018,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+281,713,1996,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+283,513,2023,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+289,905,2001,overlay,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+301,,1947,original,Maryland,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+302,,1947,original,Delaware,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+303,,1947,original,Colorado,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+304,,1947,original,West Virginia,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+305,,1947,original,Florida,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+306,,1947,original,Saskatchewan; Canada,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+307,,1947,original,Wyoming,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+308,,1955,split,no parent in NANPA report; fill from the Wikipedia article,https://reports.nanpa.com/public/npa_report.csv,low
+309,,1957,split,no parent in NANPA report; fill from the Wikipedia article,https://reports.nanpa.com/public/npa_report.csv,low
+310,213,1991,split,,https://reports.nanpa.com/public/npa_report.csv,high
+312,,1947,original,"Northeastern Illinois, including Chicago",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+313,,1947,original,"Southeastern Michigan, including Detroit",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+314,,1947,original,"Eastern Missouri, including St. Louis",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+315,,1947,original,"Central upstate New York, including Syracuse",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+316,,1947,original,"Southern Kansas, including Wichita",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+317,,1947,original,"Northern Indiana, including Indianapolis",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+318,,1957,split,no parent in NANPA report; fill from the Wikipedia article,https://reports.nanpa.com/public/npa_report.csv,low
+319,,1947,original,Eastern Iowa,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+320,612,1996,split,,https://reports.nanpa.com/public/npa_report.csv,high
+321,407,1999,split,,https://reports.nanpa.com/public/npa_report.csv,high
+323,213,1998,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+324,904,2024,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+325,915,2003,split,,https://reports.nanpa.com/public/npa_report.csv,high
+326,937,2020,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+327,870,2024,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+329,845,2023,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+330,216,1996,split,,https://reports.nanpa.com/public/npa_report.csv,high
+331,630,2007,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+332,212,2017,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+334,205,1995,split,,https://reports.nanpa.com/public/npa_report.csv,high
+336,910,1997,split,,https://reports.nanpa.com/public/npa_report.csv,high
+337,318,1999,split,,https://reports.nanpa.com/public/npa_report.csv,high
+339,781,2001,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+340,809,1997,split,parent 809 not a geographic code in service,https://reports.nanpa.com/public/npa_report.csv,low
+341,510,2019,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+343,613,2010,overlay,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+346,832,2014,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+347,718,1999,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+350,209,2022,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+351,978,2001,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+352,904,1995,split,,https://reports.nanpa.com/public/npa_report.csv,high
+353,608,2023,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+354,450,2022,overlay,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+357,559,2025,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+360,206,1995,split,,https://reports.nanpa.com/public/npa_report.csv,high
+361,512,1999,split,,https://reports.nanpa.com/public/npa_report.csv,high
+363,516,2023,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+364,270,2014,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+365,905,2013,overlay,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+367,581,2018,overlay,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+368,825,2022,overlay,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+369,707,2023,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+380,614,2016,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+382,519,2023,overlay,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+385,801,2009,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+386,904,2001,split,,https://reports.nanpa.com/public/npa_report.csv,high
+401,,1947,original,Rhode Island,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+402,,1947,original,Nebraska,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+403,,1947,original,Alberta; Canada,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+404,,1947,original,Georgia,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+405,,1947,original,Oklahoma,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+406,,1947,original,Montana,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+407,305,1988,split,,https://reports.nanpa.com/public/npa_report.csv,high
+408,415,1959,split,,https://reports.nanpa.com/public/npa_report.csv,high
+409,713,1982,split,,https://reports.nanpa.com/public/npa_report.csv,high
+410,301,1991,split,,https://reports.nanpa.com/public/npa_report.csv,high
+412,,1947,original,"Western Pennsylvania, including Pittsburgh",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+413,,1947,original,"Western Massachusetts, including Springfield",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+414,,1947,original,"Southern and northeastern Wisconsin, including Milwaukee",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+415,,1947,original,"Northern-central California, including San Francisco and Sacramento",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+416,,1947,original,"Ontario, including Toronto; Canada",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+417,,1950,split,no parent in NANPA report; fill from the Wikipedia article,https://reports.nanpa.com/public/npa_report.csv,low
+418,,1947,original,"Eastern Quebec, including Québec City; Canada",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+419,,1947,original,"Northwest Ohio, including Toledo",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+423,615,1995,split,,https://reports.nanpa.com/public/npa_report.csv,high
+424,310,2006,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+425,206,1997,split,,https://reports.nanpa.com/public/npa_report.csv,high
+428,506,2023,overlay,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+430,903,2003,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+431,204,2012,overlay,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+432,915,2003,split,,https://reports.nanpa.com/public/npa_report.csv,high
+434,804,2001,split,,https://reports.nanpa.com/public/npa_report.csv,high
+435,801,1997,split,,https://reports.nanpa.com/public/npa_report.csv,high
+436,440,2024,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+437,416,2013,overlay,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+438,514,2006,overlay,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+440,216,1997,split,,https://reports.nanpa.com/public/npa_report.csv,high
+442,760,2009,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+443,410,1997,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+445,267,2018,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+447,217,2021,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+448,850,2021,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+450,514,1998,split,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+457,318,2025,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+458,541,2010,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+463,317,2016,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+464,708,2022,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+465,718,2026,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+468,819,2022,overlay,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+469,214,1999,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+470,678,2010,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+471,662,2026,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+472,910,2022,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+474,639,2021,overlay,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+475,203,2009,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+478,912,2000,split,,https://reports.nanpa.com/public/npa_report.csv,high
+479,501,2002,split,,https://reports.nanpa.com/public/npa_report.csv,high
+480,602,1999,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+483,334,2026,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+484,610,1999,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+501,,1947,original,Arkansas,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+502,,1947,original,Kentucky,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+503,,1947,original,Oregon,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+504,,1947,original,Louisiana,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+505,,1947,original,New Mexico,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+506,,1955,split,no parent in NANPA report; fill from the Wikipedia article; Canada,https://reports.nanpa.com/public/npa_report.csv,low
+507,,1954,split,no parent in NANPA report; fill from the Wikipedia article,https://reports.nanpa.com/public/npa_report.csv,low
+508,617,1988,split,,https://reports.nanpa.com/public/npa_report.csv,high
+509,,1957,split,no parent in NANPA report; fill from the Wikipedia article,https://reports.nanpa.com/public/npa_report.csv,low
+510,415,1991,split,,https://reports.nanpa.com/public/npa_report.csv,high
+512,,1947,original,"Central and southern Texas, including Austin and San Antonio)",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+513,,1947,original,"Southwest Ohio, including Cincinnati",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+514,,1947,original,"Western Quebec, including Montreal; Canada",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+515,,1947,original,"Central Iowa, including Des Moines",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+516,914,1951,split,,https://reports.nanpa.com/public/npa_report.csv,high
+517,,1947,original,"South-central Michigan, including Lansing",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+518,,1947,original,"Northeastern New York, including Albany",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+519,,1953,split,no parent in NANPA report; fill from the Wikipedia article; Canada,https://reports.nanpa.com/public/npa_report.csv,low
+520,602,1995,split,,https://reports.nanpa.com/public/npa_report.csv,high
+521,500,2017,overlay,parent 500 not a geographic code in service,https://reports.nanpa.com/public/npa_report.csv,low
+523,500,2018,overlay,parent 500 not a geographic code in service,https://reports.nanpa.com/public/npa_report.csv,low
+524,500,2019,overlay,parent 500 not a geographic code in service,https://reports.nanpa.com/public/npa_report.csv,low
+525,500,2020,overlay,parent 500 not a geographic code in service,https://reports.nanpa.com/public/npa_report.csv,low
+526,500,2021,overlay,parent 500 not a geographic code in service,https://reports.nanpa.com/public/npa_report.csv,low
+527,500,2021,overlay,parent 500 not a geographic code in service,https://reports.nanpa.com/public/npa_report.csv,low
+529,500,2022,overlay,parent 500 not a geographic code in service,https://reports.nanpa.com/public/npa_report.csv,low
+530,916,1997,split,,https://reports.nanpa.com/public/npa_report.csv,high
+531,402,2011,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+532,500,2024,overlay,parent 500 not a geographic code in service,https://reports.nanpa.com/public/npa_report.csv,low
+534,715,2010,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+538,500,2025,overlay,parent 500 not a geographic code in service,https://reports.nanpa.com/public/npa_report.csv,low
+539,918,2011,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+540,703,1995,split,,https://reports.nanpa.com/public/npa_report.csv,high
+541,503,1995,split,,https://reports.nanpa.com/public/npa_report.csv,high
+542,500,2026,overlay,parent 500 not a geographic code in service,https://reports.nanpa.com/public/npa_report.csv,low
+543,500,2026,overlay,parent 500 not a geographic code in service,https://reports.nanpa.com/public/npa_report.csv,low
+548,226,2016,overlay,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+551,201,2001,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+557,314,2022,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+559,209,1998,split,,https://reports.nanpa.com/public/npa_report.csv,high
+561,407,1996,split,,https://reports.nanpa.com/public/npa_report.csv,high
+562,310,1997,split,,https://reports.nanpa.com/public/npa_report.csv,high
+563,319,2001,split,,https://reports.nanpa.com/public/npa_report.csv,high
+564,360,2017,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+567,419,2002,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+570,717,1998,split,,https://reports.nanpa.com/public/npa_report.csv,high
+571,703,2000,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+572,405,2021,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+573,314,1996,split,,https://reports.nanpa.com/public/npa_report.csv,high
+574,219,2002,split,,https://reports.nanpa.com/public/npa_report.csv,high
+575,505,2007,split,,https://reports.nanpa.com/public/npa_report.csv,high
+579,450,2010,overlay,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+580,405,1997,split,,https://reports.nanpa.com/public/npa_report.csv,high
+581,418,2008,overlay,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+582,814,2021,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+584,204,2022,overlay,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+585,716,2001,split,,https://reports.nanpa.com/public/npa_report.csv,high
+586,810,2001,split,,https://reports.nanpa.com/public/npa_report.csv,high
+587,780,2008,overlay,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+601,,1947,original,Mississippi,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+602,,1947,original,Arizona,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+603,,1947,original,New Hampshire,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+604,,1947,original,British Columbia; Canada,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+605,,1947,original,South Dakota,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+606,,1955,split,no parent in NANPA report; fill from the Wikipedia article,https://reports.nanpa.com/public/npa_report.csv,low
+607,,1954,split,no parent in NANPA report; fill from the Wikipedia article,https://reports.nanpa.com/public/npa_report.csv,low
+608,,1955,split,no parent in NANPA report; fill from the Wikipedia article,https://reports.nanpa.com/public/npa_report.csv,low
+609,201,1957,split,,https://reports.nanpa.com/public/npa_report.csv,high
+610,215,1994,split,,https://reports.nanpa.com/public/npa_report.csv,high
+612,,1947,original,"Southeastern Minnesota, including Minneapolis",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+613,,1947,original,"Ontario, including Ottawa; Canada",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+614,,1947,original,"Southeastern Ohio, including Columbus",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+615,,1954,split,no parent in NANPA report; fill from the Wikipedia article,https://reports.nanpa.com/public/npa_report.csv,low
+616,,1947,original,"Western Michigan, including Grand Rapids and the Upper Peninsula",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+617,,1947,original,"Eastern Massachusetts, including Boston",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+618,,1947,original,"Southern Illinois, including East St. Louis",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+619,714,1982,split,,https://reports.nanpa.com/public/npa_report.csv,high
+620,316,2001,split,,https://reports.nanpa.com/public/npa_report.csv,high
+621,346,2025,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+623,602,1999,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+624,716,2023,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+626,818,1997,split,,https://reports.nanpa.com/public/npa_report.csv,high
+628,415,2015,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+629,615,2015,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+630,708,1996,split,,https://reports.nanpa.com/public/npa_report.csv,high
+631,516,1999,split,,https://reports.nanpa.com/public/npa_report.csv,high
+636,314,1999,split,,https://reports.nanpa.com/public/npa_report.csv,high
+639,306,2013,overlay,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+640,609,2018,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+641,515,2000,split,,https://reports.nanpa.com/public/npa_report.csv,high
+645,305,2023,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+646,212,1999,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+647,416,2001,overlay,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+650,415,1997,split,,https://reports.nanpa.com/public/npa_report.csv,high
+651,612,1998,split,,https://reports.nanpa.com/public/npa_report.csv,high
+656,813,2022,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+657,714,2008,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+659,205,2019,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+660,816,1997,split,,https://reports.nanpa.com/public/npa_report.csv,high
+661,805,1999,split,,https://reports.nanpa.com/public/npa_report.csv,high
+662,601,1999,split,,https://reports.nanpa.com/public/npa_report.csv,high
+667,443,2012,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+669,408,2012,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+670,,1997,split,no parent in NANPA report; fill from the Wikipedia article,https://reports.nanpa.com/public/npa_report.csv,low
+671,,1997,split,no parent in NANPA report; fill from the Wikipedia article,https://reports.nanpa.com/public/npa_report.csv,low
+672,604,2013,overlay,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+678,470,1998,overlay,parent 470 newer than child in NANPA report,https://reports.nanpa.com/public/npa_report.csv,low
+679,313,2025,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+680,315,2017,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+681,304,2009,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+682,817,2000,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+683,705,2022,overlay,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+684,,2004,split,no parent in NANPA report; fill from the Wikipedia article,https://reports.nanpa.com/public/npa_report.csv,low
+686,804,2024,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+689,407,2019,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+701,,1947,original,North Dakota,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+702,,1947,original,Nevada,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+703,,1947,original,Virginia,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+704,,1947,original,North Carolina,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+705,,1957,split,no parent in NANPA report; fill from the Wikipedia article; Canada,https://reports.nanpa.com/public/npa_report.csv,low
+706,404,1992,split,,https://reports.nanpa.com/public/npa_report.csv,high
+707,415,1959,split,,https://reports.nanpa.com/public/npa_report.csv,high
+708,312,1989,split,,https://reports.nanpa.com/public/npa_report.csv,high
+709,,1962,split,no parent in NANPA report; fill from the Wikipedia article; Canada,https://reports.nanpa.com/public/npa_report.csv,low
+710,,1984,split,no parent in NANPA report; fill from the Wikipedia article,https://reports.nanpa.com/public/npa_report.csv,low
+712,,1947,original,"Western Iowa, including Sioux City",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+713,,1947,original,"Southeastern Texas, including Houston",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+714,213,1951,split,,https://reports.nanpa.com/public/npa_report.csv,high
+715,,1947,original,Northern Wisconsin,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+716,,1947,original,"Western New York, including Buffalo and Rochester",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+717,,1947,original,"Eastern Pennsylvania, excluding the Delaware and Lehigh valleys",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+718,212,1984,split,,https://reports.nanpa.com/public/npa_report.csv,high
+719,303,1988,split,,https://reports.nanpa.com/public/npa_report.csv,high
+720,303,1998,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+724,412,1998,split,,https://reports.nanpa.com/public/npa_report.csv,high
+725,702,2014,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+726,210,2017,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+727,813,1998,split,,https://reports.nanpa.com/public/npa_report.csv,high
+728,561,2023,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+729,423,2025,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+730,618,2023,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+731,901,2001,split,,https://reports.nanpa.com/public/npa_report.csv,high
+732,908,1997,split,,https://reports.nanpa.com/public/npa_report.csv,high
+734,313,1997,split,,https://reports.nanpa.com/public/npa_report.csv,high
+737,512,2013,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+738,323,2024,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+740,614,1997,split,,https://reports.nanpa.com/public/npa_report.csv,high
+742,905,2021,overlay,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+743,336,2016,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+747,818,2009,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+748,970,2025,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+753,613,2022,overlay,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+754,954,2001,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+757,804,1996,split,,https://reports.nanpa.com/public/npa_report.csv,high
+760,619,1997,split,,https://reports.nanpa.com/public/npa_report.csv,high
+762,706,2006,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+763,612,2000,split,,https://reports.nanpa.com/public/npa_report.csv,high
+765,317,1997,split,,https://reports.nanpa.com/public/npa_report.csv,high
+769,601,2005,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+770,404,1995,split,,https://reports.nanpa.com/public/npa_report.csv,high
+771,202,2021,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+772,561,2002,split,,https://reports.nanpa.com/public/npa_report.csv,high
+773,312,1996,split,,https://reports.nanpa.com/public/npa_report.csv,high
+774,508,2001,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+775,702,1998,split,,https://reports.nanpa.com/public/npa_report.csv,high
+778,604,2001,overlay,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+779,815,2007,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+780,,1999,split,no parent in NANPA report; fill from the Wikipedia article; Canada,https://reports.nanpa.com/public/npa_report.csv,low
+781,617,1997,split,,https://reports.nanpa.com/public/npa_report.csv,high
+782,902,2014,overlay,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+785,913,1997,split,,https://reports.nanpa.com/public/npa_report.csv,high
+786,305,1998,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+787,809,1996,split,parent 809 not a geographic code in service,https://reports.nanpa.com/public/npa_report.csv,low
+801,,1947,original,Utah,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+802,,1947,original,Vermont,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+803,,1947,original,South Carolina,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+804,,1973,split,no parent in NANPA report; fill from the Wikipedia article,https://reports.nanpa.com/public/npa_report.csv,low
+805,213,1957,split,,https://reports.nanpa.com/public/npa_report.csv,high
+806,,1957,split,no parent in NANPA report; fill from the Wikipedia article,https://reports.nanpa.com/public/npa_report.csv,low
+807,,1962,split,no parent in NANPA report; fill from the Wikipedia article; Canada,https://reports.nanpa.com/public/npa_report.csv,low
+808,,1957,split,no parent in NANPA report; fill from the Wikipedia article; outside lower 48,https://reports.nanpa.com/public/npa_report.csv,low
+810,313,1993,split,,https://reports.nanpa.com/public/npa_report.csv,high
+812,,1947,original,Southern Indiana,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+813,,1953,split,no parent in NANPA report; fill from the Wikipedia article,https://reports.nanpa.com/public/npa_report.csv,low
+814,,1947,original,Northwestern and central Pennsylvania,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+815,,1947,original,"Northern Illinois, excluding Chicago and the Quad Cities",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+816,,1947,original,"Northwestern Missouri, including Kansas City",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+817,,1953,split,no parent in NANPA report; fill from the Wikipedia article,https://reports.nanpa.com/public/npa_report.csv,low
+818,213,1984,split,,https://reports.nanpa.com/public/npa_report.csv,high
+819,,1957,split,no parent in NANPA report; fill from the Wikipedia article; Canada,https://reports.nanpa.com/public/npa_report.csv,low
+820,805,2018,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+821,864,2024,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+825,780,2016,overlay,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+826,540,2022,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+828,704,1998,split,,https://reports.nanpa.com/public/npa_report.csv,high
+830,210,1997,split,,https://reports.nanpa.com/public/npa_report.csv,high
+831,408,1998,split,,https://reports.nanpa.com/public/npa_report.csv,high
+832,713,1999,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+835,484,2022,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+837,530,2025,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+838,518,2017,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+839,803,2020,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+840,909,2021,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+843,803,1998,split,,https://reports.nanpa.com/public/npa_report.csv,high
+845,914,2000,split,,https://reports.nanpa.com/public/npa_report.csv,high
+847,708,1996,split,,https://reports.nanpa.com/public/npa_report.csv,high
+848,732,2001,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+850,904,1997,split,,https://reports.nanpa.com/public/npa_report.csv,high
+854,843,2015,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+856,609,1999,split,,https://reports.nanpa.com/public/npa_report.csv,high
+857,617,2001,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+858,619,1999,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+859,606,2000,split,,https://reports.nanpa.com/public/npa_report.csv,high
+860,203,1995,split,,https://reports.nanpa.com/public/npa_report.csv,high
+861,309,2023,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+862,973,2001,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+863,941,1999,split,,https://reports.nanpa.com/public/npa_report.csv,high
+864,803,1995,split,,https://reports.nanpa.com/public/npa_report.csv,high
+865,423,1999,split,,https://reports.nanpa.com/public/npa_report.csv,high
+867,403,1997,split,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+870,501,1997,split,,https://reports.nanpa.com/public/npa_report.csv,high
+872,312,2009,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+873,819,2012,overlay,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+878,412,2001,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+879,709,2024,overlay,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+901,,1947,original,Tennessee,https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+902,,1947,original,"Nova Scotia, Prince Edward Island, and New Brunswick; Canada",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+903,214,1990,split,,https://reports.nanpa.com/public/npa_report.csv,high
+904,,1965,split,no parent in NANPA report; fill from the Wikipedia article,https://reports.nanpa.com/public/npa_report.csv,low
+905,416,1993,split,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+906,,1961,split,no parent in NANPA report; fill from the Wikipedia article,https://reports.nanpa.com/public/npa_report.csv,low
+907,,1957,split,no parent in NANPA report; fill from the Wikipedia article; outside lower 48,https://reports.nanpa.com/public/npa_report.csv,low
+908,201,1990,split,,https://reports.nanpa.com/public/npa_report.csv,high
+909,714,1992,split,,https://reports.nanpa.com/public/npa_report.csv,high
+910,919,1993,split,,https://reports.nanpa.com/public/npa_report.csv,high
+912,,1954,split,no parent in NANPA report; fill from the Wikipedia article,https://reports.nanpa.com/public/npa_report.csv,low
+913,,1947,original,"Northern Kansas, including Kansas City, Kansas",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+914,,1947,original,"Southern New York, including Long Island but excluding New York City",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+915,,1947,original,"Western Texas, including El Paso",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+916,,1947,original,"Northern California, north of Sacramento",https://en.wikipedia.org/wiki/Original_North_American_area_codes,high
+917,212,1992,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+918,,1953,split,no parent in NANPA report; fill from the Wikipedia article,https://reports.nanpa.com/public/npa_report.csv,low
+919,,1954,split,no parent in NANPA report; fill from the Wikipedia article,https://reports.nanpa.com/public/npa_report.csv,low
+920,414,1997,split,,https://reports.nanpa.com/public/npa_report.csv,high
+924,507,2024,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+925,510,1998,split,,https://reports.nanpa.com/public/npa_report.csv,high
+928,520,2001,split,,https://reports.nanpa.com/public/npa_report.csv,high
+929,347,2011,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+930,812,2015,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+931,615,1997,split,,https://reports.nanpa.com/public/npa_report.csv,high
+934,631,2016,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+936,409,2000,split,,https://reports.nanpa.com/public/npa_report.csv,high
+937,513,1996,split,,https://reports.nanpa.com/public/npa_report.csv,high
+938,256,2010,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+939,787,2001,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+940,817,1997,split,,https://reports.nanpa.com/public/npa_report.csv,high
+941,813,1995,split,,https://reports.nanpa.com/public/npa_report.csv,high
+942,416,2025,overlay,Canada,https://reports.nanpa.com/public/npa_report.csv,high
+943,470,2022,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+945,214,2021,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+947,248,2002,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+948,757,2022,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+949,714,1998,split,,https://reports.nanpa.com/public/npa_report.csv,high
+951,909,2004,split,,https://reports.nanpa.com/public/npa_report.csv,high
+952,612,2000,split,,https://reports.nanpa.com/public/npa_report.csv,high
+954,305,1995,split,,https://reports.nanpa.com/public/npa_report.csv,high
+956,210,1997,split,,https://reports.nanpa.com/public/npa_report.csv,high
+959,860,2014,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+970,303,1995,split,,https://reports.nanpa.com/public/npa_report.csv,high
+971,503,2000,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+972,214,1996,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+973,201,1997,split,,https://reports.nanpa.com/public/npa_report.csv,high
+975,816,2023,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+978,508,1997,split,,https://reports.nanpa.com/public/npa_report.csv,high
+979,409,2000,split,,https://reports.nanpa.com/public/npa_report.csv,high
+980,704,2001,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+983,303,2022,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+984,919,2012,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+985,504,2001,split,,https://reports.nanpa.com/public/npa_report.csv,high
+986,208,2017,overlay,,https://reports.nanpa.com/public/npa_report.csv,high
+989,517,2001,split,,https://reports.nanpa.com/public/npa_report.csv,high

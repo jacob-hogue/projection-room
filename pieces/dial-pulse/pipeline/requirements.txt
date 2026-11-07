@@ -1,0 +1,8 @@
+requests>=2.32
+pandas>=2.2
+geopandas>=1.0
+shapely>=2.0
+pyogrio>=0.9
+topojson>=1.9
+playwright>=1.48
+pytest>=8
