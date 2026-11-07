@@ -21,7 +21,9 @@ describe('middleDigitClass', () => {
   test('classes whole, subdivided and later codes', () => {
     expect(middleDigitClass('305')).toBe('whole');
     expect(middleDigitClass('212')).toBe('subdivided');
-    expect(middleDigitClass('909')).toBe('later');
+    // 909 (1992) has a zero in the middle, so by digit alone it reads as a whole-state
+    // code; whether a code is a later addition comes from the lineage year, not the digit.
+    expect(middleDigitClass('909')).toBe('whole');
     expect(middleDigitClass('984')).toBe('later');
   });
 });
