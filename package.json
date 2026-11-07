@@ -19,7 +19,9 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.65.0",
+    "@types/culori": "^4.0.1",
     "@types/d3": "^7.4.3",
+    "@types/node": "^26.6.6",
     "@types/topojson-client": "^3.1.5",
     "jsdom": "^29.1.1",
     "vitest": "^5.1.0"
