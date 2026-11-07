@@ -40,7 +40,7 @@ describe('published geometry', () => {
 
   test('every territory decodes to closed rings', () => {
     const bad = polygons
-      .map((g) => [npaOf(g), openRings(feature(topo, g).geometry as GeoJSON.Polygon)] as const)
+      .map((g) => [npaOf(g), openRings((feature(topo, g) as GeoJSON.Feature<GeoJSON.Polygon>).geometry)] as const)
       .filter(([, n]) => n > 0);
     expect(bad).toEqual([]);
   });
