@@ -1,20 +1,21 @@
 """Turn the 2015 area code polygons into the small TopoJSON the page draws.
 
-Steps: normalize columns, drop overlay features (they duplicate their parent's geometry;
-overlays are rebuilt from lineage.csv), keep the lower 48, clip to the state outline minus
-the Great Lakes, project to Conus Albers (EPSG:5070), simplify on shared arcs, write
-data/areas.topojson with one feature per territory carrying `npa` and `id`.
+Steps: repair geometry, normalize columns, drop overlay features (they duplicate their
+parent's geometry; overlays are rebuilt from lineage.csv), keep the lower 48, clip to the
+state outline minus the Great Lakes, project to Conus Albers (EPSG:5070), clean and
+simplify the polygons as one coverage so shared edges match exactly, then write
+data/areas.topojson (via topo.mjs) with one feature per territory carrying `npa` and `id`.
 """
 from __future__ import annotations
 
 import pathlib
+import subprocess
 import sys
 import zipfile
 
 import geopandas as gpd
-import pandas as pd
-import topojson
-from shapely import make_valid
+import shapely
+from shapely import make_valid, unary_union
 from shapely.geometry import box
 
 HERE = pathlib.Path(__file__).resolve().parent
@@ -26,6 +27,7 @@ NOT_LOWER48_STATES = {"AK", "HI", "PR", "VI", "GU", "MP", "AS"}
 NOT_LOWER48_CODES = {"907", "808", "787", "939", "340", "671", "670", "684"}
 GREAT_LAKES = {"Lake Superior", "Lake Michigan", "Lake Huron", "Lake Erie", "Lake Ontario"}
 SIMPLIFY_M = 1500
+GAP_M = 3000  # slivers between neighbours narrower than this are merged away
 QUANTIZATION = 1e5
 
 
@@ -60,6 +62,21 @@ def lineage_types(path: pathlib.Path) -> dict[str, str]:
         return {r["code"]: r["type"] for r in csv.DictReader(f)}
 
 
+def repair(gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    """Make every geometry valid and keep only its polygonal parts. The 2015 file stores
+    some holes as keyholes (one ring bridged to the hole along a zero-width cut); make_valid
+    turns those into interior rings and leaves the cut behind as a line, which is dropped."""
+    def polygonal(geom):
+        fixed = make_valid(geom)
+        parts = [p for p in getattr(fixed, "geoms", [fixed]) if p.geom_type in ("Polygon", "MultiPolygon")]
+        if not parts:
+            return None
+        return parts[0] if len(parts) == 1 else unary_union(parts)
+    out = gdf.copy()
+    out["geometry"] = out.geometry.apply(polygonal)
+    return out[out.geometry.notna() & ~out.geometry.is_empty].reset_index(drop=True)
+
+
 def lower48(gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     out = normalize(gdf)
     if "COUNTRY" in out.columns:
@@ -85,17 +102,55 @@ def simplify(gdf: gpd.GeoDataFrame, tolerance_m: float) -> gpd.GeoDataFrame:
     return out
 
 
+def clean_coverage(gdf: gpd.GeoDataFrame, gap_m: float, snap_m: float | None = None) -> gpd.GeoDataFrame:
+    """Make the polygons a clean coverage: no overlaps, gaps narrower than `gap_m` merged
+    into the neighbour with the longest shared border, and every shared edge identical on
+    both sides. Without this, neighbours whose edges differ by a few hundred metres each
+    get their own arc, and merging them in the browser leaves open rings that draw as spikes.
+    Overlaps go to the smaller polygon: some parents in the 2015 file still cover their
+    later splits, and the split is the one that must keep its territory."""
+    out = normalize(gdf).copy()
+    kwargs = {"gap_width": gap_m, "merge_strategy": "min_area"}
+    if snap_m is not None:
+        kwargs["snapping_distance"] = snap_m
+    out["geometry"] = shapely.coverage_clean(out.geometry.values, **kwargs)
+    return out[~out.geometry.is_empty].reset_index(drop=True)
+
+
+def orient(gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    """Wind every exterior ring counterclockwise and every hole clockwise. topojson.merge
+    can only stitch a group's outer boundary when neighbours wind the same way."""
+    out = normalize(gdf).copy()
+    out["geometry"] = shapely.orient_polygons(out.geometry.values, exterior_cw=False)
+    return out
+
+
+def simplify_coverage(gdf: gpd.GeoDataFrame, tolerance_m: float) -> gpd.GeoDataFrame:
+    """Simplify shared edges once for both neighbours, so the coverage stays clean."""
+    out = normalize(gdf).copy()
+    out["geometry"] = shapely.coverage_simplify(out.geometry.values, tolerance_m, simplify_boundary=True)
+    return out
+
+
 def write_topojson(gdf: gpd.GeoDataFrame, path: pathlib.Path, quantization: float,
                    toposimplify_m: float | None = None) -> None:
-    out = normalize(gdf).copy()
+    """Write `gdf` (already projected) as TopoJSON through topo.mjs, the reference
+    topojson-server tool. Shared edges become shared arcs. The pipeline simplifies the
+    coverage before this step, so `toposimplify_m` is normally left at None."""
+    out = orient(gdf)
     out = out[["npa", "geometry"]].reset_index(drop=True)
     out["id"] = range(len(out))
-    kwargs = {"prequantize": quantization, "object_name": "areas"}
-    if toposimplify_m:
-        kwargs.update(toposimplify=toposimplify_m, prevent_oversimplify=True)
-    topo = topojson.Topology(out, **kwargs)
-    pathlib.Path(path).parent.mkdir(parents=True, exist_ok=True)
-    pathlib.Path(path).write_text(topo.to_json(), encoding="utf-8")
+    path = pathlib.Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    geojson = path.with_suffix(".geojson.tmp")
+    out.to_file(geojson, driver="GeoJSON")
+    try:
+        subprocess.run(
+            ["node", str(HERE / "topo.mjs"), str(geojson), str(path), str(quantization), str(toposimplify_m or 0)],
+            check=True, shell=False,
+        )
+    finally:
+        geojson.unlink(missing_ok=True)
 
 
 def lower48_outline() -> gpd.GeoDataFrame:
@@ -118,14 +173,17 @@ def lower48_outline() -> gpd.GeoDataFrame:
 
 
 def main() -> int:
-    areas = gpd.read_file(CACHE / "area-codes.geojson")
+    areas = repair(gpd.read_file(CACHE / "area-codes.geojson"))
     areas = lower48(drop_overlays(areas, lineage_types(HERE / "lineage.csv")))
     outline = lower48_outline()
     clipped = gpd.clip(areas, outline).explode(index_parts=False)
     clipped = clipped.dissolve(by="npa", as_index=False)[["npa", "geometry"]]
-    albers = to_albers(clipped)
+    albers = simplify_coverage(clean_coverage(to_albers(clipped), gap_m=GAP_M), SIMPLIFY_M)
+    if not shapely.coverage_is_valid(albers.geometry.values):
+        print("territories do not form a clean coverage after cleaning", file=sys.stderr)
+        return 1
     out_path = DATA / "areas.topojson"
-    write_topojson(albers, out_path, QUANTIZATION, toposimplify_m=SIMPLIFY_M)
+    write_topojson(albers, out_path, QUANTIZATION)
     size = out_path.stat().st_size
     print(f"{len(albers)} territories -> {out_path} ({size:,} bytes)")
     if size > 1_500_000:

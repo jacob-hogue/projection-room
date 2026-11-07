@@ -1,8 +1,8 @@
 requests>=2.32
 pandas>=2.2
 geopandas>=1.0
-shapely>=2.0
+shapely>=2.2
 pyogrio>=0.9
-topojson>=1.9
+# TopoJSON is written by topo.mjs with the repo's npm packages (Node 22).
 playwright>=1.48
 pytest>=8
