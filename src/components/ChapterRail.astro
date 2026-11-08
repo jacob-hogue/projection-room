@@ -1,0 +1,85 @@
+---
+/** The pinned map on the left and the chapters that drive it on the right. */
+import ExploreControls from './ExploreControls.astro';
+
+export interface Chapter {
+  id: string;
+  heading: string;
+  body: string;
+  state: { year: number; mode: 'pulses' | 'middle' | 'year'; labels: boolean; blank?: boolean };
+  play?: { from: number; to: number; seconds: number };
+  explore?: boolean;
+}
+interface Props {
+  chapters: Chapter[];
+  stageWidth: number;
+  stageHeight: number;
+}
+const { chapters, stageWidth, stageHeight } = Astro.props;
+---
+<section class="rail" id="rail">
+  <div class="stage-wrap" id="stage-wrap">
+    <svg id="stage" viewBox={`0 0 ${stageWidth} ${stageHeight}`} width={stageWidth} height={stageHeight} role="img" aria-labelledby="stage-title">
+      <title id="stage-title">Area codes of the lower 48 states, colored by the clicks it took to dial them</title>
+    </svg>
+    <p class="stage-status mono" id="stage-status" aria-live="polite"></p>
+    <ExploreControls />
+  </div>
+  <ol class="chapters" id="chapters">
+    {chapters.map((c, i) => (
+      <li
+        class="chapter"
+        id={`chapter-${c.id}`}
+        data-index={i}
+        data-year={c.state.year}
+        data-mode={c.state.mode}
+        data-labels={String(c.state.labels)}
+        data-blank={c.state.blank ? 'true' : undefined}
+        data-play={c.play ? JSON.stringify(c.play) : undefined}
+        data-explore={c.explore ? 'true' : undefined}
+      >
+        <span class="chapter-index mono">{String(i + 1).padStart(2, '0')}</span>
+        <h2>{c.heading}</h2>
+        <p>{c.body}</p>
+        {c.play ? <p class="counter mono" data-counter aria-live="off"></p> : null}
+      </li>
+    ))}
+  </ol>
+</section>
+
+<style>
+  .rail {
+    max-width: 1480px; margin: 0 auto; padding: 24px 24px 0;
+    display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 0 48px; align-items: start;
+  }
+  .stage-wrap { position: sticky; top: 72px; }
+  /* Unpinned: the map and its controls move below the chapters, where the reader is. */
+  .rail[data-explore="true"] { grid-template-columns: 1fr; }
+  .rail[data-explore="true"] .stage-wrap { position: static; order: 2; max-width: 1200px; margin: 0 auto; width: 100%; }
+  .rail[data-explore="true"] .chapters { order: 1; }
+  #stage {
+    display: block; width: 100%; height: auto; border-radius: 12px;
+    border: 1px solid var(--border); background: #0a0c11;
+  }
+  #stage :global(.areas), #stage :global(.outlines), #stage :global(.labels), #stage :global(.legend) { transition: opacity 600ms ease; }
+  #stage[data-blank="true"] :global(.areas), #stage[data-blank="true"] :global(.outlines), #stage[data-blank="true"] :global(.labels), #stage[data-blank="true"] :global(.legend) { opacity: 0; }
+  .stage-status { min-height: 20px; margin-top: 10px; font-size: 12px; color: var(--text-2); }
+  .chapters { list-style: none; }
+  .chapter { min-height: 72vh; display: flex; flex-direction: column; justify-content: center; padding: 24px 0; border-left: 2px solid var(--border); padding-left: 24px; transition: border-color 300ms ease; }
+  .chapter.is-active { border-left-color: var(--accent); }
+  .chapter-index { font-size: 12px; color: var(--text-3); margin-bottom: 10px; letter-spacing: 0.08em; }
+  .chapter.is-active .chapter-index { color: var(--accent); }
+  .chapter h2 { font-size: clamp(22px, 2.2vw, 30px); margin-bottom: 12px; }
+  .chapter p { font-size: 17px; line-height: 1.65; max-width: 44ch; }
+  .counter { margin-top: 16px; font-size: 14px; color: var(--text-1); }
+  .chapter:last-child { min-height: 40vh; }
+  @media (max-width: 899px) {
+    .rail { grid-template-columns: 1fr; gap: 0; padding-top: 12px; }
+    .stage-wrap { top: 60px; z-index: 5; background: var(--surface); padding-bottom: 8px; }
+    .rail[data-explore="true"] .stage-wrap { position: static; }
+    .chapter { min-height: 60vh; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #stage :global(.areas), #stage :global(.outlines), #stage :global(.labels), #stage :global(.legend), .chapter { transition: none; }
+  }
+</style>

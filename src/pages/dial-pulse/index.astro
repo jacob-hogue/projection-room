@@ -1,0 +1,30 @@
+---
+import { existsSync } from 'node:fs';
+import Base from '../../layouts/Base.astro';
+import PieceOpening from '../../components/PieceOpening.astro';
+import ChapterRail, { type Chapter } from '../../components/ChapterRail.astro';
+import chapters from '../../content/dial-pulse/chapters.json';
+
+const base = import.meta.env.BASE_URL;
+const title = 'The dial-pulse map';
+const rule = 'In 1947 the biggest cities got the area codes that were fastest to dial. Every point is colored by how many clicks it took.';
+const loopExists = existsSync(new URL('../../../public/dial-pulse/loop.mp4', import.meta.url));
+const STAGE_W = 1200;
+const STAGE_H = 760;
+---
+<Base title={title} description={rule}>
+  <PieceOpening
+    title={title}
+    rule={rule}
+    poster={`${base}dial-pulse/poster.png`}
+    posterAlt="The 1947 area code map of the lower 48 states, each territory colored by the clicks it took to dial, gold for the fastest and plum for the slowest."
+    loop={loopExists ? `${base}dial-pulse/loop.mp4` : null}
+    facts={['Area code polygons: October 2015', 'Method: trace each code back, dissolve, recolor', 'November 2026']}
+  />
+  <ChapterRail chapters={chapters as Chapter[]} stageWidth={STAGE_W} stageHeight={STAGE_H} />
+</Base>
+
+<script>
+  import { mountDialPulse } from '../../scripts/dial-pulse-page';
+  mountDialPulse();
+</script>

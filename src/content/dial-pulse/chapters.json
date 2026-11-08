@@ -1,0 +1,34 @@
+[
+  {
+    "id": "dial",
+    "heading": "A phone with a dial",
+    "body": "A rotary phone sent one click down the line for each digit, and ten clicks for a zero. Dialing a 2 took two clicks. Dialing a 9 took nine. Before anyone pressed a button, every number already had a speed.",
+    "state": { "year": 1947, "mode": "pulses", "labels": false, "blank": true }
+  },
+  {
+    "id": "originals",
+    "heading": "1947: five clicks to New York",
+    "body": "In October 1947 AT&T assigned 86 area codes, 77 of them in the United States. New York got 212, five clicks, the fastest code on the plan. Chicago got 312, Los Angeles 213, Detroit 313. Each territory here is colored by how many clicks its code took: gold for the fastest, plum for the slowest.",
+    "state": { "year": 1947, "mode": "pulses", "labels": true }
+  },
+  {
+    "id": "middle",
+    "heading": "A 0 in the middle means the whole state",
+    "body": "The middle digit carried a rule. A state served by one code got a 0 in the middle, like Florida's 305. A state cut into several codes got a 1, like the four Texas codes. The two colors here are that rule.",
+    "state": { "year": 1947, "mode": "middle", "labels": false }
+  },
+  {
+    "id": "fracture",
+    "heading": "Running out of numbers",
+    "body": "The 1947 format allowed 152 codes. Growth used them up, so territories split, and from 1992 new codes were laid over old ones instead of dividing them. Hatching marks those overlays. By 2025 the lower 48 states carry 367 geographic codes, on boundaries last redrawn in 2007.",
+    "state": { "year": 1947, "mode": "pulses", "labels": false },
+    "play": { "from": 1947, "to": 2025, "seconds": 20 }
+  },
+  {
+    "id": "explore",
+    "heading": "Explore",
+    "body": "Pick a palette, drag the year, and switch the coloring between clicks, middle digit and the year each code arrived. Hover any territory for its codes and its 1947 ancestor. The view lives in the link, so you can copy one and send it.",
+    "state": { "year": 2025, "mode": "pulses", "labels": true },
+    "explore": true
+  }
+]

@@ -1,0 +1,59 @@
+---
+/** Controls revealed by the last chapter. The page script wires them to the stage. */
+---
+<form class="controls" id="controls" hidden aria-label="Explore the map">
+  <div class="row">
+    <label class="field">
+      <span class="label">Palette</span>
+      <select id="palette" name="palette">
+        <option value="signature">Signature</option>
+        <option value="accent">Accent</option>
+        <option value="mono">Mono</option>
+      </select>
+    </label>
+    <fieldset class="field modes">
+      <legend class="label">Color by</legend>
+      <label><input type="radio" name="mode" value="pulses" checked /> clicks</label>
+      <label><input type="radio" name="mode" value="middle" /> middle digit</label>
+      <label><input type="radio" name="mode" value="year" /> year assigned</label>
+    </fieldset>
+  </div>
+  <div class="row year-row">
+    <button type="button" id="play" class="button" aria-pressed="false">Play</button>
+    <label class="field year-field">
+      <span class="label">Year <output id="year-out" for="year" class="mono">1947</output></span>
+      <input type="range" id="year" name="year" min="1947" max="2025" step="1" value="1947" />
+    </label>
+  </div>
+  <div class="row">
+    <label class="check"><input type="checkbox" id="labels" checked /> city labels</label>
+    <label class="check"><input type="checkbox" id="legend" checked /> legend</label>
+    <span class="spacer"></span>
+    <button type="button" id="download" class="button">Download SVG</button>
+    <button type="button" id="copy" class="button">Copy link</button>
+  </div>
+  <output id="readout" class="readout mono" aria-live="polite">Hover a territory for its codes.</output>
+</form>
+
+<style>
+  .controls { margin-top: 14px; padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: var(--card); display: grid; gap: 12px; }
+  .controls[hidden] { display: none; }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; }
+  .field { display: grid; gap: 6px; }
+  .label { font-size: 12px; color: var(--text-2); letter-spacing: 0.02em; }
+  .modes { border: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; }
+  .modes legend { float: left; margin-right: 10px; }
+  .modes label, .check { font-size: 14px; color: var(--text-1); display: inline-flex; align-items: center; gap: 6px; }
+  select, input[type="range"] { accent-color: var(--accent); }
+  select { background: #151823; color: var(--text-1); border: 1px solid var(--border-hover); border-radius: 8px; padding: 6px 10px; font: inherit; font-size: 14px; }
+  .year-row { gap: 14px; }
+  .year-field { flex: 1; min-width: 220px; }
+  .year-field output { color: var(--text-1); margin-left: 6px; }
+  input[type="range"] { width: 100%; }
+  .button { background: #151823; color: var(--text-1); border: 1px solid var(--border-hover); border-radius: 8px; padding: 7px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+  .button:hover { border-color: var(--accent); }
+  .button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+  .spacer { flex: 1; }
+  .readout { display: block; font-size: 12px; color: var(--text-2); min-height: 18px; }
+  select:focus-visible, input:focus-visible, .button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>

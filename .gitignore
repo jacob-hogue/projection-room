@@ -33,3 +33,8 @@ playwright-report/
 # Python bytecode
 __pycache__/
 *.pyc
+
+# Piece data copied into public/ by scripts/sync-data.mjs
+public/*/areas.topojson
+public/*/lineage.json
+tests/e2e/screenshots/
