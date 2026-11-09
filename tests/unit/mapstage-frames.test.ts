@@ -110,7 +110,7 @@ describe('MapStage atlas layers', () => {
     stage.setYear(2000);
     stage.zoomTo('718', 0);
     const tight = stage.state().zoom;
-    stage.zoomTo('718', 0, 0.5);
+    stage.zoomTo('718', 0, 0.75);
     expect(stage.state().zoom).toBeLessThan(tight);
     expect(stage.state().zoom).toBeGreaterThan(1);
   });
