@@ -7,7 +7,7 @@ import { codesInEffect, loadLineage, originalOf, type Lineage } from '../../../.
 import { MapStage } from '../../../../src/lib/mapstage';
 import { PALETTES } from '../../../../src/lib/palette';
 import { pulses } from '../../../../src/lib/pulses';
-import { CALLOUTS, CAPTIONS, FILM_SECONDS, SOURCE, STAGE_H, STAGE_W, TITLE, URL_LINE, seg, yearAt } from './beats';
+import { CALLOUTS, CAPTIONS, END_LINE, FILM_SECONDS, SOURCE, STAGE_H, STAGE_W, TITLE, URL_LINE, seg, yearAt } from './beats';
 import { Dial } from './Dial';
 
 const { fontFamily: SANS } = loadSans();
@@ -182,7 +182,7 @@ export const Film: React.FC<Props> = ({ offsetSeconds = 0 }) => {
         <AbsoluteFill style={{ alignItems: 'center', justifyContent: 'center', opacity: endCard }}>
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: 64, fontWeight: 700, letterSpacing: '-0.02em' }}>{TITLE}</div>
-            <div style={{ fontSize: 26, color: TEXT_2, marginTop: 14 }}>Area codes, measured in the clicks it took to dial them</div>
+            <div style={{ fontSize: 26, color: TEXT_2, marginTop: 18, maxWidth: 1100, lineHeight: 1.4 }}>{END_LINE}</div>
             <div style={{ fontSize: 22, color: ACCENT, fontFamily: MONO, marginTop: 28 }}>{URL_LINE}</div>
           </div>
         </AbsoluteFill>

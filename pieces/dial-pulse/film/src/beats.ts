@@ -21,16 +21,18 @@ export const SOURCE = 'Area code polygons: UCLA Geoportal, 2015 · Lineage: NANP
 export const URL_LINE = 'jacob-hogue.github.io/projection-room';
 
 export const CAPTIONS: Caption[] = [
-  { from: 0, to: 4.5, text: 'A rotary dial sent one click per digit, ten clicks a second. 212 took five.' },
-  { from: 4.5, to: 9.5, text: 'In 1947 New York got 212, the fastest area code on the plan.' },
-  { from: 9.5, to: 15, text: 'Chicago 312 and Los Angeles 213 took six clicks. Detroit 313 took seven.' },
-  { from: 15, to: 22, text: 'All 77 United States codes, filling in from the fastest to the slowest.' },
-  { from: 22, to: 27.5, text: 'South Dakota, South Carolina and North Carolina took 21 clicks, four times New York.' },
-  { from: 27.5, to: 32.5, text: 'A 0 in the middle meant one code for the whole state. A 1 meant the state was split.' },
-  { from: 32.5, to: 46, text: 'Splits, then overlays after 1992: 77 codes in 1947, 367 in 2025.' },
-  { from: 46, to: 51.5, text: "Houston's 713 territory now carries five codes. 212 is still Manhattan." },
+  { from: 0, to: 4.5, text: 'Before touchscreens, phones sent electrical pulses as the dial spun back. Every digit took time.' },
+  { from: 4.5, to: 9.5, text: 'In 1947, New York received 212, the fastest area code in the American numbering plan.' },
+  { from: 9.5, to: 15, text: 'Chicago and Los Angeles took six clicks. Detroit took seven. The largest industrial cities got remarkably short codes.' },
+  { from: 15, to: 22, text: 'Across the country, 77 area codes ranged from five clicks to 21. Every territory had its own dialing cost.' },
+  { from: 22, to: 27.5, text: 'South Dakota, South Carolina and North Carolina took 21 clicks. The slowest codes did not always serve small populations.' },
+  { from: 27.5, to: 32.5, text: 'A middle digit marked the territory. Zero meant one code for the state. One meant it was divided.' },
+  { from: 32.5, to: 46, text: 'The map kept dividing until 2007. Then overlays added new codes without moving the boundaries. By 2025, there were 367.' },
+  { from: 46, to: 51.5, text: "Today, 367 codes cover 237 territories. Houston's original territory carries five. Manhattan's still carries 212." },
   { from: 51.5, to: FILM_SECONDS, text: '' },
 ];
+
+export const END_LINE = 'The usual explanation is that shorter codes saved time in busy places. The pattern is clear. The reason is disputed.';
 
 export interface CalloutBeat {
   from: number;
