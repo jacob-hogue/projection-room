@@ -55,10 +55,10 @@ export const CALLOUTS: CalloutBeat[] = [
   { from: 39.2, to: 42.6, code: '704', title: 'North Carolina', value: '704 · 21 clicks', dx: 110, dy: -70 },
   { from: 45.5, to: 51.6, code: '305', title: 'Florida', value: '305 · whole state', dx: 80, dy: 40 },
   { from: 47.8, to: 51.6, code: '214', title: 'Texas, one of four', value: '214 · split state', dx: -60, dy: -90 },
-  { from: 61.6, to: 64.8, code: '212', title: '1992', value: '917 over Manhattan, the first overlay', dx: 110, dy: -70 },
+  { from: 61.6, to: 64.8, code: '212', title: '1992', value: '917, the first overlay', dx: 40, dy: 120 },
   { from: 65.4, to: 68.8, code: '505', title: '2007', value: '575, the last split', dx: -70, dy: 80 },
   { from: 76, to: 82.6, code: '713', title: 'Houston', value: '713 · 5 codes', dx: 80, dy: 70 },
-  { from: 78.4, to: 82.6, code: '212', title: 'Manhattan', value: '212 · 4 codes', dx: 110, dy: -70 },
+  { from: 78.4, to: 82.6, code: '212', title: 'Manhattan', value: '212 · 4 codes', dx: 40, dy: 120 },
 ];
 
 /** Year shown at time t during the run, with a slow landing. */
