@@ -41,3 +41,6 @@ tests/e2e/screenshots/
 
 # Piece data copied into public/
 public/*/population_1950.csv
+
+# Film data copied into the film public folder by its sync script
+pieces/*/film/public/
