@@ -2,45 +2,132 @@
   {
     "heading": "Before there were area codes",
     "paragraphs": [
-      "Before you could tap a name on your phone and hear someone's voice, making a call meant turning a dial.",
-      "On a rotary phone, you placed your finger in the hole beside a number and pulled the dial around until it stopped. Then you let go. As the dial spun back, it sent a series of electrical pulses down the telephone line. Dial a 3, and it sent three pulses. Dial a 7, and it sent seven. Zero was the exception: it sent ten.",
-      "These pulses were how the telephone network understood the number you were calling.",
-      "As the telephone system grew, connecting calls between different parts of the country became more complicated. The solution was a national numbering plan. In 1947, AT&T assigned area codes to geographic territories across the United States and Canada.",
-      "An area code was the first part of a telephone number. It told the switching equipment where a call needed to go before the rest of the number directed it to a local exchange.",
-      "But there was something unusual about the original system: area codes took different amounts of time to dial.",
-      "A code like 2-1-2, assigned to New York City, took just five pulses. A code like 6-0-5, assigned to South Dakota, took 21.",
-      "That difference is the starting point for this map."
+      "There was a time when making a telephone call was a physical act. You didn't tap a name or select a contact. You picked up a handset, listened for a dial tone, and turned a small metal-and-plastic wheel with your finger.",
+      "Every number had to be dialed by hand. And every turn of that dial sent a signal through the telephone network.",
+      "A rotary telephone worked through a surprisingly simple mechanism. You placed your finger in the hole beside a number, pulled the dial clockwise until it reached the metal stop, and released it. A spring brought the dial back to its starting position. As it returned, an electrical contact opened and closed in a rapid sequence, sending pulses down the telephone line.",
+      "Dial a three, and the phone sent three pulses. Dial a seven, and it sent seven. Zero, positioned at the far end of the dial, sent ten.",
+      "At the other end of the line, electromechanical switching equipment interpreted those pulses and used them to connect the call to the next part of the network.",
+      "For a local call, the process could be handled within a nearby telephone exchange. But as telephone service spread, and people increasingly wanted to call beyond their own towns and cities, the network needed a way to identify destinations across much greater distances.",
+      "Until then, long-distance calls often depended on operators manually connecting circuits. The future of telephone service depended on making those connections automatic.",
+      "That meant giving every part of the country a common numbering system.",
+      "In 1947, AT&T developed the North American Numbering Plan, dividing the United States and Canada into geographic numbering areas. Each area received a three-digit code, followed by a seven-digit local telephone number. The plan was designed to make direct long-distance dialing possible on a much larger scale. Its implementation began in 1951.",
+      "Those three digits became what we now call an area code.",
+      "They weren't simply labels on a map. They were instructions for the telephone network, identifying the geographic area to which a call needed to be routed before the local number directed it to the appropriate exchange and subscriber.",
+      "And because the system was still built around rotary dialing, those three digits had another interesting characteristic: some took considerably longer to dial than others.",
+      "That is where the story of the original area codes becomes especially interesting."
     ]
   },
   {
-    "heading": "Who got the fast codes",
+    "heading": "Who got the fastest numbers?",
     "paragraphs": [
-      "New York City got 2-1-2, five clicks, the fastest code on the plan. Its territory held 7.9 million people in 1950, more than any other. Chicago's 3-1-2 and Los Angeles's 2-1-3 took six clicks; Detroit's 3-1-3 and Pittsburgh's 4-1-2 took seven. The six codes that cost seven clicks or fewer served territories with a median population of 4.3 million. The big industrial cities of 1947 sit at the bright end of the scale.",
-      "The plan gave the United States 77 codes and Canada nine. Most of the country took between twelve and twenty clicks to reach, and the 42 codes in that band served a median population of 1.6 million.",
-      "At the slow end, South Dakota's 6-0-5, South Carolina's 8-0-3 and North Carolina's 7-0-4 each took 21 clicks, four times New York. South Dakota had 651,000 people. But 7-0-4 covered all of North Carolina, 4.1 million people, so the slow codes went to whole states rather than simply to small populations. The ten codes at 20 or 21 clicks served a median population of 666,000.",
-      "The usual explanation is that the busiest places received the shortest codes, saving time on millions of calls. The pattern is there in the data. Whether it was the stated reason is disputed, and this map does not settle it."
+      "Look at the original numbering map, and one of the first things you notice is that the codes weren't equally easy to dial.",
+      "New York City received 2-1-2. On a rotary telephone, that meant just five pulses: two for the first digit, one for the second, and two for the third.",
+      "It was one of the shortest combinations available.",
+      "Other major cities received relatively efficient codes, too. Los Angeles got 2-1-3, Chicago got 3-1-2, Detroit got 3-1-3, and Pittsburgh got 4-1-2.",
+      "These were some of the country's major industrial and population centers. In the 1940s, they represented enormous concentrations of telephone subscribers and long-distance calling activity.",
+      "The pattern becomes clearer when we compare the original codes with the populations they served.",
+      "The six codes requiring seven pulses or fewer served territories with a median population of 4.3 million people, measured using the 1950 Census. At the other end of the scale, the ten codes requiring 20 or 21 pulses served territories with a median population of just 666,000.",
+      "The difference could be substantial.",
+      "New York's 2-1-2 required five pulses. South Dakota's 6-0-5 required 21. South Carolina's 8-0-3 and North Carolina's 7-0-4 required the same.",
+      "That's more than four times as many pulses to dial.",
+      "But population doesn't explain everything. South Dakota had just 651,000 residents in 1950, while North Carolina had approximately 4.1 million. Both received codes that were among the slowest to dial.",
+      "The reason becomes clearer when we look at the original geography. Some codes covered entire states, while others served individual regions within much larger states.",
+      "Across the original American numbering plan, 42 codes required between 12 and 19 pulses to dial. Their territories had a median population of approximately 1.6 million.",
+      "Taken together, the numbers reveal a striking pattern: many of the largest and busiest telephone markets received the easiest codes to dial, while many smaller or more geographically extensive territories received longer ones.",
+      "A common explanation is that the numbering plan was designed to save dialing time in places where enormous numbers of calls were being made. Even a small reduction in dialing time could matter when multiplied across millions of telephone calls.",
+      "The data certainly shows a relationship between population and dialing efficiency.",
+      "But there's an important distinction between observing that pattern and proving exactly why every code was assigned. The original assignments reflected engineering, routing, geography, and the expected needs of the telephone network. The population comparison alone cannot establish how much each consideration influenced the decisions.",
+      "Still, the pattern is difficult to ignore."
     ]
   },
   {
-    "heading": "A 0 in the middle",
+    "heading": "The hidden logic of the middle digit",
     "paragraphs": [
-      "The middle digit was a flag. Only area codes had a 0 or 1 there, which let the switching equipment tell an area code from a local exchange. A 0 meant one code for the whole state, like Florida's 3-0-5. A 1 meant the state was split, like the four Texas codes. Of the 77 United States codes, 35 covered whole states."
+      "There was another feature of the original area codes that reveals just how carefully the numbering system was designed.",
+      "Look at the middle digit.",
+      "In the original numbering format, area codes could have either a zero or a one in that position. That made them immediately distinguishable from local central-office exchange codes, which followed a different numbering format.",
+      "But the original assignments also followed a geographic convention.",
+      "States with a single numbering area generally received a zero in the middle. Florida, for example, received 3-0-5. Maine received 2-0-7. Wyoming received 3-0-7.",
+      "States divided into multiple numbering areas generally received a one. New York received 2-1-2, Illinois received 3-1-2, and Texas received several codes, including 5-1-2 and 7-1-3.",
+      "In other words, the middle digit offered a clue about how the telephone network divided the country.",
+      "Of the 77 original United States area codes, 35 covered entire states.",
+      "It was a simple numbering convention that made the system easier to organize and helped distinguish geographic area codes from local exchange numbers.",
+      "As the network expanded, the original pattern eventually became less useful, and the distinction between the two types of territory was no longer maintained.",
+      "But in the original map, that small digit tells a surprisingly large part of the story."
     ]
   },
   {
-    "heading": "Running out of numbers",
+    "heading": "A numbering system runs out of room",
     "paragraphs": [
-      "The format allowed 152 codes. The first split came in 1948, when 2-1-9 was cut out of Indiana's 3-1-7. By 1960 the country carried 101 codes, and by 1990 only 114: the plan held for forty years. Then growth used it up. Territories kept splitting, and from 1992 new codes were laid over old ones instead of dividing them; 9-1-7 over Manhattan was the first. The count went from 121 codes in 1992 to 233 in 2000. The last boundary split was 5-7-5 out of New Mexico's 5-0-5 in 2007. Every code since has been an overlay, which is why the hatching appears in the film but the lines stop moving.",
-      "In 2025 the lower 48 states carry 367 codes on 237 territories. Eleven territories carry three or more, and Houston's 7-1-3 carries five. The 1947 shape still shows through: 2-1-2 is still Manhattan, 3-1-3 is still Detroit."
+      "The original numbering plan was designed with room for growth.",
+      "Under its original three-digit format, with a middle digit of zero or one, there were 152 possible area codes available for assignment.",
+      "In 1947, only 86 had been assigned across the United States and Canada. Seventy-seven belonged to the United States and nine to Canada.",
+      "That left a substantial reserve of numbers for future expansion.",
+      "The first geographic split came in 1948, when Indiana's original 3-1-7 territory was divided to create 2-1-9. Instead of asking the entire state to share one code, the network could now route calls to two distinct numbering areas.",
+      "For years, expansion happened gradually. New codes were introduced as populations grew, telephone ownership increased, and the demand for direct long-distance calling spread.",
+      "By 1960, the country had 101 area codes. By 1990, it had 114.",
+      "For decades, the original numbering system seemed to have plenty of room.",
+      "Then the pace of change accelerated.",
+      "The growth of mobile phones, fax machines, pagers, additional telephone lines, and new telecommunications services created demand for far more numbers than the original system had anticipated.",
+      "Simply dividing existing territories was no longer an attractive solution everywhere.",
+      "A geographic split meant drawing a new boundary across an existing area. Some customers kept their old area code, while others had to adopt a new one. Businesses had to update their contact information, and residents had to adjust to a different telephone identity.",
+      "There was another way.",
+      "Instead of dividing a territory, the telephone network could introduce an additional area code over the same geographic region. This became known as an overlay.",
+      "New York introduced 9-1-7 in 1992, one of the first overlay arrangements in the United States. Rather than creating an entirely separate geographic region, the new code added another layer of numbering capacity to an existing service area.",
+      "The map could now gain new area codes without necessarily gaining new geographic boundaries.",
+      "And the change was dramatic.",
+      "The number of codes rose from 121 in 1992 to 233 by 2000.",
+      "Geographic splits continued during this period, but overlays increasingly became the preferred way to provide additional numbers without forcing large numbers of existing customers to change their telephone numbers.",
+      "The last geographic split in this reconstruction came in 2007, when New Mexico's 5-0-5 territory was divided to create 5-7-5.",
+      "After that, every new code in the sequence was introduced as an overlay.",
+      "The distinction is important when watching the map. A split changes the shape of a territory. An overlay adds another code to a territory that already exists.",
+      "That's why, in the later years of the animation, the number of codes continues to increase even though the geographic boundaries stop moving."
     ]
   },
   {
-    "heading": "How the map was made",
+    "heading": "The map we have today",
     "paragraphs": [
-      "Nobody publishes a map of the 1947 area codes. What exists is a map of today's boundaries, a list of the original 77, and a long record of which code was carved out of which. The three were stitched together into one dataset.",
-      "Each code has a parent, the code it was split from, and a year. Written down for all 425 codes, that is a family tree with 86 roots. To draw any year, take each of today's territories, follow its parents back until you reach a code that existed that year, and merge the territories that land on the same code. For 1947 the 237 modern territories collapse into the 77 originals.",
-      "The modern boundaries came from a 2015 dataset published by UCLA's map library. Where two codes met, each side had its own slightly different copy of the shared edge, so the shapes were snapped together as one surface before anything was drawn. Population per territory is the 1950 Census count of the counties inside it; the 77 territories add up to 150.7 million people, the Census figure for the 48 states. The count of codes in service was checked against the numbering authority's records for twelve years between 1947 and 2025, and all twelve match.",
-      "One map engine draws every frame of the film and the poster, so the two never disagree."
+      "By 2025, the lower 48 states in this reconstruction contained 367 area codes distributed across 237 geographic territories.",
+      "Some territories now have two or more codes serving the same area. Eleven have three or more.",
+      "Houston is one of the most striking examples. The original 7-1-3 territory is now associated with five area codes.",
+      "What began as a system of carefully divided geographic regions has become a much more layered network, where several different area codes can identify telephone numbers in the same place.",
+      "And yet, some of the original geography remains recognizable.",
+      "New York's 2-1-2 is still associated with Manhattan. Detroit's 3-1-3 remains one of the most recognizable original area codes in the country.",
+      "The numbering system has changed enormously, but the foundations laid down in 1947 are still visible.",
+      "There's also something worth remembering about what an area code means today. It identifies the numbering area associated with a telephone number, not necessarily the current location of the person using it. Mobile numbers can move with their owners, and numbers can be transferred between providers.",
+      "The map tells us how the telephone network developed geographically. It doesn't necessarily tell us where everyone is today."
+    ]
+  },
+  {
+    "heading": "Reconstructing a map that no longer exists",
+    "paragraphs": [
+      "There is one final challenge with this story.",
+      "Nobody publishes a complete digital map of what the original area-code boundaries looked like in 1947. What survives is a combination of modern geographic boundaries, historical lists of original area codes, and records documenting how one numbering area was divided to create another.",
+      "To reconstruct the past, those pieces have to be brought together.",
+      "The foundation is a modern map of area-code territories, combined with the historical record of every split and the year it occurred.",
+      "Each newer code has a parent: the earlier code from which its territory was created. Follow those relationships backward, and the entire numbering system becomes a kind of family tree.",
+      "In this dataset, 425 codes can be traced back through 86 original numbering areas.",
+      "That family tree makes it possible to reconstruct the map at different points in time.",
+      "To draw the map for any given year, start with today's geographic territories and trace each one backward through its parent codes. Stop when you reach a code that was already in service in the year being reconstructed.",
+      "Territories that lead back to the same original code are then merged.",
+      "For 1947, that process takes the 237 modern geographic territories in the lower 48 and brings them back together into the original 77 United States numbering areas.",
+      "The geographic boundaries themselves come from a 2015 dataset published by UCLA's map library. Because neighboring territories can contain slightly different versions of the same shared boundary, those edges were aligned and joined into a consistent geographic surface before the animation was created.",
+      "Population was reconstructed separately.",
+      "For each original territory, the 1950 Census population was calculated by adding together the populations of the counties contained within its boundaries. Across the 77 original territories, the total comes to 150.7 million people, matching the Census population of the 48 contiguous states.",
+      "The historical count of area codes was also checked against numbering-authority records at twelve points between 1947 and 2025. All twelve comparisons match.",
+      "Finally, the same map engine draws every frame of the animation and the accompanying poster. That means both visualizations are generated from the same underlying geographic data, rather than being assembled separately.",
+      "The result is more than a picture of how area codes changed.",
+      "It's a reconstruction of how an entire telephone network grew, adapted, and eventually outgrew the numbering system it started with."
+    ]
+  },
+  {
+    "heading": "Closing",
+    "paragraphs": [
+      "The next time you dial a number, it's easy to forget how much history is packed into those ten digits.",
+      "They began as a practical solution to a mechanical problem: how to connect one telephone to another across an increasingly connected country.",
+      "The rotary dial is mostly gone. The switching equipment has changed. The way we make calls has transformed beyond recognition.",
+      "But the area codes remain.",
+      "And hidden inside them is the story of how America learned to connect itself."
     ]
   }
 ]
