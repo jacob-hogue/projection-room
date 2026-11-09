@@ -7,7 +7,7 @@ const pieces = [
     title: 'The dial-pulse map',
     rule: 'In 1947 the biggest cities got the area codes that were fastest to dial. Every territory is colored by how many clicks it took.',
     date: 'November 2026',
-    poster: `${base}dial-pulse/poster.png`,
+    poster: `${base}dial-pulse/card.png`,
   },
 ];
 ---
@@ -19,7 +19,7 @@ const pieces = [
   <section class="pieces" aria-label="Pieces">
     {pieces.map((p) => (
       <a class="piece-card" href={`${base}${p.slug}/`}>
-        <img src={p.poster} alt="" width="1600" height="1000" loading="lazy" decoding="async" />
+        <img src={p.poster} alt="" width="1600" height="880" loading="lazy" decoding="async" />
         <div class="piece-text">
           <h2>{p.title}</h2>
           <p>{p.rule}</p>
@@ -34,13 +34,13 @@ const pieces = [
   .intro { max-width: 1200px; margin: 0 auto; padding: 72px 24px 32px; }
   .intro h1 { font-size: clamp(36px, 5vw, 56px); margin-bottom: 16px; }
   .intro p { font-size: 18px; max-width: 58ch; }
-  .pieces { max-width: 1200px; margin: 0 auto; padding: 0 24px 72px; display: grid; gap: 28px; }
+  .pieces { max-width: 1200px; margin: 0 auto; padding: 0 24px 72px; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 520px), 1fr)); gap: 28px; }
   .piece-card {
     display: grid; overflow: hidden; border-radius: 14px; border: 1px solid var(--border);
     background: var(--card); transition: border-color 200ms ease;
   }
   .piece-card:hover, .piece-card:focus-visible { border-color: var(--accent); }
-  .piece-card img { display: block; width: 100%; height: auto; aspect-ratio: 1600 / 1000; object-fit: cover; }
+  .piece-card img { display: block; width: 100%; height: auto; aspect-ratio: 1600 / 880; object-fit: cover; }
   .piece-text { padding: 20px 22px 22px; }
   .piece-text h2 { font-size: clamp(22px, 2.4vw, 30px); margin-bottom: 8px; }
   .piece-text p { font-size: 16px; max-width: 70ch; }

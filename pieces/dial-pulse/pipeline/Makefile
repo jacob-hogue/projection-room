@@ -22,6 +22,7 @@ check:
 poster:
 	node render_poster.mjs
 	$(PY) shrink_png.py ../../../public/dial-pulse/poster.png
+	$(PY) card_png.py ../../../public/dial-pulse/poster.png ../../../public/dial-pulse/card.png
 
 test:
 	$(PY) -m pytest tests -q
