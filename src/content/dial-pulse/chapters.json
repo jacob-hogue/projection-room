@@ -2,7 +2,7 @@
   {
     "id": "dial",
     "heading": "A phone with a dial",
-    "body": "A rotary phone sent one click down the line for each digit, and ten clicks for a zero. Dialing a 2 took two clicks. Dialing a 9 took nine. Before anyone pressed a button, every number already had a speed.",
+    "body": "A rotary phone sent one click down the line for each digit, and ten clicks for a zero. Dialing a 2 took two clicks. Dialing a 9 took nine. So the three digits of an area code took anywhere from 5 clicks (212) to 28 (909).",
     "state": { "year": 1947, "mode": "pulses", "labels": false, "blank": true }
   },
   {

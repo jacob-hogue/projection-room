@@ -17,7 +17,8 @@ check:
 	$(PY) check.py
 
 poster:
-	$(PY) render_poster.py
+	node render_poster.mjs
+	$(PY) shrink_png.py ../../../public/dial-pulse/poster.png
 
 test:
 	$(PY) -m pytest tests -q
