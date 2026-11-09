@@ -98,7 +98,7 @@ export const Film: React.FC<Props> = ({ offsetSeconds = 0 }) => {
   const year = t >= 32.5 && t < 46 ? yearAt(t) : null;
   const count = year && lineageRef.current ? countFor(year, lineageRef.current, usRef.current) : null;
   const endCard = seg(t, 51.5, 52.5);
-  const mapTop = 190;
+  const mapTop = 180;
   const mapLeft = (1920 - STAGE_W) / 2;
 
   return (
