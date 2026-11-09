@@ -39,7 +39,7 @@ export const S = {
 };
 
 export const CAPTIONS: Caption[] = [
-  { from: S.opening, to: S.dialing, text: 'Before telephone numbers became something we typed, they were something we physically dialed. And every digit had a cost.' },
+  { from: S.opening, to: S.dialing, text: 'Before telephone numbers became something we typed, they were something we physically dialed. And every digit took time.' },
   { from: S.dialing, to: S.newYork, text: 'A rotary telephone sent electrical pulses as the dial returned to its starting position. Each number produced that many pulses. One sent one. Nine sent nine. Zero sent ten.' },
   { from: S.newYork, to: S.cities, text: 'When AT&T designed the North American Numbering Plan in 1947, it assigned area codes with this mechanical reality in mind. New York received 212. Add the digits together, and the entire code took just five pulses to dial.' },
   { from: S.cities, to: S.contrast, text: "Other major telephone markets received relatively short codes, too. Los Angeles got 213, Chicago got 312, and Detroit got 313. These weren't arbitrary combinations. They were part of a numbering system designed for a network still built around rotary dialing." },
