@@ -3,7 +3,9 @@ import { existsSync } from 'node:fs';
 import Base from '../../layouts/Base.astro';
 import PieceOpening from '../../components/PieceOpening.astro';
 import ChapterRail, { type Chapter } from '../../components/ChapterRail.astro';
+import PieceIntro from '../../components/PieceIntro.astro';
 import chapters from '../../content/dial-pulse/chapters.json';
+import intro from '../../content/dial-pulse/intro.json';
 
 const base = import.meta.env.BASE_URL;
 const title = 'The dial-pulse map';
@@ -21,6 +23,7 @@ const STAGE_H = 760;
     loop={loopExists ? `${base}dial-pulse/loop.mp4` : null}
     facts={['Area code polygons: October 2015', 'Method: trace each code back, dissolve, recolor', 'November 2026']}
   />
+  <PieceIntro heading={intro.heading} paragraphs={intro.paragraphs} />
   <ChapterRail chapters={chapters as Chapter[]} stageWidth={STAGE_W} stageHeight={STAGE_H} />
 </Base>
 

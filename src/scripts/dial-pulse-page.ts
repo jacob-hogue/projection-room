@@ -1,18 +1,19 @@
 /**
- * Wires the dial-pulse page: data, the stage, the chapter beats, the year play, controls
- * and the hash state. Each chapter has a base state and an optional list of timed beats;
- * entering a chapter cancels the previous chapter's beats and runs its own.
+ * Wires the dial-pulse page: data, the stage, the story stepper, the year play, controls
+ * and the hash state. Each step has a base state and an optional list of timed beats.
+ * Entering a step cancels the previous step's beats; if they had not finished, the previous
+ * step is settled to its complete state first, so nothing is ever left half drawn.
  */
 import { csvParse } from 'd3';
 import type { Topology } from 'topojson-specification';
 import { Callouts } from '../lib/callouts';
-import { drawScatter } from '../lib/scatter';
 import { dial, type DialHandles } from '../lib/dial';
 import { readHash, writeHash, type HashState } from '../lib/hashstate';
 import { codesInEffect, loadLineage, originalOf, type Lineage } from '../lib/lineage';
 import { MapStage, YEAR_MAX, YEAR_MIN, type HoverInfo, type Mode } from '../lib/mapstage';
 import { PALETTES, pulseColor, type PaletteName } from '../lib/palette';
 import { pulses } from '../lib/pulses';
+import { drawScatter } from '../lib/scatter';
 
 interface Beat {
   at: number;
@@ -32,12 +33,13 @@ interface Beat {
   seconds?: number;
 }
 
-interface ChapterState {
+interface StepState {
   year: number;
   mode: Mode;
   labels: boolean;
   blank: boolean;
   beats: Beat[];
+  hold: number;
   explore: boolean;
   widget: { type: 'dial'; number: string } | { type: 'ruler' } | { type: 'scatter' } | null;
 }
@@ -45,8 +47,10 @@ interface ChapterState {
 const STAGE_W = 1200;
 const STAGE_H = 760;
 const T = { fill: 700, zoom: 1200, focus: 600, blank: 500 };
+const DEFAULT_HOLD = 5000;
 
 export async function mountDialPulse(): Promise<void> {
+  document.documentElement.classList.add('js');
   const svgEl = document.getElementById('stage') as SVGSVGElement | null;
   const railEl = document.getElementById('rail');
   const frameEl = document.getElementById('callouts');
@@ -69,6 +73,7 @@ export async function mountDialPulse(): Promise<void> {
   const openedWithHash = hasHash();
   const stage = new MapStage(svg, topo, { width: STAGE_W, height: STAGE_H, palette: PALETTES[initial.palette], lineage });
   const callouts = new Callouts(frameEl, STAGE_W, STAGE_H, reduced);
+  void stage.warm();
 
   const controls = document.getElementById('controls') as HTMLFormElement;
   const yearInput = document.getElementById('year') as HTMLInputElement;
@@ -82,12 +87,15 @@ export async function mountDialPulse(): Promise<void> {
   const badge = document.getElementById('year-badge') as HTMLElement;
   const badgeYear = badge.querySelector<HTMLElement>('[data-year]')!;
   const badgeCount = badge.querySelector<HTMLElement>('[data-count]')!;
+  const prevButton = document.getElementById('step-prev') as HTMLButtonElement;
+  const nextButton = document.getElementById('step-next') as HTMLButtonElement;
+  const storyButton = document.getElementById('step-play') as HTMLButtonElement;
+  const stepCount = document.getElementById('step-count') as HTMLElement;
 
   let state: HashState = { ...initial };
   let explore = false;
   let playing = false;
   let playFrame = 0;
-  let run = 0; // increments on every chapter change; beats check it before acting
 
   function countFor(year: number): number {
     let n = 0;
@@ -133,7 +141,6 @@ export async function mountDialPulse(): Promise<void> {
     rail.dataset.explore = String(on);
     controls.hidden = !on;
     badge.hidden = true;
-    // The legend belongs to explore; chapters carry their own meaning.
     stage.setLegend(on && legendBox.checked);
   }
   function writeUrl_(): void {
@@ -173,17 +180,23 @@ export async function mountDialPulse(): Promise<void> {
     playFrame = requestAnimationFrame(tick);
   }
 
-  // Chapters. -----------------------------------------------------------------------------
+  // Story steps. --------------------------------------------------------------------------
   const chapters = [...document.querySelectorAll<HTMLElement>('.chapter')];
+  let current = -1;
+  let run = 0;
+  let pending = 0; // timers of the current step still to fire
+  let storyPlaying = false;
+  let storyTimer = 0;
   let dialAbort: AbortController | null = null;
 
-  function chapterState(el: HTMLElement): ChapterState {
+  function stepState(el: HTMLElement): StepState {
     return {
       year: Number(el.dataset.year),
       mode: el.dataset.mode as Mode,
       labels: el.dataset.labels === 'true',
       blank: el.dataset.blank === 'true',
       beats: el.dataset.beats ? (JSON.parse(el.dataset.beats) as Beat[]) : [],
+      hold: el.dataset.hold ? Number(el.dataset.hold) : DEFAULT_HOLD,
       explore: el.dataset.explore === 'true',
       widget: el.dataset.widget ? JSON.parse(el.dataset.widget) : null,
     };
@@ -238,48 +251,82 @@ export async function mountDialPulse(): Promise<void> {
     }
   }
 
-  function applyChapter(el: HTMLElement): void {
-    const s = chapterState(el);
+  /** Total milliseconds a step's beats take, for "play the story". */
+  function beatsLength(s: StepState): number {
+    let end = 0;
+    for (const b of s.beats) {
+      const length = b.do === 'play' ? (b.seconds ?? 10) * 1000 : b.do === 'reveal' ? 236 * (b.step ?? 30) + (b.duration ?? 500) : (b.duration ?? T.fill);
+      end = Math.max(end, b.at + length);
+    }
+    if (s.widget?.type === 'dial') end = Math.max(end, 6500);
+    return end;
+  }
+
+  function goTo(index: number): void {
+    const next = Math.min(chapters.length - 1, Math.max(0, index));
+    if (next === current) return;
+    const prevEl = chapters[current];
+    const el = chapters[next];
+    const s = stepState(el);
     const myRun = ++run;
-    chapters.forEach((c) => c.classList.toggle('is-active', c === el));
+
+    // Leave the previous step on a complete state.
     dialAbort?.abort();
     dialAbort = null;
     stopPlay();
+    clearTimeout(storyTimer);
     callouts.clear();
     badge.hidden = true;
+    if (prevEl && pending > 0) {
+      const p = stepState(prevEl);
+      if (!p.explore) stage.settle({ year: p.year, mode: p.mode, labels: p.labels, blank: p.blank });
+    }
+    pending = 0;
+
+    current = next;
+    chapters.forEach((c, i) => {
+      c.classList.toggle('is-active', i === next);
+      const head = c.querySelector<HTMLButtonElement>('.chapter-head');
+      if (head) {
+        if (i === next) head.setAttribute('aria-current', 'step');
+        else head.removeAttribute('aria-current');
+      }
+    });
+    stepCount.textContent = `${next + 1} / ${chapters.length}`;
+    prevButton.disabled = next === 0;
+    nextButton.disabled = next === chapters.length - 1;
+    el.scrollIntoView({ block: 'nearest', behavior: reduced ? 'auto' : 'smooth' });
 
     if (s.explore) {
-      if (explore) return;
       setExplore(true);
       stage.focus(null, ms(T.focus));
       stage.zoomTo(null, ms(T.zoom));
       if (!hasHash()) {
         setMode(s.mode, ms(T.fill), false);
         setYear(s.year, ms(T.fill), false);
+      } else {
+        setYear(state.year, 0, false);
       }
-      if (stage.state().year !== state.year) setYear(state.year, 0, false);
-      stage.setBlank(false, 0);
+      stage.setBlank(false, ms(T.blank));
       setLabels(s.labels);
+      stopStory();
       writeUrl_();
       return;
     }
-    setExplore(false);
+    if (explore) setExplore(false);
 
-    const beatKinds = new Set(s.beats.map((b) => b.do));
-    // Base state first, each change as a transition.
-    if (!beatKinds.has('zoom') && stage.state().zoom !== 1) stage.zoomTo(null, ms(T.zoom));
-    if (!beatKinds.has('focus')) stage.focus(null, ms(T.focus));
+    const kinds = new Set(s.beats.map((b) => b.do));
+    if (!kinds.has('zoom') && stage.state().zoom !== 1) stage.zoomTo(null, ms(T.zoom));
+    if (!kinds.has('focus')) stage.focus(null, ms(T.focus));
     setMode(s.mode, ms(T.fill), false);
     setLabels(s.labels);
     if (s.blank) {
-      if (svg.dataset.blank !== 'true') stage.setBlank(true, ms(T.blank));
-      else stage.setBlank(true, 0);
-    } else if (svg.dataset.blank === 'true' && !beatKinds.has('reveal') && !beatKinds.has('show')) {
+      stage.setBlank(true, svg.dataset.blank === 'true' ? 0 : ms(T.blank));
+    } else if (svg.dataset.blank === 'true' && !kinds.has('reveal') && !kinds.has('show')) {
       stage.setBlank(false, ms(T.blank));
     }
-    if (!beatKinds.has('play')) setYear(s.year, ms(T.fill), false);
+    if (!kinds.has('play')) setYear(s.year, ms(T.fill), false);
 
-    // Widgets.
     if (s.widget?.type === 'scatter') {
       const host = el.querySelector<HTMLElement>('[data-scatter]');
       if (host && !host.dataset.drawn) {
@@ -306,23 +353,67 @@ export async function mountDialPulse(): Promise<void> {
       }
     }
 
-    // Beats, in time, unless the chapter changed meanwhile.
     for (const beat of s.beats) {
-      const delay = reduced ? 0 : beat.at;
+      pending++;
       setTimeout(() => {
         if (run !== myRun) return;
+        pending--;
         runBeat(beat, el);
-      }, delay);
+      }, reduced ? 0 : beat.at);
+    }
+    if (storyPlaying) {
+      const wait = reduced ? 1500 : beatsLength(s) + s.hold;
+      storyTimer = window.setTimeout(() => {
+        if (run === myRun && storyPlaying) goTo(current + 1);
+      }, wait);
     }
   }
 
-  const observer = new IntersectionObserver(
-    (entries) => {
-      for (const e of entries) if (e.isIntersecting) applyChapter(e.target as HTMLElement);
-    },
-    { threshold: 0.6 },
+  function startStory(): void {
+    storyPlaying = true;
+    storyButton.setAttribute('aria-pressed', 'true');
+    storyButton.textContent = 'Pause the story';
+    if (current >= chapters.length - 2) {
+      current = -1;
+      goTo(0);
+    } else {
+      const s = stepState(chapters[current]);
+      storyTimer = window.setTimeout(() => storyPlaying && goTo(current + 1), reduced ? 1500 : s.hold);
+    }
+  }
+  function stopStory(): void {
+    storyPlaying = false;
+    clearTimeout(storyTimer);
+    storyButton.setAttribute('aria-pressed', 'false');
+    storyButton.textContent = 'Play the story';
+  }
+
+  prevButton.addEventListener('click', () => {
+    stopStory();
+    goTo(current - 1);
+  });
+  nextButton.addEventListener('click', () => {
+    stopStory();
+    goTo(current + 1);
+  });
+  storyButton.addEventListener('click', () => (storyPlaying ? stopStory() : startStory()));
+  chapters.forEach((c, i) =>
+    c.querySelector('.chapter-head')?.addEventListener('click', () => {
+      stopStory();
+      goTo(i);
+    }),
   );
-  chapters.forEach((c) => observer.observe(c));
+  document.addEventListener('keydown', (e) => {
+    const target = e.target as HTMLElement | null;
+    if (target && (target.tagName === 'INPUT' || target.tagName === 'SELECT' || target.tagName === 'TEXTAREA')) return;
+    if (e.key === 'ArrowRight') {
+      stopStory();
+      goTo(current + 1);
+    } else if (e.key === 'ArrowLeft') {
+      stopStory();
+      goTo(current - 1);
+    }
+  });
 
   // Controls. -----------------------------------------------------------------------------
   paletteSelect.addEventListener('change', () => setPalette(paletteSelect.value as PaletteName, true));
@@ -377,16 +468,14 @@ export async function mountDialPulse(): Promise<void> {
     readout.value = parts.join(' · ');
   });
 
-  // Initial state: the hash wins if present, otherwise the first chapter's state.
+  // Initial state: a hash opens explore with that view; otherwise the first step.
   setPalette(initial.palette, false);
   setMode(initial.mode, 0, false);
   setYear(initial.year, 0, false);
   setLabels(false);
   stage.setBlank(true, 0);
-  if (openedWithHash) {
-    const last = chapters[chapters.length - 1];
-    last?.scrollIntoView({ block: 'start' });
-  }
+  if (openedWithHash) goTo(chapters.length - 1);
+  else goTo(0);
 }
 
 function usOriginalsOf(topo: Topology, lineage: Lineage): Set<string> {
