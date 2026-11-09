@@ -15,7 +15,7 @@ import urllib.request
 
 HERE = pathlib.Path(__file__).resolve().parent
 CACHE = HERE.parent.parent.parent / ".cache"
-UA = "lab-dial-pulse/0.1 (https://jacob-hogue.github.io/lab/)"
+UA = "projection-room-dial-pulse/0.1 (https://jacob-hogue.github.io/projection-room/)"
 
 SOURCES = {
     "area-codes.geojson": "https://raw.githubusercontent.com/1ec5/nanp-boundaries/main/area-codes.geojson",

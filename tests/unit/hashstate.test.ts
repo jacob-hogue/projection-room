@@ -22,7 +22,7 @@ describe('hashstate', () => {
   });
 
   test('writeHash is a hash fragment with only the three keys', () => {
-    expect(writeHash({ year: 2025, mode: 'year', palette: 'accent' })).toBe('#year=2025&mode=year&palette=accent');
+    expect(writeHash({ year: 2025, mode: 'year', palette: 'cool' })).toBe('#year=2025&mode=year&palette=cool');
   });
 
   test('partial hashes keep the other defaults', () => {

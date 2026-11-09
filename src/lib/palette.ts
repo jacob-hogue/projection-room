@@ -43,12 +43,12 @@ export const PALETTES = {
     ramp: stepped(['#f5d98a', '#e2876f', '#c04a84', '#5b2a7a', '#2a1a4a'], 'oklch'),
     middle: { whole: '#f5d98a', subdivided: '#e2876f', later: LATER_GRAY },
   },
-  accent: {
-    name: 'accent',
-    label: 'Accent',
-    // The site's own family: light sky through the accent and violet to the Lab magenta.
-    ramp: stepped(['#7dd3fc', '#38bdf8', '#8b5cf6', '#d9137f'], 'oklch'),
-    middle: { whole: '#38bdf8', subdivided: '#d9137f', later: LATER_GRAY },
+  cool: {
+    name: 'cool',
+    label: 'Cool',
+    // Sky through blue and violet to a deep indigo.
+    ramp: stepped(['#7dd3fc', '#38bdf8', '#6366f1', '#1e1b4b'], 'oklch'),
+    middle: { whole: '#7dd3fc', subdivided: '#6366f1', later: LATER_GRAY },
   },
   mono: {
     name: 'mono',

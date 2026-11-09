@@ -1,43 +1,30 @@
-# Astro Starter Kit: Minimal
+# The Projection Room
+
+Interactive maps and short films by Jacob Hogue, published at [jacob-hogue.github.io/projection-room](https://jacob-hogue.github.io/projection-room/). Each piece is built from one public dataset, and the data pipeline, the method and the sources are published with it.
+
+## Pieces
+
+- `pieces/dial-pulse/`: the dial-pulse map. Area codes of the lower 48 states, colored by how many clicks it took to dial them on a rotary phone, from the 1947 plan to 2025.
+
+## Layout
+
+- `src/`: the Astro site (layouts, components, the piece pages, the D3 map stage in `src/lib/`).
+- `pieces/<piece>/pipeline/`: the Python pipeline that downloads, cleans and exports that piece's data, with its tests. `make all` in that folder rebuilds the data; `make poster` renders the poster from the built site.
+- `pieces/<piece>/data/`: the exported files the site serves (copied into `public/` before every build).
+- `tests/`: Vitest unit tests for the browser code and Playwright tests for the pages.
+
+## Build
 
 ```sh
-npm create astro@latest -- --template minimal
+npm install
+npm run build        # also copies piece data into public/
+npm run preview      # serves the build at http://localhost:4321/projection-room/
+npm test             # unit tests
+npm run e2e          # page tests against the build
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+The pipeline needs Python 3.11 with the packages in `pieces/dial-pulse/pipeline/requirements.txt` (GeoPandas, Shapely 2.2 on GEOS 3.14, pyogrio, Pillow) and Node 22 for the TopoJSON writer.
 
-## 🚀 Project Structure
+## Deploying
 
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
-
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+GitHub Pages, from the `deploy` workflow, run by hand.

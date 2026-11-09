@@ -43,11 +43,11 @@ describe('palette', () => {
       expect(p.name).toBe(key);
       expect(p.label.length).toBeGreaterThan(0);
     }
-    expect(Object.keys(PALETTES)).toEqual(['signature', 'accent', 'mono']);
+    expect(Object.keys(PALETTES)).toEqual(['signature', 'cool', 'mono']);
   });
 
   test('colored ramps never pass through gray', () => {
-    for (const p of [PALETTES.signature, PALETTES.accent]) {
+    for (const p of [PALETTES.signature, PALETTES.cool]) {
       const chroma = Array.from({ length: 24 }, (_, i) => oklch(p.ramp(i / 23))!.c ?? 0);
       expect(Math.min(...chroma), p.name).toBeGreaterThan(0.08);
     }

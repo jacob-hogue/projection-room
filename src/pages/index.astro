@@ -1,15 +1,48 @@
 ---
 import Base from '../layouts/Base.astro';
+const base = import.meta.env.BASE_URL;
+const pieces = [
+  {
+    slug: 'dial-pulse',
+    title: 'The dial-pulse map',
+    rule: 'In 1947 the biggest cities got the area codes that were fastest to dial. Every point is colored by how many clicks it took.',
+    date: 'November 2026',
+    poster: `${base}dial-pulse/poster.png`,
+  },
+];
 ---
-<Base title="The Lab">
+<Base title="The Projection Room">
   <section class="intro">
-    <h1>The Lab</h1>
+    <h1>The Projection Room</h1>
     <p>Interactive maps and short films by Jacob Hogue, each built from one public dataset, with the data and method published alongside.</p>
+  </section>
+  <section class="pieces" aria-label="Pieces">
+    {pieces.map((p) => (
+      <a class="piece-card" href={`${base}${p.slug}/`}>
+        <img src={p.poster} alt="" width="1600" height="1000" loading="lazy" decoding="async" />
+        <div class="piece-text">
+          <h2>{p.title}</h2>
+          <p>{p.rule}</p>
+          <span class="piece-date mono">{p.date}</span>
+        </div>
+      </a>
+    ))}
   </section>
 </Base>
 
 <style>
-  .intro { max-width: 1080px; margin: 0 auto; padding: 72px 24px 48px; }
+  .intro { max-width: 1200px; margin: 0 auto; padding: 72px 24px 32px; }
   .intro h1 { font-size: clamp(36px, 5vw, 56px); margin-bottom: 16px; }
-  .intro p { font-size: 18px; max-width: 54ch; }
+  .intro p { font-size: 18px; max-width: 58ch; }
+  .pieces { max-width: 1200px; margin: 0 auto; padding: 0 24px 72px; display: grid; gap: 28px; }
+  .piece-card {
+    display: grid; overflow: hidden; border-radius: 14px; border: 1px solid var(--border);
+    background: var(--card); transition: border-color 200ms ease;
+  }
+  .piece-card:hover, .piece-card:focus-visible { border-color: var(--accent); }
+  .piece-card img { display: block; width: 100%; height: auto; aspect-ratio: 1600 / 1000; object-fit: cover; }
+  .piece-text { padding: 20px 22px 22px; }
+  .piece-text h2 { font-size: clamp(22px, 2.4vw, 30px); margin-bottom: 8px; }
+  .piece-text p { font-size: 16px; max-width: 70ch; }
+  .piece-date { display: inline-block; margin-top: 12px; font-size: 12px; color: var(--accent); letter-spacing: 0.04em; }
 </style>

@@ -11,7 +11,7 @@ import { chromium } from '@playwright/test';
 const root = new URL('../../../', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
 const out = join(root, 'public', 'dial-pulse');
 const port = 4399;
-const url = `http://127.0.0.1:${port}/lab/dial-pulse/poster/`;
+const url = `http://127.0.0.1:${port}/projection-room/dial-pulse/poster/`;
 
 // Astro writes pages under dist/ without the site base.
 if (!existsSync(join(root, 'dist', 'dial-pulse', 'poster', 'index.html'))) {

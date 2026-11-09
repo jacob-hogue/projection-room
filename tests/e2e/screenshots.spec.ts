@@ -10,7 +10,7 @@ for (const size of sizes) {
   test(`dial-pulse stills at ${size.name}`, async ({ browser }) => {
     const ctx = await browser.newContext({ viewport: { width: size.width, height: size.height } });
     const page = await ctx.newPage();
-    await page.goto('/lab/dial-pulse/');
+    await page.goto('/projection-room/dial-pulse/');
     await page.locator('#stage path.area').first().waitFor({ state: 'attached' });
     await page.screenshot({ path: `tests/e2e/screenshots/${size.name}-opening.png` });
     await page.locator('.chapter').nth(1).scrollIntoViewIfNeeded();

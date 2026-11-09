@@ -34,7 +34,7 @@ WIKI_API = (
     "&prop=wikitext&format=json&formatversion=2"
 )
 WIKI_PAGE = "https://en.wikipedia.org/wiki/Original_North_American_area_codes"
-UA = "lab-dial-pulse/0.1 (https://jacob-hogue.github.io/lab/)"
+UA = "projection-room-dial-pulse/0.1 (https://jacob-hogue.github.io/projection-room/)"
 ROW_RE = re.compile(
     r"^\|\s*\[\[Area code (\d{3})\|\d{3}\]\]\s*\|\|\s*(?:\{\{Hidden sort key\|([A-Z]{2}:[A-Z]{2})\}\})?\s*(.*)$",
     re.M,

@@ -3,7 +3,7 @@ interface Props {
   title: string;
   description?: string;
 }
-const { title, description = 'Geospatial data stories by Jacob Hogue.' } = Astro.props;
+const { title, description = 'Maps and short films by Jacob Hogue.' } = Astro.props;
 const base = import.meta.env.BASE_URL;
 ---
 <!doctype html>
@@ -22,14 +22,14 @@ const base = import.meta.env.BASE_URL;
   </head>
   <body>
     <header class="site-header">
-      <a class="wordmark" href={base}>jacob<span class="dot">.</span>hogue / <span class="lab">lab</span></a>
+      <a class="wordmark" href={base}>jacob<span class="dot">.</span>hogue / <span class="brand">projection room</span></a>
       <a class="home-link" href="https://jacob-hogue.github.io/">jacob-hogue.github.io</a>
     </header>
     <main>
       <slot />
     </main>
     <footer class="site-footer">
-      The Lab is part of <a href="https://jacob-hogue.github.io/">jacob-hogue.github.io</a>.
+      The Projection Room is part of <a href="https://jacob-hogue.github.io/">jacob-hogue.github.io</a>.
     </footer>
   </body>
 </html>
@@ -43,10 +43,10 @@ const base = import.meta.env.BASE_URL;
     --text-1: #e8eaed;
     --text-2: #8b8fa3;
     --text-3: #4a4e5a;
-    --accent: #38bdf8;
-    --accent-dim: rgba(56, 189, 248, 0.1);
-    --green: #34d399;
-    --lab: #d9137f;
+    /* The Projection Room's color is green; the main site keeps blue, the blog keeps magenta. */
+    --accent: #4ade80;
+    --accent-dim: rgba(74, 222, 128, 0.12);
+    --brand: #4ade80;
     --sans: 'DM Sans', system-ui, sans-serif;
     --mono: 'JetBrains Mono', ui-monospace, monospace;
   }
@@ -60,7 +60,7 @@ const base = import.meta.env.BASE_URL;
     -webkit-font-smoothing: antialiased;
   }
   a { color: inherit; text-decoration: none; }
-  ::selection { background: rgba(56, 189, 248, 0.35); color: #fff; }
+  ::selection { background: rgba(74, 222, 128, 0.35); color: #fff; }
   :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
   h1, h2, h3 { color: var(--text-1); letter-spacing: -0.02em; line-height: 1.15; }
   .mono { font-family: var(--mono); }
@@ -73,8 +73,8 @@ const base = import.meta.env.BASE_URL;
     border-bottom: 1px solid var(--border);
   }
   .wordmark { font-weight: 700; font-size: 16px; color: var(--text-1); letter-spacing: 0.02em; white-space: nowrap; }
-  .wordmark .dot { color: var(--accent); }
-  .wordmark .lab { color: var(--lab); }
+  .wordmark .dot { color: var(--brand); }
+  .wordmark .brand { color: var(--brand); }
   .home-link { font-size: 13px; color: var(--text-2); }
   .home-link:hover { color: var(--text-1); }
   main { min-height: 70vh; }
