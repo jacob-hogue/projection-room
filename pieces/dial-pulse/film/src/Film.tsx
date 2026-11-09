@@ -48,21 +48,21 @@ function sceneAt(t: number): Scene {
   const base: Scene = { mode: 'pulses', year: 1947, blank: false, shown: [], reveal: 1, labels: false, focus: null, dim: 1, inset: null };
   if (t < S.newYork) return { ...base, blank: true, reveal: 0 };
   if (t < S.cities) {
-    return { ...base, blank: true, reveal: 0, shown: t >= S.newYork + 0.6 ? ['212'] : [], inset: { opacity: seg(t, S.newYork + 0.8, S.newYork + 1.6), label: 'New York, 1947' } };
+    return { ...base, blank: true, reveal: 0, shown: t >= S.newYork + 1.0 ? ['212'] : [], inset: { opacity: seg(t, S.newYork + 1.4, S.newYork + 2.2), label: 'New York, 1947' } };
   }
   if (t < S.contrast) {
     const shown = ['212'];
-    if (t >= S.cities + 0.8) shown.push('213');
-    if (t >= S.cities + 2.2) shown.push('312');
-    if (t >= S.cities + 3.6) shown.push('313');
+    if (t >= S.cities + 1.0) shown.push('213');
+    if (t >= S.cities + 3.0) shown.push('312');
+    if (t >= S.cities + 5.0) shown.push('313');
     return { ...base, blank: true, reveal: 0, shown };
   }
   if (t < S.middle) {
-    const reveal = seg(t, S.contrast + 0.4, S.contrast + 3.4);
-    const dimOn = t >= S.contrast + 4.6;
-    return { ...base, reveal, focus: dimOn ? ['605', '704'] : null, dim: dimOn ? seg(t, S.contrast + 4.6, S.contrast + 5.6) : 1 };
+    const reveal = seg(t, S.contrast + 0.6, S.contrast + 4.6);
+    const dimOn = t >= S.contrast + 7.4;
+    return { ...base, reveal, focus: dimOn ? ['605', '704'] : null, dim: dimOn ? seg(t, S.contrast + 7.4, S.contrast + 8.4) : 1 };
   }
-  if (t < S.changes) return { ...base, mode: t >= S.middle + 0.6 ? 'middle' : 'pulses' };
+  if (t < S.changes) return { ...base, mode: t >= S.middle + 0.8 ? 'middle' : 'pulses' };
   if (t < S.present) {
     const year = yearAt(t);
     let focus: string[] | null = null;
@@ -91,9 +91,9 @@ function sceneAt(t: number): Scene {
       ...base,
       year: 2025,
       focus: ['713', '404', '214', '212'],
-      dim: seg(t, S.present + 0.8, S.present + 1.8),
+      dim: seg(t, S.present + 1.0, S.present + 2.0),
       labels: true,
-      inset: { opacity: seg(t, S.present + 1.4, S.present + 2.2), label: 'Manhattan, 2025' },
+      inset: { opacity: seg(t, S.present + 1.8, S.present + 2.6), label: 'Manhattan, 2025' },
     };
   }
   return { ...base, year: 2025, labels: true, focus: null, dim: 1 };
@@ -165,7 +165,7 @@ export const Film: React.FC<Props> = ({ offsetSeconds = 0 }) => {
   const caption = CAPTIONS.find((c) => t >= c.from && t < c.to);
   const captionAge = caption ? t - caption.from : 0;
   const captionOpacity = caption ? Math.min(1, captionAge / 0.6) * (caption.to - t < 0.4 ? (caption.to - t) / 0.4 : 1) : 0;
-  const endCard = seg(t, S.end, S.end + 1.4);
+  const endCard = seg(t, S.end, S.end + 1.6);
   const count = data ? countFor(scene.year, data.lineage, usRef.current) : 0;
   const insetTop = RAIL.top + 300;
 
@@ -232,9 +232,9 @@ export const Film: React.FC<Props> = ({ offsetSeconds = 0 }) => {
 function railContent(t: number, scene: Scene, count: number): React.ReactNode {
   const fadeIn = (from: number, len = 0.6) => seg(t, from, from + len);
   if (t < S.newYork) return null;
-  if (t < S.cities) return <Stat eyebrow="1947 · New York" code="212" number="5" unit="pulses" note="2 + 1 + 2. 7.9 million people in its territory in 1950." opacity={fadeIn(S.newYork + 1.4)} />;
+  if (t < S.cities) return <Stat eyebrow="1947 · New York" code="212" number="5" unit="pulses" note="2 + 1 + 2. 7.9 million people in its territory in 1950." opacity={fadeIn(S.newYork + 2.0)} />;
   if (t < S.contrast) {
-    const shown = (t >= S.cities + 0.8 ? 1 : 0) + (t >= S.cities + 2.2 ? 1 : 0) + (t >= S.cities + 3.6 ? 1 : 0);
+    const shown = (t >= S.cities + 1.0 ? 1 : 0) + (t >= S.cities + 3.0 ? 1 : 0) + (t >= S.cities + 5.0 ? 1 : 0);
     return (
       <Rows
         eyebrow="1947 · the major markets"
@@ -244,16 +244,16 @@ function railContent(t: number, scene: Scene, count: number): React.ReactNode {
           { code: '313', name: 'Detroit', value: '7 pulses', color: pulseColor(PALETTES.signature, 7) },
         ]}
         shown={shown}
-        opacity={fadeIn(S.cities + 0.6)}
+        opacity={fadeIn(S.cities + 0.8)}
       />
     );
   }
   if (t < S.middle) {
-    const shown = (t >= S.contrast + 5 ? 1 : 0) + (t >= S.contrast + 6.2 ? 1 : 0);
+    const shown = (t >= S.contrast + 7.8 ? 1 : 0) + (t >= S.contrast + 9.4 ? 1 : 0);
     return (
       <>
-        {t < S.contrast + 4.6 ? (
-          <Stat eyebrow="1947 · United States" code="" number="77" unit="area codes" note="From 5 pulses to 21" opacity={Math.min(fadeIn(S.contrast + 3.4), 1 - seg(t, S.contrast + 4.2, S.contrast + 4.6))} />
+        {t < S.contrast + 7.4 ? (
+          <Stat eyebrow="1947 · United States" code="" number="77" unit="area codes" note="From 5 pulses to 21" opacity={Math.min(fadeIn(S.contrast + 4.8), 1 - seg(t, S.contrast + 7.0, S.contrast + 7.4))} />
         ) : (
           <Rows
             eyebrow="1947 · 21 pulses"
@@ -262,11 +262,11 @@ function railContent(t: number, scene: Scene, count: number): React.ReactNode {
               { code: '704', name: 'North Carolina', sub: '4.1 million people', value: '21', color: pulseColor(PALETTES.signature, 21) },
             ]}
             shown={shown}
-            opacity={fadeIn(S.contrast + 4.8)}
+            opacity={fadeIn(S.contrast + 7.6)}
           />
         )}
         <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }}>
-          <ClicksLegend opacity={fadeIn(S.contrast + 3.4)} />
+          <ClicksLegend opacity={fadeIn(S.contrast + 4.8)} />
         </div>
       </>
     );
@@ -274,7 +274,7 @@ function railContent(t: number, scene: Scene, count: number): React.ReactNode {
   if (t < S.changes) {
     return (
       <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }}>
-        <MiddleLegend opacity={fadeIn(S.middle + 0.8)} />
+        <MiddleLegend opacity={fadeIn(S.middle + 1.2)} />
       </div>
     );
   }
@@ -292,7 +292,7 @@ function railContent(t: number, scene: Scene, count: number): React.ReactNode {
       </>
     );
   }
-  if (t < S.conclusion) return <Stat eyebrow="2025 · Houston" code="713" number="5" unit="codes" note="713, 281, 832, 346 and 621 share one territory" opacity={fadeIn(S.present + 1.6)} />;
+  if (t < S.conclusion) return <Stat eyebrow="2025 · Houston" code="713" number="5" unit="codes" note="713, 281, 832, 346 and 621 share one territory" opacity={fadeIn(S.present + 2.0)} />;
   return (
     <div style={{ position: 'absolute', right: 0, bottom: 0 }}>
       <Counter year={2025} count={count} opacity={1} />

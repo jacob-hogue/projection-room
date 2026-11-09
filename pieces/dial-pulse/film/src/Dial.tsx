@@ -45,7 +45,7 @@ function schedule(number: string, start: number): Digit[] {
   return out;
 }
 
-const PLAN = schedule('212', 6.6);
+const PLAN = schedule('212', 8.2);
 
 /** Wheel angle (degrees clockwise) and pulses sent so far at time t. */
 export function dialState(t: number): { angle: number; clicks: number; finger: number | null } {
@@ -72,7 +72,7 @@ export function dialState(t: number): { angle: number; clicks: number; finger: n
 
 export const Dial: React.FC<{ t: number }> = ({ t }) => {
   const { angle, clicks, finger } = dialState(t);
-  const fade = Math.min(seg(t, 0.3, 0.9), 1 - seg(t, 11.2, 11.8));
+  const fade = Math.min(seg(t, 0.3, 0.9), 1 - seg(t, 15.2, 15.8));
   const digitsDone = PLAN.filter((d) => t >= d.releaseAt + travelFor(d.digit) / RETURN_DPS).length;
   return (
     <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', display: 'flex', alignItems: 'center', gap: 64, opacity: fade }}>
