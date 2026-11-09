@@ -1,0 +1,10 @@
+[
+  { "label": "Map graphics", "value": "D3 (d3-geo, TopoJSON), SVG" },
+  { "label": "Data pipeline", "value": "Python, GeoPandas, Shapely 2.2 on GEOS 3.14" },
+  { "label": "Site", "value": "Astro, TypeScript" },
+  { "label": "Video rendering", "value": "Remotion, React" },
+  { "label": "Color", "value": "culori, OKLCH ramps" },
+  { "label": "Tests", "value": "Vitest, Playwright, pytest" },
+  { "label": "Hosting", "value": "GitHub Pages" },
+  { "label": "AI integration", "value": "Claude Code pair programming" }
+]

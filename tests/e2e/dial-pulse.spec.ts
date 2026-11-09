@@ -6,6 +6,8 @@ test('the page is film, context, story, then the explore map', async ({ page }) 
   await page.goto(PAGE);
   await expect(page.locator('h1')).toHaveText('The dial-pulse map');
   await expect(page.locator('.film video, .film img.film-poster')).toHaveCount(1);
+  await expect(page.locator('.stack dt')).toHaveCount(8);
+  await expect(page.locator('.stack')).toContainText('Remotion');
   await expect(page.locator('.intro-prose h2')).toHaveText('Before there were area codes');
   await expect(page.locator('.essay .part')).toHaveCount(8);
   // The explore map is built only when the reader reaches it.

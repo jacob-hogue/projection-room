@@ -6,9 +6,11 @@ import FilmSection from '../../components/FilmSection.astro';
 import MethodSection from '../../components/MethodSection.astro';
 import PieceIntro from '../../components/PieceIntro.astro';
 import StorySection from '../../components/StorySection.astro';
+import TechStack from '../../components/TechStack.astro';
 import story from '../../content/dial-pulse/story.json';
 import intro from '../../content/dial-pulse/intro.json';
 import method from '../../content/dial-pulse/method.json';
+import stack from '../../content/dial-pulse/stack.json';
 
 const base = import.meta.env.BASE_URL;
 const title = 'The dial-pulse map';
@@ -34,6 +36,7 @@ const STAGE_H = 760;
     posterAlt="The 1947 area code map of the lower 48 states, each territory colored by the clicks it took to dial, gold for the fastest and plum for the slowest."
     downloadName="the-dial-pulse-map.mp4"
   />
+  <TechStack items={stack} />
   <PieceIntro heading={intro.heading} paragraphs={intro.paragraphs} />
   <StorySection parts={story} />
   <ExploreSection stageWidth={STAGE_W} stageHeight={STAGE_H} />
