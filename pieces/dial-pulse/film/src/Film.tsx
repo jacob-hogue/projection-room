@@ -95,9 +95,9 @@ export const Film: React.FC<Props> = ({ offsetSeconds = 0 }) => {
   const caption = CAPTIONS.find((c) => t >= c.from && t < c.to);
   const captionAge = caption ? t - caption.from : 0;
   const captionOpacity = caption ? Math.min(1, captionAge / 0.4) * (caption.to - t < 0.4 ? (caption.to - t) / 0.4 : 1) : 0;
-  const year = t >= 32.5 && t < 46 ? yearAt(t) : null;
+  const year = t >= 52.6 && t < 74 ? yearAt(t) : null;
   const count = year && lineageRef.current ? countFor(year, lineageRef.current, usRef.current) : null;
-  const endCard = seg(t, 51.5, 52.5);
+  const endCard = seg(t, 83, 84.2);
   const mapTop = 180;
   const mapLeft = (1920 - STAGE_W) / 2;
 
@@ -170,7 +170,7 @@ export const Film: React.FC<Props> = ({ offsetSeconds = 0 }) => {
             <div style={{ fontSize: 20, color: TEXT_2, marginTop: 6 }}>{count} area codes</div>
           </div>
         ) : null}
-        {t < 4.5 ? <Dial t={t} /> : null}
+        {t < 7 ? <Dial t={t} /> : null}
       </div>
 
       <div style={{ position: 'absolute', left: 80, right: 80, bottom: 28, display: 'flex', justifyContent: 'space-between', fontFamily: MONO, fontSize: 16, color: TEXT_2 }}>
@@ -193,7 +193,7 @@ export const Film: React.FC<Props> = ({ offsetSeconds = 0 }) => {
 
 /** Drive the stage to the state for time t. Every call is idempotent for a given t. */
 function applyFrame(stage: MapStage, t: number, order: string[]): void {
-  if (t < 4.5) {
+  if (t < 7) {
     stage.setMode('pulses', 0);
     stage.setLabels(false);
     stage.setBlank(true, 0);
@@ -201,58 +201,58 @@ function applyFrame(stage: MapStage, t: number, order: string[]): void {
     stage.dimAt(null, 1);
     return;
   }
-  if (t < 9.5) {
+  if (t < 14) {
     stage.setMode('pulses', 0);
     stage.setLabels(false);
     stage.setBlank(true, 0);
     stage.setYear(1947, 0);
     void stage.show(['212'], { step: 0, duration: 0 });
-    stage.cameraAt('212', seg(t, 4.5, 6.6));
-    stage.dimAt(['212'], seg(t, 5.6, 6.4));
+    stage.cameraAt('212', seg(t, 7.6, 10.2));
+    stage.dimAt(['212'], seg(t, 9.4, 10.4));
     return;
   }
-  if (t < 15) {
+  if (t < 24) {
     stage.setMode('pulses', 0);
     stage.setLabels(false);
     stage.setBlank(true, 0);
     stage.setYear(1947, 0);
     stage.dimAt(null, 1);
-    stage.cameraAt(null, seg(t, 9.5, 11));
+    stage.cameraAt(null, seg(t, 14, 16.4));
     const shown = ['212'];
-    if (t >= 10.6) shown.push('312');
-    if (t >= 11.3) shown.push('213');
-    if (t >= 12.0) shown.push('313');
+    if (t >= 16.6) shown.push('312');
+    if (t >= 18.4) shown.push('213');
+    if (t >= 20.2) shown.push('313');
     void stage.show(shown, { step: 0, duration: 0 });
     return;
   }
-  if (t < 22) {
+  if (t < 34) {
     stage.setMode('pulses', 0);
     stage.setYear(1947, 0);
     stage.cameraAt(null, 1);
     stage.dimAt(null, 1);
-    stage.revealAt(order, seg(t, 15, 19.5));
-    stage.setLabels(t >= 19.6);
+    stage.revealAt(order, seg(t, 25, 31));
+    stage.setLabels(t >= 31.4);
     return;
   }
-  if (t < 27.5) {
+  if (t < 43) {
     stage.setMode('pulses', 0);
     stage.setYear(1947, 0);
     stage.setLabels(false);
     stage.revealAt(order, 1);
     stage.cameraAt(null, 1);
-    stage.dimAt(['605', '803', '704'], seg(t, 22, 23));
+    stage.dimAt(['605', '803', '704'], seg(t, 34.6, 35.8));
     return;
   }
-  if (t < 32.5) {
+  if (t < 52) {
     stage.setYear(1947, 0);
     stage.setLabels(false);
     stage.revealAt(order, 1);
     stage.cameraAt(null, 1);
     stage.dimAt(null, 1);
-    stage.setMode('middle', 0);
+    stage.setMode(t >= 43.8 ? 'middle' : 'pulses', 0);
     return;
   }
-  if (t < 46) {
+  if (t < 74) {
     stage.setMode('pulses', 0);
     stage.setLabels(false);
     stage.revealAt(order, 1);
@@ -266,7 +266,7 @@ function applyFrame(stage: MapStage, t: number, order: string[]): void {
   stage.revealAt(order, 1);
   stage.cameraAt(null, 1);
   stage.setLabels(true);
-  stage.dimAt(['713', '404', '214', '212'], seg(t, 46, 47));
+  stage.dimAt(['713', '404', '214', '212'], seg(t, 74.6, 75.8));
 }
 
 function countFor(year: number, lineage: Lineage, us: Set<string>): number {
