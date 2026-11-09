@@ -4,11 +4,13 @@ import { loadFont as loadSans } from '@remotion/google-fonts/DMSans';
 import { loadFont as loadMono } from '@remotion/google-fonts/JetBrainsMono';
 import type { Topology } from 'topojson-specification';
 import { codesInEffect, loadLineage, originalOf, type Lineage } from '../../../../src/lib/lineage';
-import { MapStage } from '../../../../src/lib/mapstage';
-import { PALETTES } from '../../../../src/lib/palette';
+import { MapStage, type Mode } from '../../../../src/lib/mapstage';
+import { PALETTES, pulseColor } from '../../../../src/lib/palette';
 import { pulses } from '../../../../src/lib/pulses';
-import { CALLOUTS, CAPTIONS, END_LINE, FILM_SECONDS, SOURCE, STAGE_H, STAGE_W, TITLE, URL_LINE, seg, yearAt } from './beats';
+import { BYLINE, CAPTIONS, FILM_SECONDS, INSET, MAP, RAIL, RUN, S, SOURCE, SUBTITLE, TITLE, URL_LINE, seg, yearAt } from './beats';
 import { Dial } from './Dial';
+import { Inset } from './Inset';
+import { ClicksLegend, Counter, MiddleLegend, Rows, Stat } from './Rail';
 
 const { fontFamily: SANS } = loadSans();
 const { fontFamily: MONO } = loadMono();
@@ -23,9 +25,75 @@ interface Props {
   offsetSeconds?: number;
 }
 
-interface Anchor {
-  x: number;
-  y: number;
+interface Data {
+  topo: Topology;
+  states: Topology;
+  lineage: Lineage;
+}
+
+/** What the main stage and the inset show at time t. */
+interface Scene {
+  mode: Mode;
+  year: number;
+  blank: boolean;
+  shown: string[];
+  reveal: number;
+  labels: boolean;
+  focus: string[] | null;
+  dim: number;
+  inset: { opacity: number; label: string } | null;
+}
+
+function sceneAt(t: number): Scene {
+  const base: Scene = { mode: 'pulses', year: 1947, blank: false, shown: [], reveal: 1, labels: false, focus: null, dim: 1, inset: null };
+  if (t < S.newYork) return { ...base, blank: true, reveal: 0 };
+  if (t < S.cities) {
+    return { ...base, blank: true, reveal: 0, shown: t >= S.newYork + 0.6 ? ['212'] : [], inset: { opacity: seg(t, S.newYork + 0.8, S.newYork + 1.6), label: 'New York, 1947' } };
+  }
+  if (t < S.original) {
+    const shown = ['212'];
+    if (t >= S.cities + 0.8) shown.push('312');
+    if (t >= S.cities + 2.2) shown.push('213');
+    if (t >= S.cities + 3.6) shown.push('313');
+    return { ...base, blank: true, reveal: 0, shown };
+  }
+  if (t < S.exception) return { ...base, reveal: seg(t, S.original + 0.6, S.original + 5.6), labels: t >= S.original + 6 };
+  if (t < S.middle) return { ...base, focus: ['605', '803', '704'], dim: seg(t, S.exception + 0.6, S.exception + 1.6) };
+  if (t < S.changes) return { ...base, mode: t >= S.middle + 0.6 ? 'middle' : 'pulses' };
+  if (t < S.present) {
+    const year = yearAt(t);
+    let focus: string[] | null = null;
+    let dim = 0;
+    if (t >= RUN.split1948 && t < RUN.runTo1992) {
+      focus = ['219'];
+      dim = Math.min(seg(t, RUN.split1948, RUN.split1948 + 0.5), 1 - seg(t, RUN.runTo1992 - 0.5, RUN.runTo1992));
+    } else if (t >= RUN.hold1992 && t < RUN.runTo2007) {
+      focus = ['212'];
+      dim = Math.min(seg(t, RUN.hold1992, RUN.hold1992 + 0.5), 1 - seg(t, RUN.runTo2007 - 0.5, RUN.runTo2007));
+    } else if (t >= RUN.hold2007 && t < RUN.runTo2025) {
+      focus = ['575'];
+      dim = Math.min(seg(t, RUN.hold2007, RUN.hold2007 + 0.5), 1 - seg(t, RUN.runTo2025 - 0.5, RUN.runTo2025));
+    }
+    const insetOn = t >= RUN.hold1992 - 0.4 && t < RUN.runTo2007 + 0.4;
+    return {
+      ...base,
+      year,
+      focus,
+      dim,
+      inset: insetOn ? { opacity: Math.min(seg(t, RUN.hold1992 - 0.4, RUN.hold1992 + 0.4), 1 - seg(t, RUN.runTo2007 - 0.2, RUN.runTo2007 + 0.4)), label: 'Manhattan, 1992' } : null,
+    };
+  }
+  if (t < S.explanation) {
+    return {
+      ...base,
+      year: 2025,
+      focus: ['713', '404', '214', '212'],
+      dim: seg(t, S.present + 0.6, S.present + 1.6),
+      labels: true,
+      inset: { opacity: seg(t, S.present + 1.2, S.present + 2), label: 'Manhattan, 2025' },
+    };
+  }
+  return { ...base, year: 2025, labels: true, focus: null, dim: 1 };
 }
 
 export const Film: React.FC<Props> = ({ offsetSeconds = 0 }) => {
@@ -34,32 +102,31 @@ export const Film: React.FC<Props> = ({ offsetSeconds = 0 }) => {
   const t = offsetSeconds + frame / fps;
   const svgRef = useRef<SVGSVGElement>(null);
   const stageRef = useRef<MapStage | null>(null);
-  const lineageRef = useRef<Lineage | null>(null);
-  const usRef = useRef<Set<string>>(new Set());
   const orderRef = useRef<string[]>([]);
+  const usRef = useRef<Set<string>>(new Set());
   const [handle] = useState(() => delayRender('dial-pulse data'));
-  const [ready, setReady] = useState(false);
-  const [anchors, setAnchors] = useState<Record<string, Anchor>>({});
+  const [data, setData] = useState<Data | null>(null);
+  const [anchor212, setAnchor212] = useState<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const [topo, lineageJson] = await Promise.all([
+      const [topo, states, lineageJson] = await Promise.all([
         fetch(staticFile('areas.topojson')).then((r) => r.json() as Promise<Topology>),
+        fetch(staticFile('states.topojson')).then((r) => r.json() as Promise<Topology>),
         fetch(staticFile('lineage.json')).then((r) => r.json()),
       ]);
       if (cancelled || !svgRef.current) return;
       const lineage = loadLineage(lineageJson);
-      const stage = new MapStage(svgRef.current, topo, { width: STAGE_W, height: STAGE_H, palette: PALETTES.signature, lineage });
+      const stage = new MapStage(svgRef.current, topo, { width: MAP.width, height: MAP.height, palette: PALETTES.signature, lineage, states });
       await stage.warm();
-      lineageRef.current = lineage;
       stageRef.current = stage;
       usRef.current = new Set(stage.territories().map((n) => originalOf(n, lineage)));
       stage.setYear(1947, 0);
       orderRef.current = [...stage.territories()].sort(
         (a, b) => pulses(stage.displayOf(a)) - pulses(stage.displayOf(b)) || Number(a) - Number(b),
       );
-      setReady(true);
+      setData({ topo, states, lineage });
       continueRender(handle);
     })();
     return () => {
@@ -67,206 +134,174 @@ export const Film: React.FC<Props> = ({ offsetSeconds = 0 }) => {
     };
   }, [handle]);
 
+  const scene = sceneAt(t);
+
   useLayoutEffect(() => {
     const stage = stageRef.current;
-    if (!stage || !ready) return;
-    applyFrame(stage, t, orderRef.current);
-    const next: Record<string, Anchor> = {};
-    for (const c of CALLOUTS) {
-      if (t >= c.from && t < c.to) {
-        const a = stage.anchor(c.code);
-        if (a) next[`${c.from}:${c.code}`] = a;
-      }
+    if (!stage || !data) return;
+    stage.setMode(scene.mode, 0);
+    stage.setYear(scene.year, 0);
+    stage.cameraAt(null, 1);
+    if (scene.blank) {
+      stage.setBlank(true, 0);
+      void stage.show(scene.shown, { step: 0, duration: 0 });
+      stage.dimAt(null, 1);
+    } else {
+      stage.revealAt(orderRef.current, scene.reveal);
+      // dimAt redraws every opacity; during a partial reveal it would hide what revealAt showed.
+      if (scene.reveal >= 1) stage.dimAt(scene.focus, scene.dim);
     }
-    // Flip a callout's offset when its label would leave the stage.
-    for (const c of CALLOUTS) {
-      const a = next[`${c.from}:${c.code}`];
-      if (!a) continue;
-      const labelW = 300;
-      const labelH = 70;
-      if (c.dx >= 0 && a.x + c.dx + labelW > STAGE_W + 180) c.dx = -Math.abs(c.dx);
-      else if (c.dx < 0 && a.x + c.dx - labelW < 0) c.dx = Math.abs(c.dx);
-      if (a.y + c.dy - labelH / 2 < 0) c.dy = Math.abs(c.dy);
-      else if (a.y + c.dy + labelH / 2 > STAGE_H) c.dy = -Math.abs(c.dy);
-    }
-    setAnchors(next);
-  }, [t, ready]);
+    stage.setLabels(scene.labels && scene.reveal >= 1);
+    const a = stage.anchor('212');
+    const next = a ? { x: MAP.left + a.x, y: MAP.top + a.y } : null;
+    // Keep the same object when nothing moved, or this effect would re-render forever.
+    setAnchor212((prev) => (prev && next && prev.x === next.x && prev.y === next.y ? prev : next));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [t, data]);
 
   const caption = CAPTIONS.find((c) => t >= c.from && t < c.to);
   const captionAge = caption ? t - caption.from : 0;
-  const captionOpacity = caption ? Math.min(1, captionAge / 0.4) * (caption.to - t < 0.4 ? (caption.to - t) / 0.4 : 1) : 0;
-  const year = t >= 52.6 && t < 74 ? yearAt(t) : null;
-  const count = year && lineageRef.current ? countFor(year, lineageRef.current, usRef.current) : null;
-  const endCard = seg(t, 83, 84.2);
-  const mapTop = 180;
-  const mapLeft = (1920 - STAGE_W) / 2;
+  const captionOpacity = caption ? Math.min(1, captionAge / 0.5) * (caption.to - t < 0.4 ? (caption.to - t) / 0.4 : 1) : 0;
+  const endCard = seg(t, S.end, S.end + 1.2);
+  const count = data ? countFor(scene.year, data.lineage, usRef.current) : 0;
+  const insetTop = RAIL.top + 300;
 
   return (
     <AbsoluteFill style={{ background: SURFACE, fontFamily: SANS, color: TEXT }}>
-      <div style={{ position: 'absolute', left: 80, top: 54 }}>
-        <div style={{ fontSize: 44, fontWeight: 700, letterSpacing: '-0.02em', lineHeight: 1.1 }}>{TITLE}</div>
-        <div style={{ fontSize: 26, color: TEXT_2, marginTop: 12, maxWidth: 1500, opacity: captionOpacity, lineHeight: 1.3 }}>{caption?.text}</div>
+      {/* Wordmark and the one large caption */}
+      <div style={{ position: 'absolute', left: MAP.left, top: 40, fontSize: 18, fontWeight: 700, letterSpacing: '0.02em', opacity: 1 - endCard }}>
+        jacob<span style={{ color: ACCENT }}>.</span>hogue / <span style={{ color: ACCENT }}>projection room</span>
+      </div>
+      <div style={{ position: 'absolute', left: MAP.left, top: 84, width: 1760, fontSize: 36, lineHeight: 1.3, color: TEXT, opacity: captionOpacity }}>{caption?.text}</div>
+
+      {/* The map */}
+      <div style={{ position: 'absolute', left: MAP.left, top: MAP.top, width: MAP.width, height: MAP.height, opacity: 1 - endCard * 0.85 }}>
+        <svg ref={svgRef} width={MAP.width} height={MAP.height} viewBox={`0 0 ${MAP.width} ${MAP.height}`} style={{ display: 'block', borderRadius: 16 }} />
+        {t < S.newYork ? <Dial t={t} /> : null}
       </div>
 
-      <div style={{ position: 'absolute', left: mapLeft, top: mapTop, width: STAGE_W, height: STAGE_H, opacity: 1 - endCard * 0.85 }}>
-        <svg ref={svgRef} width={STAGE_W} height={STAGE_H} viewBox={`0 0 ${STAGE_W} ${STAGE_H}`} style={{ display: 'block', borderRadius: 16 }} />
-        <svg
-          width={STAGE_W}
-          height={STAGE_H}
-          viewBox={`0 0 ${STAGE_W} ${STAGE_H}`}
-          style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'visible' }}
-        >
-          {CALLOUTS.map((c) => {
-            const a = anchors[`${c.from}:${c.code}`];
-            if (!a) return null;
-            const p = seg(t, c.from, c.from + 0.35);
-            const out = seg(t, c.to - 0.3, c.to);
-            return (
-              <line
-                key={`${c.from}:${c.code}`}
-                x1={a.x}
-                y1={a.y}
-                x2={a.x + c.dx * p}
-                y2={a.y + c.dy * p}
-                stroke={TEXT}
-                strokeOpacity={0.8 * (1 - out)}
-                strokeWidth={1.5}
-              />
-            );
-          })}
-        </svg>
-        {CALLOUTS.map((c) => {
-          const a = anchors[`${c.from}:${c.code}`];
-          if (!a) return null;
-          const p = seg(t, c.from + 0.3, c.from + 0.6);
-          const out = seg(t, c.to - 0.3, c.to);
-          const left = a.x + c.dx;
-          const top = a.y + c.dy;
-          return (
-            <div
-              key={`${c.from}:${c.code}`}
-              style={{
-                position: 'absolute',
-                left: c.dx < 0 ? undefined : left + 12,
-                right: c.dx < 0 ? STAGE_W - left + 12 : undefined,
-                top,
-                transform: `translateY(calc(-50% + ${(1 - p) * 10}px))`,
-                opacity: p * (1 - out),
-                padding: '10px 14px',
-                borderRadius: 10,
-                background: 'rgba(10, 12, 17, 0.88)',
-                border: '1px solid rgba(255,255,255,0.14)',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              <div style={{ fontSize: 22, fontWeight: 600, lineHeight: 1.2 }}>{c.title}</div>
-              <div style={{ fontSize: 18, color: ACCENT, fontFamily: MONO, marginTop: 2 }}>{c.value}</div>
-            </div>
-          );
-        })}
-        {year !== null ? (
-          <div style={{ position: 'absolute', left: 36, bottom: 30, textAlign: 'left', fontFamily: MONO }}>
-            <div style={{ fontSize: 72, fontWeight: 500, lineHeight: 1, letterSpacing: '-0.02em' }}>{year}</div>
-            <div style={{ fontSize: 20, color: TEXT_2, marginTop: 6 }}>{count} area codes</div>
+      {/* The rail */}
+      <div style={{ position: 'absolute', left: RAIL.left, top: RAIL.top, width: RAIL.width, height: RAIL.height, opacity: 1 - endCard }}>
+        {railContent(t, scene, count)}
+        {data && scene.inset ? (
+          <div style={{ position: 'absolute', left: 0, top: insetTop - RAIL.top }}>
+            <Inset
+              topo={data.topo}
+              states={data.states}
+              lineage={data.lineage}
+              year={scene.year}
+              mode={scene.mode}
+              focus={scene.focus}
+              dim={scene.dim}
+              blank={scene.blank}
+              shown={scene.shown}
+              opacity={scene.inset.opacity}
+              label={scene.inset.label}
+            />
           </div>
         ) : null}
-        {t < 7 ? <Dial t={t} /> : null}
       </div>
 
-      <div style={{ position: 'absolute', left: 80, right: 80, bottom: 28, display: 'flex', justifyContent: 'space-between', fontFamily: MONO, fontSize: 16, color: TEXT_2 }}>
-        <span>{SOURCE}</span>
-        <span style={{ color: ACCENT }}>{URL_LINE}</span>
-      </div>
+      {/* Locator line from the inset to Manhattan on the main map */}
+      {scene.inset && anchor212 ? (
+        <svg width={1920} height={1080} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+          <line x1={RAIL.left} y1={insetTop + INSET.height / 2} x2={anchor212.x} y2={anchor212.y} stroke={TEXT} strokeOpacity={0.45 * scene.inset.opacity} strokeWidth={1.2} strokeDasharray="4 5" />
+          <circle cx={anchor212.x} cy={anchor212.y} r={5} fill="none" stroke={TEXT} strokeOpacity={0.8 * scene.inset.opacity} strokeWidth={1.5} />
+        </svg>
+      ) : null}
 
       {endCard > 0 ? (
         <AbsoluteFill style={{ alignItems: 'center', justifyContent: 'center', opacity: endCard }}>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 64, fontWeight: 700, letterSpacing: '-0.02em' }}>{TITLE}</div>
-            <div style={{ fontSize: 26, color: TEXT_2, marginTop: 18, maxWidth: 1100, lineHeight: 1.4 }}>{END_LINE}</div>
-            <div style={{ fontSize: 22, color: ACCENT, fontFamily: MONO, marginTop: 28 }}>{URL_LINE}</div>
+          <div style={{ textAlign: 'center', maxWidth: 1400 }}>
+            <div style={{ fontSize: 72, fontWeight: 700, letterSpacing: '-0.02em' }}>{TITLE}</div>
+            <div style={{ fontSize: 30, color: TEXT_2, marginTop: 16 }}>{SUBTITLE}</div>
+            <div style={{ fontSize: 22, color: TEXT, marginTop: 40 }}>{BYLINE}</div>
+            <div style={{ fontSize: 22, color: ACCENT, fontFamily: MONO, marginTop: 10 }}>{URL_LINE}</div>
           </div>
+          <div style={{ position: 'absolute', bottom: 40, left: 80, right: 80, textAlign: 'center', fontFamily: MONO, fontSize: 16, color: TEXT_2 }}>{SOURCE}</div>
         </AbsoluteFill>
       ) : null}
     </AbsoluteFill>
   );
 };
 
-/** Drive the stage to the state for time t. Every call is idempotent for a given t. */
-function applyFrame(stage: MapStage, t: number, order: string[]): void {
-  if (t < 7) {
-    stage.setMode('pulses', 0);
-    stage.setLabels(false);
-    stage.setBlank(true, 0);
-    stage.cameraAt(null, 1);
-    stage.dimAt(null, 1);
-    return;
+/** The rail's content for the current shot. */
+function railContent(t: number, scene: Scene, count: number): React.ReactNode {
+  const fadeIn = (from: number, len = 0.6) => seg(t, from, from + len);
+  if (t < S.newYork) return null;
+  if (t < S.cities) return <Stat eyebrow="1947 · New York" code="212" number="5" unit="clicks" note="7.9 million people in its territory in 1950" opacity={fadeIn(S.newYork + 1.4)} />;
+  if (t < S.original) {
+    const shown = (t >= S.cities + 0.8 ? 1 : 0) + (t >= S.cities + 2.2 ? 1 : 0) + (t >= S.cities + 3.6 ? 1 : 0);
+    return (
+      <Rows
+        eyebrow="1947 · the fast codes"
+        rows={[
+          { code: '312', name: 'Chicago', value: '6 clicks', color: pulseColor(PALETTES.signature, 6) },
+          { code: '213', name: 'Los Angeles', value: '6 clicks', color: pulseColor(PALETTES.signature, 6) },
+          { code: '313', name: 'Detroit', value: '7 clicks', color: pulseColor(PALETTES.signature, 7) },
+        ]}
+        shown={shown}
+        opacity={fadeIn(S.cities + 0.6)}
+      />
+    );
   }
-  if (t < 14) {
-    stage.setMode('pulses', 0);
-    stage.setLabels(false);
-    stage.setBlank(true, 0);
-    stage.setYear(1947, 0);
-    void stage.show(['212'], { step: 0, duration: 0 });
-    stage.cameraAt('212', seg(t, 7.6, 10.2));
-    stage.dimAt(['212'], seg(t, 9.4, 10.4));
-    return;
+  if (t < S.exception) {
+    return (
+      <>
+        <Stat eyebrow="1947 · United States" code="" number="77" unit="area codes" opacity={fadeIn(S.original + 5.8)} />
+        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }}>
+          <ClicksLegend opacity={fadeIn(S.original + 5.8)} />
+        </div>
+      </>
+    );
   }
-  if (t < 24) {
-    stage.setMode('pulses', 0);
-    stage.setLabels(false);
-    stage.setBlank(true, 0);
-    stage.setYear(1947, 0);
-    stage.dimAt(null, 1);
-    stage.cameraAt(null, seg(t, 14, 16.4));
-    const shown = ['212'];
-    if (t >= 16.6) shown.push('312');
-    if (t >= 18.4) shown.push('213');
-    if (t >= 20.2) shown.push('313');
-    void stage.show(shown, { step: 0, duration: 0 });
-    return;
+  if (t < S.middle) {
+    const shown = (t >= S.exception + 1.2 ? 1 : 0) + (t >= S.exception + 2.6 ? 1 : 0) + (t >= S.exception + 4 ? 1 : 0);
+    return (
+      <>
+        <Rows
+          eyebrow="1947 · the slow codes"
+          rows={[
+            { code: '605', name: 'South Dakota', sub: '651,000 people', value: '21', color: pulseColor(PALETTES.signature, 21) },
+            { code: '704', name: 'North Carolina', sub: '4.1 million people', value: '21', color: pulseColor(PALETTES.signature, 21) },
+            { code: '803', name: 'South Carolina', sub: '2.1 million people', value: '21', color: pulseColor(PALETTES.signature, 21) },
+          ]}
+          shown={shown}
+          opacity={fadeIn(S.exception + 1)}
+        />
+        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }}>
+          <ClicksLegend opacity={1} />
+        </div>
+      </>
+    );
   }
-  if (t < 34) {
-    stage.setMode('pulses', 0);
-    stage.setYear(1947, 0);
-    stage.cameraAt(null, 1);
-    stage.dimAt(null, 1);
-    stage.revealAt(order, seg(t, 25, 31));
-    stage.setLabels(t >= 31.4);
-    return;
+  if (t < S.changes) {
+    return (
+      <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }}>
+        <MiddleLegend opacity={fadeIn(S.middle + 0.8)} />
+      </div>
+    );
   }
-  if (t < 43) {
-    stage.setMode('pulses', 0);
-    stage.setYear(1947, 0);
-    stage.setLabels(false);
-    stage.revealAt(order, 1);
-    stage.cameraAt(null, 1);
-    stage.dimAt(['605', '803', '704'], seg(t, 34.6, 35.8));
-    return;
+  if (t < S.present) {
+    let event: React.ReactNode = null;
+    if (t >= RUN.split1948 && t < RUN.runTo1992) event = <Stat eyebrow="1948 · the first split" code="219" number="" unit="" note="Cut out of Indiana's 317" opacity={fadeIn(RUN.split1948 + 0.2)} />;
+    else if (t >= RUN.hold1992 && t < RUN.runTo2007) event = <Stat eyebrow="1992 · the first overlay" code="917" number="" unit="" note="Laid over Manhattan's 212. The boundary did not move." opacity={fadeIn(RUN.hold1992 + 0.2)} />;
+    else if (t >= RUN.hold2007 && t < RUN.runTo2025) event = <Stat eyebrow="2007 · the last split" code="575" number="" unit="" note="Cut out of New Mexico's 505. Every code since has been an overlay." opacity={fadeIn(RUN.hold2007 + 0.2)} />;
+    return (
+      <>
+        {event}
+        <div style={{ position: 'absolute', right: 0, bottom: 0 }}>
+          <Counter year={scene.year} count={count} opacity={fadeIn(S.changes + 0.6)} />
+        </div>
+      </>
+    );
   }
-  if (t < 52) {
-    stage.setYear(1947, 0);
-    stage.setLabels(false);
-    stage.revealAt(order, 1);
-    stage.cameraAt(null, 1);
-    stage.dimAt(null, 1);
-    stage.setMode(t >= 43.8 ? 'middle' : 'pulses', 0);
-    return;
-  }
-  if (t < 74) {
-    stage.setMode('pulses', 0);
-    stage.setLabels(false);
-    stage.revealAt(order, 1);
-    stage.cameraAt(null, 1);
-    stage.dimAt(null, 1);
-    stage.setYear(yearAt(t), 0);
-    return;
-  }
-  stage.setMode('pulses', 0);
-  stage.setYear(2025, 0);
-  stage.revealAt(order, 1);
-  stage.cameraAt(null, 1);
-  stage.setLabels(true);
-  stage.dimAt(['713', '404', '214', '212'], seg(t, 74.6, 75.8));
+  if (t < S.explanation) return <Stat eyebrow="2025 · Houston" code="713" number="5" unit="codes" note="713, 281, 832, 346 and 621 share one territory" opacity={fadeIn(S.present + 1.4)} />;
+  return (
+    <div style={{ position: 'absolute', right: 0, bottom: 0 }}>
+      <Counter year={2025} count={count} opacity={1} />
+    </div>
+  );
 }
 
 function countFor(year: number, lineage: Lineage, us: Set<string>): number {
