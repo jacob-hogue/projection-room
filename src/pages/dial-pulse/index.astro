@@ -1,5 +1,5 @@
 ---
-import { existsSync } from 'node:fs';
+import { existsSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import Base from '../../layouts/Base.astro';
 import FilmSection from '../../components/FilmSection.astro';
@@ -12,7 +12,10 @@ import stack from '../../content/dial-pulse/stack.json';
 const base = import.meta.env.BASE_URL;
 const title = 'The dial-pulse map';
 const rule = 'In 1947 the biggest cities got the area codes that were fastest to dial. Every territory is colored by how many clicks it took.';
-const filmExists = existsSync(join(process.cwd(), 'public', 'dial-pulse', 'film.mp4'));
+const filmPath = join(process.cwd(), 'public', 'dial-pulse', 'film.mp4');
+const filmExists = existsSync(filmPath);
+// The version changes with every render, so browsers never resume an old copy under the same URL.
+const filmSrc = filmExists ? `${base}dial-pulse/film.mp4?v=${Math.floor(statSync(filmPath).mtimeMs / 1000)}` : null;
 ---
 <Base title={title} description={rule}>
   <section class="opening">
@@ -25,7 +28,7 @@ const filmExists = existsSync(join(process.cwd(), 'public', 'dial-pulse', 'film.
     </ul>
   </section>
   <FilmSection
-    src={filmExists ? `${base}dial-pulse/film.mp4` : null}
+    src={filmSrc}
     poster={`${base}dial-pulse/poster.png`}
     title={`${title}, the film`}
     posterAlt="The 1947 area code map of the lower 48 states, each territory colored by the clicks it took to dial, gold for the fastest and plum for the slowest."
