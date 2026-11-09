@@ -1,31 +1,26 @@
 ---
 import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import Base from '../../layouts/Base.astro';
-import ExploreSection from '../../components/ExploreSection.astro';
 import FilmSection from '../../components/FilmSection.astro';
-import MethodSection from '../../components/MethodSection.astro';
-import PieceIntro from '../../components/PieceIntro.astro';
-import StorySection from '../../components/StorySection.astro';
+import Post from '../../components/Post.astro';
 import TechStack from '../../components/TechStack.astro';
-import story from '../../content/dial-pulse/story.json';
-import intro from '../../content/dial-pulse/intro.json';
-import method from '../../content/dial-pulse/method.json';
+import post from '../../content/dial-pulse/post.json';
+import sources from '../../content/dial-pulse/sources.json';
 import stack from '../../content/dial-pulse/stack.json';
 
 const base = import.meta.env.BASE_URL;
 const title = 'The dial-pulse map';
-const rule = 'In 1947 the biggest cities got the area codes that were fastest to dial. Every point is colored by how many clicks it took.';
-const filmExists = existsSync(new URL('../../../public/dial-pulse/film.mp4', import.meta.url));
-const STAGE_W = 1200;
-const STAGE_H = 760;
+const rule = 'In 1947 the biggest cities got the area codes that were fastest to dial. Every territory is colored by how many clicks it took.';
+const filmExists = existsSync(join(process.cwd(), 'public', 'dial-pulse', 'film.mp4'));
 ---
 <Base title={title} description={rule}>
   <section class="opening">
     <h1>{title}</h1>
     <p class="rule">{rule}</p>
     <ul class="facts mono">
-      <li>Area code polygons: October 2015</li>
-      <li>Method: trace each code back, dissolve, recolor</li>
+      <li>Area code boundaries: October 2015</li>
+      <li>Population: 1950 Census</li>
       <li>November 2026</li>
     </ul>
   </section>
@@ -37,16 +32,8 @@ const STAGE_H = 760;
     downloadName="the-dial-pulse-map.mp4"
   />
   <TechStack items={stack} />
-  <PieceIntro heading={intro.heading} paragraphs={intro.paragraphs} />
-  <StorySection parts={story} />
-  <ExploreSection stageWidth={STAGE_W} stageHeight={STAGE_H} />
-  <MethodSection {...method} />
+  <Post sections={post} sources={sources} />
 </Base>
-
-<script>
-  import { mountExplore } from '../../scripts/dial-pulse-explore';
-  mountExplore();
-</script>
 
 <style>
   .opening { max-width: 1200px; margin: 0 auto; padding: 56px 24px 20px; }

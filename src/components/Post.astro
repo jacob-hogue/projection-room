@@ -1,0 +1,45 @@
+---
+/** The written piece: a short post under the film, plus its sources. */
+export interface PostSection {
+  heading: string;
+  paragraphs: string[];
+}
+export interface Source {
+  name: string;
+  detail: string;
+  href: string;
+}
+interface Props {
+  sections: PostSection[];
+  sources: Source[];
+}
+const { sections, sources } = Astro.props;
+---
+<article class="post">
+  {sections.map((s) => (
+    <section>
+      <h2>{s.heading}</h2>
+      {s.paragraphs.map((p) => <p>{p}</p>)}
+    </section>
+  ))}
+  <section class="sources-block">
+    <h2>Sources</h2>
+    <ul class="sources">
+      {sources.map((s) => (
+        <li><a href={s.href} rel="noopener">{s.name}</a>: {s.detail}</li>
+      ))}
+    </ul>
+  </section>
+</article>
+
+<style>
+  .post { max-width: 1200px; margin: 0 auto; padding: 40px 24px 56px; display: grid; gap: 30px; }
+  .post section { max-width: 66ch; }
+  .post h2 { font-size: clamp(22px, 2.4vw, 30px); margin-bottom: 12px; }
+  .post p { font-size: 18px; line-height: 1.7; color: var(--text-2); margin-bottom: 14px; }
+  .post p:last-child { margin-bottom: 0; }
+  .sources-block h2 { font-size: 16px; color: var(--text-2); }
+  .sources { list-style: none; display: grid; gap: 6px; font-size: 14px; line-height: 1.55; color: var(--text-3); }
+  .sources a { color: var(--text-2); }
+  .sources a:hover { color: var(--accent); }
+</style>

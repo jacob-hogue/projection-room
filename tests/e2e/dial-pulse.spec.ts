@@ -2,45 +2,24 @@ import { expect, test } from '@playwright/test';
 
 const PAGE = '/projection-room/dial-pulse/';
 
-test('the page is film, context, story, then the explore map', async ({ page }) => {
+test('the page is title, film, stack and one post', async ({ page }) => {
   await page.goto(PAGE);
   await expect(page.locator('h1')).toHaveText('The dial-pulse map');
-  await expect(page.locator('.film video, .film img.film-poster')).toHaveCount(1);
+  await expect(page.locator('.film video')).toHaveCount(1);
+  await expect(page.locator('.film video')).toHaveAttribute('controls', '');
   await expect(page.locator('.stack dt')).toHaveCount(8);
-  await expect(page.locator('.stack')).toContainText('Remotion');
-  await expect(page.locator('.intro-prose h2')).toHaveText('Before there were area codes');
-  await expect(page.locator('.essay .part')).toHaveCount(8);
-  // The explore map is built only when the reader reaches it.
-  await expect(page.locator('#stage path.area')).toHaveCount(0);
-  await page.locator('#explore').scrollIntoViewIfNeeded();
-  await expect(page.locator('#stage path.area').first()).toBeAttached({ timeout: 15000 });
-  await expect(page.locator('#stage')).toHaveAttribute('data-year', '1947');
-  await page.locator('#year').fill('1999');
-  await expect(page).toHaveURL(/year=1999/);
-  await expect(page.locator('#stage')).toHaveAttribute('data-year', '1999');
-  await page.getByLabel('middle digit').check();
-  await expect(page.locator('#stage')).toHaveAttribute('data-mode', 'middle');
+  await expect(page.locator('.post h2').first()).toHaveText('Before there were area codes');
+  await expect(page.locator('.post section')).toHaveCount(6); // five sections and the sources
+  const words = (await page.locator('.post p').allTextContents()).join(' ').split(/\s+/).length;
+  expect(words).toBeGreaterThan(500);
+  expect(words).toBeLessThan(1000);
+  await expect(page.locator('#explore')).toHaveCount(0);
 });
 
-test('a link with a hash opens on the explore map in that view', async ({ page }) => {
-  await page.goto(`${PAGE}#year=1999&mode=year&palette=cool`);
-  await expect(page.locator('#stage path.area').first()).toBeAttached({ timeout: 15000 });
-  await expect(page.locator('#stage')).toHaveAttribute('data-year', '1999');
-  await expect(page.locator('#stage')).toHaveAttribute('data-mode', 'year');
-  await expect(page.locator('#stage')).toHaveAttribute('data-palette', 'cool');
-});
-
-test('bad hash falls back to the defaults', async ({ page }) => {
-  await page.goto(`${PAGE}#year=1900&palette=nope`);
-  await expect(page.locator('#stage path.area').first()).toBeAttached({ timeout: 15000 });
-  await expect(page.locator('#stage')).toHaveAttribute('data-year', '1947');
-});
-
-test('the story renders without JavaScript', async ({ browser }) => {
+test('the page reads without JavaScript', async ({ browser }) => {
   const ctx = await browser.newContext({ javaScriptEnabled: false });
   const page = await ctx.newPage();
   await page.goto(PAGE);
-  await expect(page.locator('.essay .part')).toHaveCount(8);
-  await expect(page.locator('.essay .part').first().locator('h2')).toHaveText('Five clicks to New York');
+  await expect(page.locator('.post h2')).toHaveCount(6);
   await ctx.close();
 });

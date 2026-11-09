@@ -1,0 +1,7 @@
+[
+  { "name": "Area code boundaries", "detail": "North America Telephone Area Code Boundaries, UCLA Geoportal, October 2015, republished on GitHub as 1ec5/nanp-boundaries.", "href": "https://github.com/1ec5/nanp-boundaries" },
+  { "name": "The 1947 plan and code history", "detail": "Wikipedia's original area codes table and per-code articles.", "href": "https://en.wikipedia.org/wiki/Original_North_American_area_codes" },
+  { "name": "Codes in service by year", "detail": "NANPA area code report.", "href": "https://reports.nanpa.com/public/npa_report.csv" },
+  { "name": "1950 population", "detail": "Population of Counties by Decennial Census 1900 to 1990, Census Bureau, via NBER.", "href": "https://www.nber.org/research/data/census-us-decennial-county-population-data-1900-1990" },
+  { "name": "Coast and counties", "detail": "Natural Earth; Census Bureau cartographic boundary files.", "href": "https://www.naturalearthdata.com/" }
+]
