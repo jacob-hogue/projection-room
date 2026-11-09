@@ -180,6 +180,6 @@ describe('MapStage', () => {
   test('state reports year, mode and palette', () => {
     stage.setYear(1999);
     stage.setMode('year');
-    expect(stage.state()).toEqual({ year: 1999, mode: 'year', palette: 'signature' });
+    expect(stage.state()).toEqual({ year: 1999, mode: 'year', palette: 'signature', zoom: 1 });
   });
 });

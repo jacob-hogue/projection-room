@@ -3,10 +3,14 @@
  * TopoJSON, so the projection is an identity fit to the stage; changing the year only
  * recolors and redraws dissolved outlines, never re-projects.
  *
- * Layers, bottom to top: water, areas (with hatches), territory outlines (dark casing
- * under a light line), the coast (soft glow under a thin light edge), labels, legend.
+ * Layers, bottom to top, inside one `g.view` the camera moves: water, areas (with
+ * hatches), territory outlines (dark casing under a light line), halos, the coast (soft glow
+ * under a thin light edge), labels. The legend sits outside the view.
+ *
+ * Every state change takes a duration. Zero applies at once (also what reduced motion
+ * gets); anything else tweens with d3 transitions.
  */
-import { geoIdentity, geoPath, select, type GeoPath, type GeoProjection, type Selection } from 'd3';
+import { easeCubicInOut, geoIdentity, geoPath, select, type BaseType, type GeoPath, type GeoProjection, type Selection } from 'd3';
 import polylabel from 'polylabel';
 import { feature, merge, mesh } from 'topojson-client';
 import type { GeometryCollection, GeometryObject, MultiPolygon, Polygon, Topology } from 'topojson-specification';
@@ -30,9 +34,19 @@ export interface HoverInfo {
   original: string;
 }
 
+export interface RevealOptions {
+  /** Milliseconds between one territory and the next. */
+  step: number;
+  /** Milliseconds each territory takes to fade in. */
+  duration: number;
+}
+
 export const YEAR_MIN = 1947;
 export const YEAR_MAX = 2025;
 export const LABEL_COUNT = 5;
+export const DIM_OPACITY = 0.22;
+export const NEW_FLASH_MS = 900;
+const MAX_ZOOM = 6;
 
 /** Cities for the 1947 codes worth naming on the map, fastest first. */
 export const LABEL_CITIES: Record<string, string> = {
@@ -61,12 +75,19 @@ const CASING_WIDTH = 1.6;
 const LINE_WIDTH = 0.5;
 const COAST_GLOW_WIDTH = 3;
 const COAST_WIDTH = 0.6;
+/** Firefly stack for a focused territory: wide and faint under narrow and bright. */
+const HALO_STACK: { width: number; opacity: number }[] = [
+  { width: 10, opacity: 0.12 },
+  { width: 5, opacity: 0.25 },
+  { width: 2, opacity: 0.9 },
+];
 
 const EMBEDDED_STYLE = [
   `.mapstage{background:${SURFACE}}`,
   '.area{stroke-linejoin:round}',
   `.area.is-hover{stroke:${TEXT};stroke-width:1.2}`,
-  '.hatch,.outline-casing,.outline,.coast,.label,.legend{pointer-events:none}',
+  `.area.is-new{stroke:${TEXT};stroke-width:1.4}`,
+  '.hatch,.outline-casing,.outline,.coast,.halo,.label,.legend{pointer-events:none}',
   `.label-city{font:600 12px ${SANS}}`,
   `.label-code{font:500 11px ${MONO}}`,
   `.legend text{font:500 10px ${MONO}}`,
@@ -92,15 +113,20 @@ interface Outline {
   d: string;
   /** Pole of inaccessibility of the largest part, in stage pixels. */
   anchor: [number, number];
+  bounds: [[number, number], [number, number]];
 }
+
+type G = Selection<SVGGElement, unknown, null, undefined>;
 
 export class MapStage {
   private readonly root: Selection<SVGSVGElement, unknown, null, undefined>;
-  private readonly areas: Selection<SVGGElement, unknown, null, undefined>;
-  private readonly casings: Selection<SVGGElement, unknown, null, undefined>;
-  private readonly lines: Selection<SVGGElement, unknown, null, undefined>;
-  private readonly labels: Selection<SVGGElement, unknown, null, undefined>;
-  private readonly legend: Selection<SVGGElement, unknown, null, undefined>;
+  private readonly view: G;
+  private readonly areas: G;
+  private readonly casings: G;
+  private readonly lines: G;
+  private readonly halos: G;
+  private readonly labels: G;
+  private readonly legend: G;
   private readonly projection: GeoProjection;
   private readonly path: GeoPath;
   private readonly polys: Poly[];
@@ -115,6 +141,10 @@ export class MapStage {
   private mode: Mode = 'pulses';
   private labelsOn = false;
   private legendOn = false;
+  private blank = false;
+  private focused: Set<string> | null = null;
+  private zoom = { k: 1, x: 0, y: 0 };
+  private lastDisplay = new Map<string, string>();
   private hoverCb: ((info: HoverInfo | null) => void) | null = null;
 
   constructor(svg: SVGSVGElement, topology: Topology, opts: StageOptions) {
@@ -160,31 +190,35 @@ export class MapStage {
       .attr('stroke-opacity', 0.38)
       .attr('stroke-width', 1.1);
     this.root.append('rect').attr('class', 'water').attr('width', opts.width).attr('height', opts.height).attr('fill', WATER);
-    this.areas = this.root.append('g').attr('class', 'areas');
-    const outlines = this.root.append('g').attr('class', 'outlines');
+    this.view = this.root.append('g').attr('class', 'view');
+    this.areas = this.view.append('g').attr('class', 'areas');
+    const outlines = this.view.append('g').attr('class', 'outlines');
     this.casings = outlines.append('g').attr('class', 'outline-casings');
     this.lines = outlines.append('g').attr('class', 'outline-lines');
+    this.halos = this.view.append('g').attr('class', 'halos');
     this.drawCoast(object);
-    this.labels = this.root.append('g').attr('class', 'labels');
+    this.labels = this.view.append('g').attr('class', 'labels');
     this.legend = this.root.append('g').attr('class', 'legend');
 
     this.labelCodes = this.fastestOriginals();
-    this.render();
+    this.render(0);
   }
 
-  setYear(year: number): void {
+  // Public state changes. ------------------------------------------------------------------
+
+  setYear(year: number, duration = 0): void {
     this.year = Math.min(YEAR_MAX, Math.max(YEAR_MIN, Math.round(year)));
-    this.render();
+    this.render(duration);
   }
 
-  setMode(mode: Mode): void {
+  setMode(mode: Mode, duration = 0): void {
     this.mode = mode;
-    this.render();
+    this.render(duration);
   }
 
-  setPalette(p: Palette): void {
+  setPalette(p: Palette, duration = 0): void {
     this.palette = p;
-    this.render();
+    this.render(duration);
   }
 
   setLabels(on: boolean): void {
@@ -197,12 +231,137 @@ export class MapStage {
     this.renderLegend();
   }
 
+  /** Hide the data layers (coast and water stay), or show them again. */
+  setBlank(on: boolean, duration = 0): void {
+    this.blank = on;
+    this.root.attr('data-blank', String(on));
+    const target = on ? 0 : 1;
+    this.fade(this.areas.selectAll<SVGPathElement, Entry>('path'), (e) => (on ? 0 : this.opacityFor(e.display)), duration);
+    this.fade(this.casings.selectAll('path'), () => target, duration);
+    this.fade(this.lines.selectAll('path'), () => target, duration);
+    this.fade(this.labels.selectAll('text'), () => target, duration);
+  }
+
+  /** From blank, bring territories in one after another in the given order (others last). */
+  reveal(order: string[], opts: RevealOptions): Promise<void> {
+    const rank = new Map(order.map((npa, i) => [npa, i]));
+    const n = this.polys.length;
+    const indexOf = (npa: string) => rank.get(npa) ?? order.length + this.polys.findIndex((p) => p.npa === npa);
+    const paths = this.areas.selectAll<SVGPathElement, Entry>('path');
+    paths.attr('data-reveal', (e) => indexOf(e.poly.npa));
+    const total = (n - 1) * opts.step + opts.duration;
+    const self = this;
+    // Targets are computed as if already revealed; the data-blank attribute flips at the end.
+    this.blank = false;
+    if (opts.duration === 0 && opts.step === 0) {
+      this.root.attr('data-blank', 'false');
+      paths.attr('opacity', (e) => this.opacityFor(e.display));
+      this.casings.selectAll('path').attr('opacity', 1);
+      this.lines.selectAll('path').attr('opacity', 1);
+      this.renderLabels();
+      return Promise.resolve();
+    }
+    paths
+      .transition('reveal')
+      .delay((e) => indexOf(e.poly.npa) * opts.step)
+      .duration(opts.duration)
+      .ease(easeCubicInOut)
+      .attr('opacity', (e) => this.opacityFor(e.display));
+    this.casings.selectAll('path').transition('reveal').delay(total * 0.6).duration(opts.duration * 2).attr('opacity', 1);
+    this.lines.selectAll('path').transition('reveal').delay(total * 0.6).duration(opts.duration * 2).attr('opacity', 1);
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        self.root.attr('data-blank', 'false');
+        paths.interrupt('reveal').attr('opacity', (e) => self.opacityFor(e.display));
+        self.casings.selectAll('path').interrupt('reveal').attr('opacity', 1);
+        self.lines.selectAll('path').interrupt('reveal').attr('opacity', 1);
+        self.renderLabels();
+        resolve();
+      }, total + 60);
+    });
+  }
+
+  /** Dim everything except the given display codes and halo them; null clears. */
+  focus(codes: string[] | null, duration = 0): void {
+    this.focused = codes ? new Set(codes) : null;
+    const paths = this.areas.selectAll<SVGPathElement, Entry>('path');
+    this.fade(paths, (e) => this.opacityFor(e.display), duration);
+    const outlines = this.outlinesFor(this.year).filter((o) => this.focused?.has(o.code));
+    const fillOf = (code: string) => this.colorFor(code, this.classify(code));
+    const rings = outlines.flatMap((o) => HALO_STACK.map((s, i) => ({ o, s, key: `${o.code}:${i}` })));
+    const sel = this.halos
+      .selectAll<SVGPathElement, { o: Outline; s: { width: number; opacity: number }; key: string }>('path')
+      .data(rings, (r) => r.key);
+    sel.exit().remove();
+    const enter = sel
+      .enter()
+      .append('path')
+      .attr('class', 'halo')
+      .attr('fill', 'none')
+      .attr('stroke-linejoin', 'round')
+      .attr('vector-effect', 'non-scaling-stroke')
+      .attr('stroke-opacity', 0);
+    const all = enter
+      .merge(sel)
+      .attr('d', (r) => r.o.d)
+      .attr('stroke', (r) => fillOf(r.o.code))
+      .attr('stroke-width', (r) => r.s.width);
+    if (duration > 0) all.transition('halo').duration(duration).ease(easeCubicInOut).attr('stroke-opacity', (r) => r.s.opacity);
+    else all.attr('stroke-opacity', (r) => r.s.opacity);
+  }
+
+  /** Move the camera to a display code's territory, or back to the whole map with null. */
+  zoomTo(code: string | null, duration = 0): void {
+    const outline = code ? this.outlinesFor(this.year).find((o) => o.code === code) : undefined;
+    if (!outline) {
+      this.zoom = { k: 1, x: 0, y: 0 };
+    } else {
+      const [[x0, y0], [x1, y1]] = outline.bounds;
+      const bw = Math.max(1, x1 - x0);
+      const bh = Math.max(1, y1 - y0);
+      const k = Math.min(MAX_ZOOM, 0.8 / Math.max(bw / this.width, bh / this.height));
+      const cx = (x0 + x1) / 2;
+      const cy = (y0 + y1) / 2;
+      this.zoom = { k, x: this.width / 2 - k * cx, y: this.height / 2 - k * cy };
+    }
+    const transform = `translate(${this.zoom.x},${this.zoom.y}) scale(${this.zoom.k})`;
+    if (duration > 0) this.view.transition('zoom').duration(duration).ease(easeCubicInOut).attr('transform', transform);
+    else this.view.attr('transform', transform);
+    this.root.attr('data-zoom', this.zoom.k.toFixed(2));
+    // Labels are sized for the whole map; let them go while zoomed in.
+    this.fade(this.labels.selectAll('text'), () => (this.zoom.k > 1.3 ? 0 : 1), duration);
+  }
+
   onHover(cb: (info: HoverInfo | null) => void): void {
     this.hoverCb = cb;
   }
 
-  state(): { year: number; mode: Mode; palette: string } {
-    return { year: this.year, mode: this.mode, palette: this.palette.name };
+  // Readbacks. ---------------------------------------------------------------------------
+
+  state(): { year: number; mode: Mode; palette: string; zoom: number } {
+    return { year: this.year, mode: this.mode, palette: this.palette.name, zoom: this.zoom.k };
+  }
+
+  /** Stage coordinates (after the camera) of a display code's label anchor this year. */
+  anchor(code: string): { x: number; y: number } | null {
+    const o = this.outlinesFor(this.year).find((o) => o.code === code);
+    if (!o) return null;
+    return { x: this.zoom.x + this.zoom.k * o.anchor[0], y: this.zoom.y + this.zoom.k * o.anchor[1] };
+  }
+
+  /** Every code a territory carries this year, display code first. */
+  codesFor(npa: string): string[] {
+    return polygonCodes(npa, this.year, this.lineage);
+  }
+
+  /** The display code a territory carries this year. */
+  displayOf(npa: string): string {
+    return displayCode(this.codesFor(npa), this.year, this.lineage);
+  }
+
+  /** Territory codes in the data, for ordering reveals. */
+  territories(): string[] {
+    return this.polys.map((p) => p.npa);
   }
 
   /** A standalone SVG document with the styles embedded. */
@@ -216,10 +375,23 @@ export class MapStage {
     return out.startsWith('<svg') ? out : out.slice(out.indexOf('<svg'));
   }
 
+  // Internals. ---------------------------------------------------------------------------
+
+  private fade<E extends BaseType, D>(sel: Selection<E, D, SVGGElement, unknown>, to: (d: D) => number, duration: number): void {
+    if (duration > 0) sel.transition('fade').duration(duration).ease(easeCubicInOut).attr('opacity', (d) => to(d));
+    else sel.interrupt('fade').attr('opacity', (d) => to(d));
+  }
+
+  private opacityFor(display: string): number {
+    if (this.blank) return 0;
+    if (this.focused && !this.focused.has(display)) return DIM_OPACITY;
+    return 1;
+  }
+
   private drawCoast(object: GeometryCollection): void {
     // Exterior arcs only: arcs with the same polygon on both sides are the land edge.
     const d = this.path(mesh(this.topology, object, (a, b) => a === b)) ?? '';
-    const g = this.root.append('g').attr('class', 'coast');
+    const g = this.view.append('g').attr('class', 'coast');
     g.append('path')
       .attr('class', 'coast coast-glow')
       .attr('d', d)
@@ -227,7 +399,8 @@ export class MapStage {
       .attr('stroke', TEXT)
       .attr('stroke-opacity', 0.12)
       .attr('stroke-width', COAST_GLOW_WIDTH)
-      .attr('stroke-linejoin', 'round');
+      .attr('stroke-linejoin', 'round')
+      .attr('vector-effect', 'non-scaling-stroke');
     g.append('path')
       .attr('class', 'coast coast-edge')
       .attr('d', d)
@@ -235,7 +408,8 @@ export class MapStage {
       .attr('stroke', TEXT)
       .attr('stroke-opacity', 0.55)
       .attr('stroke-width', COAST_WIDTH)
-      .attr('stroke-linejoin', 'round');
+      .attr('stroke-linejoin', 'round')
+      .attr('vector-effect', 'non-scaling-stroke');
   }
 
   private fastestOriginals(): string[] {
@@ -299,86 +473,129 @@ export class MapStage {
     const out: Outline[] = [];
     for (const [code, polys] of byCode) {
       const merged = merge(this.topology, polys.map((p) => p.geom as GeometryObject as Polygon | MultiPolygon));
-      out.push({ code, d: this.path(merged) ?? '', anchor: this.anchorFor(merged) });
+      out.push({ code, d: this.path(merged) ?? '', anchor: this.anchorFor(merged), bounds: this.path.bounds(merged) });
     }
     out.sort((a, b) => Number(a.code) - Number(b.code));
     this.outlineCache.set(year, out);
     return out;
   }
 
-  private render(): void {
+  private render(duration: number): void {
     this.root.attr('data-year', this.year).attr('data-mode', this.mode).attr('data-palette', this.palette.name);
     const self = this;
-    this.areas
+    const entries = this.entries();
+
+    // Territories whose code changed since the last render flash for a moment.
+    const changed = new Set<string>();
+    for (const e of entries) {
+      if (e.kind !== 'area') continue;
+      const prev = this.lastDisplay.get(e.poly.npa);
+      if (prev !== undefined && prev !== e.display) changed.add(e.poly.npa);
+      this.lastDisplay.set(e.poly.npa, e.display);
+    }
+
+    const paths = this.areas
       .selectAll<SVGPathElement, Entry>('path')
-      .data(this.entries(), (e) => `${e.kind}:${e.poly.npa}`)
-      .join((enter) =>
-        enter
-          .append('path')
-          .attr('d', (e) => e.poly.d)
-          .on('mouseenter', function (_event, e) {
-            if (e.kind !== 'area') return;
-            this.classList.add('is-hover');
-            self.hoverCb?.({
-              npa: e.poly.npa,
-              codes: e.codes,
-              pulses: pulses(e.display),
-              original: originalOf(e.poly.npa, self.lineage),
-            });
-          })
-          .on('mouseleave', function () {
-            this.classList.remove('is-hover');
-            self.hoverCb?.(null);
-          }),
+      .data(entries, (e) => `${e.kind}:${e.poly.npa}`)
+      .join(
+        (enter) =>
+          enter
+            .append('path')
+            .attr('d', (e) => e.poly.d)
+            .attr('vector-effect', 'non-scaling-stroke')
+            .attr('opacity', (e) => (e.kind === 'hatch' && duration > 0 ? 0 : this.opacityFor(e.display)))
+            .attr('fill', (e) => (e.kind === 'area' ? e.fill : 'url(#hatch)'))
+            .attr('stroke', (e) => (e.kind === 'area' ? e.fill : null))
+            .on('mouseenter', function (_event, e) {
+              if (e.kind !== 'area') return;
+              this.classList.add('is-hover');
+              self.hoverCb?.({
+                npa: e.poly.npa,
+                codes: e.codes,
+                pulses: pulses(e.display),
+                original: originalOf(e.poly.npa, self.lineage),
+              });
+            })
+            .on('mouseleave', function () {
+              this.classList.remove('is-hover');
+              self.hoverCb?.(null);
+            }),
+        (update) => update,
+        (exit) => (duration > 0 ? exit.transition('fade').duration(duration).attr('opacity', 0).remove() : exit.remove()),
       )
       .attr('class', function (e) {
-        return e.kind + (this.classList.contains('is-hover') ? ' is-hover' : '');
+        const keep: string[] = [e.kind];
+        if (this.classList.contains('is-hover')) keep.push('is-hover');
+        if (e.kind === 'area' && changed.has(e.poly.npa)) keep.push('is-new');
+        return keep.join(' ');
       })
       .attr('data-npa', (e) => e.poly.npa)
       .attr('data-codes', (e) => e.codes.join(','))
       .attr('data-display', (e) => e.display)
       .attr('data-class', (e) => e.cls)
-      .attr('fill', (e) => (e.kind === 'area' ? e.fill : 'url(#hatch)'))
-      // Stroking each area in its own fill closes the hairline seams between neighbours.
-      .attr('stroke', (e) => (e.kind === 'area' ? e.fill : null))
       .attr('stroke-width', (e) => (e.kind === 'area' ? AREA_SEAM : null))
       .attr('stroke-linejoin', (e) => (e.kind === 'area' ? 'round' : null))
       .attr('pointer-events', (e) => (e.kind === 'area' ? null : 'none'))
       .order();
 
-    const outlines = this.outlinesFor(this.year);
-    this.casings
-      .selectAll<SVGPathElement, Outline>('path')
-      .data(outlines, (o) => o.code)
-      .join('path')
-      .attr('class', 'outline-casing')
-      .attr('data-code', (o) => o.code)
-      .attr('d', (o) => o.d)
-      .attr('fill', 'none')
-      .attr('stroke', SURFACE)
-      .attr('stroke-opacity', 0.9)
-      .attr('stroke-width', CASING_WIDTH)
-      .attr('stroke-linejoin', 'round');
-    this.lines
-      .selectAll<SVGPathElement, Outline>('path')
-      .data(outlines, (o) => o.code)
-      .join('path')
-      .attr('class', 'outline')
-      .attr('data-code', (o) => o.code)
-      .attr('d', (o) => o.d)
-      .attr('fill', 'none')
-      .attr('stroke', TEXT)
-      .attr('stroke-opacity', 0.35)
-      .attr('stroke-width', LINE_WIDTH)
-      .attr('stroke-linejoin', 'round');
+    if (changed.size) {
+      setTimeout(() => {
+        this.areas.selectAll<SVGPathElement, Entry>('path.is-new').classed('is-new', false);
+      }, NEW_FLASH_MS);
+    }
 
+    // Color: stroking each area in its own fill closes the hairline seams between neighbours.
+    const areasOnly = paths.filter((e) => e.kind === 'area');
+    const hatches = paths.filter((e) => e.kind === 'hatch');
+    if (duration > 0) {
+      areasOnly
+        .transition('color')
+        .duration(duration)
+        .ease(easeCubicInOut)
+        .attr('fill', (e) => e.fill)
+        .attr('stroke', (e) => e.fill)
+        .on('end', function (e) {
+          select(this).attr('fill', e.fill).attr('stroke', e.fill);
+        });
+      hatches.transition('fade').duration(duration).attr('opacity', (e) => this.opacityFor(e.display));
+    } else {
+      areasOnly.interrupt('color').attr('fill', (e) => e.fill).attr('stroke', (e) => e.fill);
+      hatches.attr('opacity', (e) => this.opacityFor(e.display));
+    }
+
+    const outlines = this.outlinesFor(this.year);
+    const drawOutlines = (g: G, cls: string, stroke: string, opacity: number, width: number) => {
+      const sel = g.selectAll<SVGPathElement, Outline>('path').data(outlines, (o) => o.code);
+      const enter = sel
+        .enter()
+        .append('path')
+        .attr('class', cls)
+        .attr('fill', 'none')
+        .attr('stroke', stroke)
+        .attr('stroke-opacity', opacity)
+        .attr('stroke-width', width)
+        .attr('stroke-linejoin', 'round')
+        .attr('vector-effect', 'non-scaling-stroke')
+        .attr('opacity', duration > 0 || this.blank ? 0 : 1);
+      if (duration > 0) {
+        sel.exit().transition('fade').duration(duration).attr('opacity', 0).remove();
+        if (!this.blank) enter.transition('fade').duration(duration).attr('opacity', 1);
+      } else {
+        sel.exit().remove();
+      }
+      enter.merge(sel).attr('data-code', (o) => o.code).attr('d', (o) => o.d);
+    };
+    drawOutlines(this.casings, 'outline-casing', SURFACE, 0.9, CASING_WIDTH);
+    drawOutlines(this.lines, 'outline', TEXT, 0.35, LINE_WIDTH);
+
+    if (this.focused) this.focus([...this.focused], duration);
     this.renderLabels();
     this.renderLegend();
   }
 
   private renderLabels(): void {
     const outlines = this.outlinesFor(this.year);
-    const shown = this.labelsOn
+    const shown = this.labelsOn && !this.blank
       ? this.labelCodes.map((code) => outlines.find((o) => o.code === code)).filter((o): o is Outline => Boolean(o))
       : [];
     const text = this.labels
@@ -398,7 +615,8 @@ export class MapStage {
       .attr('stroke-width', 3)
       .attr('stroke-linejoin', 'round')
       .attr('paint-order', 'stroke')
-      .attr('text-anchor', 'middle');
+      .attr('text-anchor', 'middle')
+      .attr('opacity', this.zoom.k > 1.3 ? 0 : 1);
     text
       .select('.label-city')
       .attr('x', (o) => o.anchor[0])
