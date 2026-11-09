@@ -7,5 +7,5 @@ const here = dirname(fileURLToPath(import.meta.url));
 const data = join(here, '..', '..', 'data');
 const pub = join(here, '..', 'public');
 mkdirSync(pub, { recursive: true });
-for (const name of ['areas.topojson', 'lineage.json']) copyFileSync(join(data, name), join(pub, name));
+for (const name of ['areas.topojson', 'states.topojson', 'lineage.json']) copyFileSync(join(data, name), join(pub, name));
 console.log('film data synced');

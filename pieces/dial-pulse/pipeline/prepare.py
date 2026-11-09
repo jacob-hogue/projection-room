@@ -153,6 +153,38 @@ def write_topojson(gdf: gpd.GeoDataFrame, path: pathlib.Path, quantization: floa
         geojson.unlink(missing_ok=True)
 
 
+def write_states(states: gpd.GeoDataFrame, path: pathlib.Path, quantization: float = QUANTIZATION,
+                 simplify_m: float = SIMPLIFY_M) -> None:
+    """Lower-48 state polygons, projected and simplified like the territories, as a TopoJSON
+    object `states` with a two-letter `state` property. The map draws their shared borders
+    as thin neutral lines under the territory boundaries."""
+    out = states[~states["iso_3166_2"].isin({"US-AK", "US-HI"})].copy()
+    out["state"] = out["iso_3166_2"].str.slice(3)
+    out = out[["state", "geometry"]].reset_index(drop=True)
+    if out.crs is None:
+        out = out.set_crs(4326)
+    out = out.to_crs(ALBERS)
+    out["geometry"] = out.geometry.apply(make_valid)
+    out["geometry"] = shapely.coverage_simplify(out.geometry.values, simplify_m, simplify_boundary=True)
+    out["geometry"] = shapely.orient_polygons(out.geometry.values, exterior_cw=False)
+    out["id"] = range(len(out))
+    path = pathlib.Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    geojson = path.with_suffix(".geojson.tmp")
+    out.to_file(geojson, driver="GeoJSON")
+    try:
+        subprocess.run(["node", str(HERE / "topo.mjs"), str(geojson), str(path), str(quantization), "0", "states"],
+                       check=True, shell=False)
+    finally:
+        geojson.unlink(missing_ok=True)
+
+
+def ne_states() -> gpd.GeoDataFrame:
+    inner = [n for n in zipfile.ZipFile(CACHE / "ne_states.zip").namelist() if n.endswith(".shp")][0]
+    states = gpd.read_file(f"/vsizip/{(CACHE / 'ne_states.zip').as_posix()}/{inner}", columns=["iso_a2", "iso_3166_2", "name"])
+    return states[states["iso_a2"] == "US"]
+
+
 def lower48_outline() -> gpd.GeoDataFrame:
     """Lower-48 states dissolved, minus the Great Lakes, in EPSG:4326. Cached as a GeoPackage."""
     cached = CACHE / "lower48_outline.gpkg"
@@ -186,6 +218,8 @@ def main() -> int:
     write_topojson(albers, out_path, QUANTIZATION)
     size = out_path.stat().st_size
     print(f"{len(albers)} territories -> {out_path} ({size:,} bytes)")
+    write_states(ne_states(), DATA / "states.topojson")
+    print(f"state lines -> {DATA / 'states.topojson'} ({(DATA / 'states.topojson').stat().st_size:,} bytes)")
     if size > 1_500_000:
         print("areas.topojson is over the 1.5 MB budget", file=sys.stderr)
         return 1

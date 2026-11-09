@@ -5,7 +5,7 @@ import { join } from 'node:path';
 
 const root = new URL('..', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
 const pieces = join(root, 'pieces');
-const served = ['areas.topojson', 'lineage.json', 'population_1950.csv'];
+const served = ['areas.topojson', 'states.topojson', 'lineage.json', 'population_1950.csv'];
 
 for (const piece of readdirSync(pieces)) {
   const data = join(pieces, piece, 'data');

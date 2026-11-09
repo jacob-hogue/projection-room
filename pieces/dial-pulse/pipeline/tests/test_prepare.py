@@ -140,3 +140,23 @@ def test_orient_makes_every_exterior_ring_counterclockwise():
             assert part.exterior.is_ccw
             assert all(not ring.is_ccw for ring in part.interiors)
     assert out.geometry.area.tolist() == pytest.approx([100.0, 96.0])
+
+
+def test_state_lines_are_interior_borders_in_albers(tmp_path):
+    """State lines for the atlas look: the lower-48 state borders, projected like the
+    territories, written as a TopoJSON with one object `states`."""
+    import json
+    from shapely.geometry import box
+    from prepare import write_states
+
+    states = gpd.GeoDataFrame(
+        {"iso_3166_2": ["US-AA", "US-BB", "US-AK"]},
+        geometry=[box(-100, 40, -95, 45), box(-95, 40, -90, 45), box(-150, 60, -140, 70)],
+        crs=4326,
+    )
+    out = tmp_path / "states.topojson"
+    write_states(states, out, quantization=1e4)
+    topo = json.loads(out.read_text(encoding="utf-8"))
+    assert "states" in topo["objects"]
+    codes = sorted(g["properties"]["state"] for g in topo["objects"]["states"]["geometries"])
+    assert codes == ["AA", "BB"]  # Alaska is not on the map

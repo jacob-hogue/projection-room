@@ -28,6 +28,8 @@ export interface StageOptions {
   height: number;
   palette: Palette;
   lineage: Lineage;
+  /** Optional state polygons (object `states`); their shared borders draw as thin neutral lines. */
+  states?: Topology;
 }
 
 export interface HoverInfo {
@@ -201,6 +203,23 @@ export class MapStage {
     this.root.append('rect').attr('class', 'water').attr('width', opts.width).attr('height', opts.height).attr('fill', WATER);
     this.view = this.root.append('g').attr('class', 'view');
     this.areas = this.view.append('g').attr('class', 'areas');
+    const statesLayer = this.view.append('g').attr('class', 'states');
+    if (opts.states) {
+      const object = opts.states.objects.states as GeometryCollection;
+      // Interior borders only: arcs shared by two different states. The coast is drawn separately.
+      const d = this.path(mesh(opts.states, object, (a, b) => a !== b)) ?? '';
+      statesLayer
+        .append('path')
+        .attr('class', 'state-line')
+        .attr('d', d)
+        .attr('fill', 'none')
+        .attr('stroke', TEXT)
+        .attr('stroke-opacity', 0.18)
+        .attr('stroke-width', 0.6)
+        .attr('stroke-linejoin', 'round')
+        .attr('vector-effect', 'non-scaling-stroke')
+        .attr('pointer-events', 'none');
+    }
     const outlines = this.view.append('g').attr('class', 'outlines');
     this.casings = outlines.append('g').attr('class', 'outline-casings');
     this.lines = outlines.append('g').attr('class', 'outline-lines');
@@ -348,13 +367,13 @@ export class MapStage {
   }
 
   /** Scale and centre (in stage units) that frame a display code's territory. */
-  private centerFor(code: string): { k: number; cx: number; cy: number } {
+  private centerFor(code: string, fill = 0.8): { k: number; cx: number; cy: number } {
     const outline = this.outlinesFor(this.year).find((o) => o.code === code);
     if (!outline) return { k: 1, cx: this.width / 2, cy: this.height / 2 };
     const [[x0, y0], [x1, y1]] = outline.bounds;
     const bw = Math.max(1, x1 - x0);
     const bh = Math.max(1, y1 - y0);
-    const k = Math.min(MAX_ZOOM, 0.8 / Math.max(bw / this.width, bh / this.height));
+    const k = Math.max(1, Math.min(MAX_ZOOM * (0.8 / fill), fill / Math.max(bw / this.width, bh / this.height)));
     return { k, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2 };
   }
 
@@ -373,9 +392,9 @@ export class MapStage {
     this.fade(this.labels.selectAll('text'), () => (zoom.k > 1.3 ? 0 : 1), duration);
   }
 
-  /** Move the camera to a display code's territory, or back to the whole map with null. */
-  zoomTo(code: string | null, duration = 0): void {
-    const c = code ? this.centerFor(code) : { k: 1, cx: this.width / 2, cy: this.height / 2 };
+  /** Move the camera to a display code's territory (filling `fill` of the stage), or back to the whole map with null. */
+  zoomTo(code: string | null, duration = 0, fill = 0.8): void {
+    const c = code ? this.centerFor(code, fill) : { k: 1, cx: this.width / 2, cy: this.height / 2 };
     this.cameraTarget = code ?? '';
     this.cameraFrom = c;
     this.applyCamera({ k: c.k, x: this.width / 2 - c.k * c.cx, y: this.height / 2 - c.k * c.cy }, duration);

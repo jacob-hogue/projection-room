@@ -90,3 +90,28 @@ describe('MapStage frame setters', () => {
     expect(svg.querySelectorAll('text.label').length).toBe(1);
   });
 });
+
+describe('MapStage atlas layers', () => {
+  test('state lines draw under the territory outlines when a states topology is given', () => {
+    const states = JSON.parse(readFileSync('tests/fixtures/states-small.topojson', 'utf8')) as Topology;
+    const el = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    document.body.appendChild(el);
+    const s = new MapStage(el, topo, { width: 600, height: 300, palette: PALETTES.signature, lineage, states });
+    const lines = el.querySelectorAll('g.states path');
+    expect(lines.length).toBe(1);
+    expect(lines[0].getAttribute('d')).toMatch(/^M/);
+    const order = [...el.querySelectorAll('g.view > g')].map((g) => g.getAttribute('class'));
+    expect(order.indexOf('states')).toBeGreaterThan(order.indexOf('areas'));
+    expect(order.indexOf('states')).toBeLessThan(order.indexOf('outlines'));
+    expect(s.state().zoom).toBe(1);
+  });
+
+  test('zoomTo accepts how much of the stage the territory should fill', () => {
+    stage.setYear(2000);
+    stage.zoomTo('718', 0);
+    const tight = stage.state().zoom;
+    stage.zoomTo('718', 0, 0.5);
+    expect(stage.state().zoom).toBeLessThan(tight);
+    expect(stage.state().zoom).toBeGreaterThan(1);
+  });
+});
