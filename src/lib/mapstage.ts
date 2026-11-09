@@ -69,6 +69,8 @@ const SURFACE = '#0f1117';
 const WATER = '#0a0c11';
 const TEXT = '#e8eaed';
 const TEXT_2 = '#8b8fa3';
+/** Translucent halo: lifts text off any fill without drawing a hard outline around it. */
+const LABEL_HALO = 'rgba(10, 12, 17, 0.72)';
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const SANS = '"DM Sans", system-ui, sans-serif';
 const MONO = '"JetBrains Mono", ui-monospace, monospace';
@@ -747,29 +749,33 @@ export class MapStage {
       })
       .attr('class', 'label')
       .attr('x', (o) => o.anchor[0])
-      .attr('y', (o) => o.anchor[1] - 2)
+      // Small territories (a city on a national map) get their label above, not on top.
+      .attr('y', (o) => (isSmall(o) ? o.bounds[0][1] - 16 : o.anchor[1] - 2))
       .attr('fill', TEXT)
-      .attr('stroke', SURFACE)
-      .attr('stroke-width', 3)
+      .attr('stroke', LABEL_HALO)
+      .attr('stroke-width', 2.5)
       .attr('stroke-linejoin', 'round')
       .attr('paint-order', 'stroke')
       .attr('text-anchor', 'middle')
+      .attr('letter-spacing', '0.01em')
       .attr('opacity', this.zoom.k > 1.3 ? 0 : 1);
     text
       .select('.label-city')
       .attr('x', (o) => o.anchor[0])
       .attr('font-family', SANS)
-      .attr('font-size', 12)
+      .attr('font-size', 13)
       .attr('font-weight', 600)
       .text((o) => LABEL_CITIES[o.code] ?? '');
     text
       .select('.label-code')
       .attr('x', (o) => o.anchor[0])
-      .attr('dy', '1.15em')
+      .attr('dy', '1.2em')
       .attr('font-family', MONO)
       .attr('font-size', 11)
       .attr('font-weight', 500)
       .attr('fill', TEXT_2)
+      .attr('stroke', LABEL_HALO)
+      .attr('stroke-width', 2)
       .text((o) => o.code);
   }
 
@@ -821,6 +827,12 @@ export class MapStage {
       .attr('text-anchor', this.mode === 'middle' ? 'start' : 'middle')
       .text((d) => d.label ?? '');
   }
+}
+
+/** A territory too small to hold its own label at national scale. */
+function isSmall(o: Outline): boolean {
+  const [[x0, y0], [x1, y1]] = o.bounds;
+  return x1 - x0 < 60 || y1 - y0 < 40;
 }
 
 function ringArea(ring: number[][]): number {

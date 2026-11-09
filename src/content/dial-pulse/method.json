@@ -1,0 +1,31 @@
+{
+  "intro": [
+    "Everything on this page is rebuilt by one command from public data. The pipeline lives in the repository under pieces/dial-pulse/pipeline, with its tests.",
+    "The map's geometry is the set of area code territories as they stood in October 2015. Every year back to 1947 is reconstructed by tracing each 2015 territory up its lineage (which code it was split from, and when) to the code in effect that year, then dissolving neighbours that shared a code. Codes added since 2015 are overlays, so the year slider runs to 2025 by adding codes to existing territories; the boundaries themselves have not moved since the last split in 2007."
+  ],
+  "steps": [
+    { "name": "Download", "detail": "2015 polygons, Natural Earth coast and lakes, Census counties, NANPA's code report, the 1950 county table" },
+    { "name": "Clean", "detail": "repair rings, drop overlays, clip to the lower 48, make the polygons one coverage so shared edges match, simplify at 1.5 km" },
+    { "name": "Trace", "detail": "walk the lineage table for every territory and year; dissolve by the code in effect; count pulses (digits summed, 0 as 10)" },
+    { "name": "Check", "detail": "the count of codes in service each year against NANPA; 77 originals cover the lower 48; every ring closes" },
+    { "name": "Render", "detail": "one map engine draws the explore map, the poster and every frame of the film" }
+  ],
+  "pulses": "A code's clicks are its digits summed, with 0 counted as ten: 212 is 2 + 1 + 2 = 5, 605 is 6 + 10 + 5 = 21. The 1950 population of each 1947 territory is the sum of the 1950 Census counts of the counties whose centre falls inside it; the chart below shows the two together for all 77 United States originals. The territories add up to 150.7 million people, the Census count for the 48 states.",
+  "sources": [
+    { "name": "Area code polygons", "detail": "North America Telephone Area Code Boundaries, UCLA Geoportal, October 14, 2015; republished as 1ec5/nanp-boundaries on GitHub. Public domain.", "href": "https://github.com/1ec5/nanp-boundaries" },
+    { "name": "The 1947 plan", "detail": "Original North American area codes, Wikipedia, with the per-code articles for split and overlay years. Read November 2026.", "href": "https://en.wikipedia.org/wiki/Original_North_American_area_codes" },
+    { "name": "Codes in service by year", "detail": "NANPA NPA report (daily CSV), in-service dates for every geographic code. Read November 7, 2026.", "href": "https://reports.nanpa.com/public/npa_report.csv" },
+    { "name": "Coast and lakes", "detail": "Natural Earth 1:10m states and provinces, and lakes. Public domain.", "href": "https://www.naturalearthdata.com/" },
+    { "name": "Counties", "detail": "Census Bureau cartographic boundary files, 2024, 1:500k. Public domain.", "href": "https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.html" },
+    { "name": "1950 population", "detail": "Population of Counties by Decennial Census: 1900 to 1990, Richard L. Forstall, Census Bureau, 1995, in the CSV copy published by NBER.", "href": "https://www.nber.org/research/data/census-us-decennial-county-population-data-1900-1990" }
+  ],
+  "gaps": [
+    "Geometry is frozen at October 2015. The 1947 map is rebuilt from today's territories, so where a 1947 boundary ran along a line no later code followed, the 1947 shape is approximate. Three codes split from two parents each (607, 608 and 806) are assigned wholly to their main parent.",
+    "The 2015 source is not a clean coverage: neighbours' shared edges differed by up to a few kilometres. Slivers narrower than 3 km were merged into the neighbour with the longer shared border before drawing.",
+    "Connecticut's 1950 population is the state total, because the 2024 county file holds planning regions the 1950 table does not know. Counties created after 1950 are counted in the county they came from.",
+    "Canada's nine original codes are in the lineage table but not on the map, which covers the lower 48 states. Alaska and Hawaii had no codes in 1947.",
+    "The explanation that short codes went to the busiest places to save switching time is the usual account. Its status as the stated reason for the 1947 assignments is disputed; the pattern in the assignments and the 1950 populations is what the page shows."
+  ],
+  "credit": "The format, a map of an everyday numbering rule with a short film and the method published beside it, follows Alan McConchie's Voronoi Highways (2025). The map engine, the data pipeline and the film are this piece's own.",
+  "repo": "https://github.com/jacob-hogue/projection-room"
+}

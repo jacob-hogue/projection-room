@@ -78,6 +78,17 @@ export const Film: React.FC<Props> = ({ offsetSeconds = 0 }) => {
         if (a) next[`${c.from}:${c.code}`] = a;
       }
     }
+    // Flip a callout's offset when its label would leave the stage.
+    for (const c of CALLOUTS) {
+      const a = next[`${c.from}:${c.code}`];
+      if (!a) continue;
+      const labelW = 300;
+      const labelH = 70;
+      if (c.dx >= 0 && a.x + c.dx + labelW > STAGE_W) c.dx = -Math.abs(c.dx);
+      else if (c.dx < 0 && a.x + c.dx - labelW < 0) c.dx = Math.abs(c.dx);
+      if (a.y + c.dy - labelH / 2 < 0) c.dy = Math.abs(c.dy);
+      else if (a.y + c.dy + labelH / 2 > STAGE_H) c.dy = -Math.abs(c.dy);
+    }
     setAnchors(next);
   }, [t, ready]);
 
@@ -154,7 +165,7 @@ export const Film: React.FC<Props> = ({ offsetSeconds = 0 }) => {
           );
         })}
         {year !== null ? (
-          <div style={{ position: 'absolute', right: 28, bottom: 24, textAlign: 'right', fontFamily: MONO }}>
+          <div style={{ position: 'absolute', right: 28, top: 22, textAlign: 'right', fontFamily: MONO }}>
             <div style={{ fontSize: 72, fontWeight: 500, lineHeight: 1, letterSpacing: '-0.02em' }}>{year}</div>
             <div style={{ fontSize: 20, color: TEXT_2, marginTop: 6 }}>{count} area codes</div>
           </div>

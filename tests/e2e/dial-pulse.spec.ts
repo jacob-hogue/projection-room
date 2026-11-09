@@ -7,7 +7,7 @@ test('the page is film, context, story, then the explore map', async ({ page }) 
   await expect(page.locator('h1')).toHaveText('The dial-pulse map');
   await expect(page.locator('.film video, .film img.film-poster')).toHaveCount(1);
   await expect(page.locator('.intro-prose h2')).toHaveText('Before there were area codes');
-  await expect(page.locator('.story .step')).toHaveCount(10);
+  await expect(page.locator('.essay .part')).toHaveCount(8);
   // The explore map is built only when the reader reaches it.
   await expect(page.locator('#stage path.area')).toHaveCount(0);
   await page.locator('#explore').scrollIntoViewIfNeeded();
@@ -38,7 +38,7 @@ test('the story renders without JavaScript', async ({ browser }) => {
   const ctx = await browser.newContext({ javaScriptEnabled: false });
   const page = await ctx.newPage();
   await page.goto(PAGE);
-  await expect(page.locator('.story .step')).toHaveCount(10);
-  await expect(page.locator('.story .step').nth(1).locator('h3')).toHaveText('Five clicks to New York');
+  await expect(page.locator('.essay .part')).toHaveCount(8);
+  await expect(page.locator('.essay .part').first().locator('h2')).toHaveText('Five clicks to New York');
   await ctx.close();
 });

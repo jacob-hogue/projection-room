@@ -3,10 +3,12 @@ import { existsSync } from 'node:fs';
 import Base from '../../layouts/Base.astro';
 import ExploreSection from '../../components/ExploreSection.astro';
 import FilmSection from '../../components/FilmSection.astro';
+import MethodSection from '../../components/MethodSection.astro';
 import PieceIntro from '../../components/PieceIntro.astro';
 import StorySection from '../../components/StorySection.astro';
-import chapters from '../../content/dial-pulse/chapters.json';
+import story from '../../content/dial-pulse/story.json';
 import intro from '../../content/dial-pulse/intro.json';
+import method from '../../content/dial-pulse/method.json';
 
 const base = import.meta.env.BASE_URL;
 const title = 'The dial-pulse map';
@@ -14,7 +16,6 @@ const rule = 'In 1947 the biggest cities got the area codes that were fastest to
 const filmExists = existsSync(new URL('../../../public/dial-pulse/film.mp4', import.meta.url));
 const STAGE_W = 1200;
 const STAGE_H = 760;
-const steps = chapters.filter((c) => !('explore' in c && c.explore)).map((c) => ({ id: c.id, heading: c.heading, body: c.body }));
 ---
 <Base title={title} description={rule}>
   <section class="opening">
@@ -34,8 +35,9 @@ const steps = chapters.filter((c) => !('explore' in c && c.explore)).map((c) => 
     downloadName="the-dial-pulse-map.mp4"
   />
   <PieceIntro heading={intro.heading} paragraphs={intro.paragraphs} />
-  <StorySection steps={steps} />
+  <StorySection parts={story} />
   <ExploreSection stageWidth={STAGE_W} stageHeight={STAGE_H} />
+  <MethodSection {...method} />
 </Base>
 
 <script>

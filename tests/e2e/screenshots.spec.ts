@@ -14,7 +14,7 @@ for (const size of sizes) {
     const shot = (name: string, fullPage = false) => page.screenshot({ path: `tests/e2e/screenshots/${size.name}-${name}.png`, fullPage });
     await page.goto('/projection-room/dial-pulse/');
     await shot('01-top');
-    await page.locator('.story').scrollIntoViewIfNeeded();
+    await page.locator('.essay').scrollIntoViewIfNeeded();
     await shot('02-story');
     await page.locator('#explore').scrollIntoViewIfNeeded();
     await page.locator('#stage path.area').first().waitFor({ state: 'attached', timeout: 15000 });

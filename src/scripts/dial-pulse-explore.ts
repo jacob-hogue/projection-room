@@ -2,16 +2,19 @@
  * The explore map at the end of the dial-pulse page: data, the stage, controls, hover
  * readout and the hash state. The stage is built only when the section comes into view.
  */
+import { csvParse } from 'd3';
 import type { Topology } from 'topojson-specification';
 import { readHash, writeHash, type HashState } from '../lib/hashstate';
 import { codesInEffect, loadLineage, originalOf, type Lineage } from '../lib/lineage';
 import { MapStage, YEAR_MAX, YEAR_MIN, type HoverInfo, type Mode } from '../lib/mapstage';
-import { PALETTES, type PaletteName } from '../lib/palette';
+import { PALETTES, pulseColor, type PaletteName } from '../lib/palette';
+import { drawScatter } from '../lib/scatter';
 
 const STAGE_W = 1200;
 const STAGE_H = 760;
 
 export function mountExplore(): void {
+  mountScatter();
   const section = document.getElementById('explore');
   if (!section) return;
   const start = () => void build();
@@ -34,6 +37,35 @@ export function mountExplore(): void {
     { rootMargin: '600px 0px' },
   );
   io.observe(section);
+}
+
+/** The clicks-against-population chart in the method section, drawn when it comes into view. */
+function mountScatter(): void {
+  const host = document.querySelector<HTMLElement>('#method [data-scatter]');
+  if (!host) return;
+  const base = import.meta.env.BASE_URL;
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const draw = () =>
+    fetch(`${base}dial-pulse/population_1950.csv`)
+      .then((r) => r.text())
+      .then((text) => {
+        const rows = csvParse(text, (d) => ({ code: String(d.code), population_1950: Number(d.population_1950) }));
+        drawScatter(host, rows, (clicks) => pulseColor(PALETTES.signature, clicks), reduced);
+      });
+  if (!('IntersectionObserver' in window)) {
+    void draw();
+    return;
+  }
+  const io = new IntersectionObserver(
+    (entries) => {
+      if (entries.some((e) => e.isIntersecting)) {
+        io.disconnect();
+        void draw();
+      }
+    },
+    { rootMargin: '400px 0px' },
+  );
+  io.observe(host);
 }
 
 async function build(): Promise<void> {

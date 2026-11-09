@@ -1,0 +1,42 @@
+[
+  {
+    "id": "new-york",
+    "heading": "Five clicks to New York",
+    "body": "In October 1947 AT&T published the first area codes. New York City got 212: two, one, two, five clicks, the fastest code on the plan. Its territory held 7.9 million people in 1950, more than any other."
+  },
+  {
+    "id": "fastest-four",
+    "heading": "The fastest four",
+    "body": "Chicago's 312 and Los Angeles's 213 took six clicks. Detroit's 313 and Pittsburgh's 412 took seven. The six codes that cost seven clicks or fewer served territories with a median 1950 population of 4.3 million; the big industrial cities of 1947 sit at the bright end of the scale."
+  },
+  {
+    "id": "originals",
+    "heading": "Seventy-seven codes",
+    "body": "The plan gave the United States 77 codes and Canada nine. Most of the country took between twelve and twenty clicks to reach, and the 42 codes in that band served a median population of 1.6 million."
+  },
+  {
+    "id": "slow-end",
+    "heading": "The slow end",
+    "body": "South Dakota's 605, South Carolina's 803 and North Carolina's 704 each took 21 clicks, four times New York. South Dakota had 651,000 people in 1950. But 704 covered all of North Carolina, 4.1 million people, so the slow codes went to whole states rather than simply to small populations. The ten codes at 20 or 21 clicks served a median population of 666,000."
+  },
+  {
+    "id": "middle",
+    "heading": "A 0 in the middle",
+    "body": "The middle digit was a flag. Only area codes had a 0 or 1 there, which let the switching equipment tell an area code from a local exchange. A 0 meant one code for the whole state, like Florida's 305. A 1 meant the state was split, like the four Texas codes. Of the 77 United States codes, 35 covered whole states."
+  },
+  {
+    "id": "first-splits",
+    "heading": "The first splits",
+    "body": "The format allowed 152 codes. The first split came in 1948, when 219 was cut out of Indiana's 317. By 1960 the country carried 101 codes, and by 1990 only 114: the plan held for forty years."
+  },
+  {
+    "id": "fracture",
+    "heading": "Running out of numbers",
+    "body": "Then growth used it up. Territories kept splitting, and from 1992 new codes were laid over old ones instead of dividing them; 917 over Manhattan was the first. The count went from 121 codes in 1992 to 233 in 2000. The last boundary split was 575 out of New Mexico's 505 in 2007. Every code since has been an overlay, so the boundaries on the map have not moved since."
+  },
+  {
+    "id": "today",
+    "heading": "Today",
+    "body": "In 2025 the lower 48 states carry 367 codes on 237 territories. Eleven territories carry three or more, and Houston's 713 carries five. The 1947 shape still shows through: 212 is still Manhattan, 313 is still Detroit."
+  }
+]
