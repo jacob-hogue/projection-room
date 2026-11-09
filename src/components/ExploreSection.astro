@@ -1,0 +1,32 @@
+---
+/** The interactive map and its controls, at the end of the page. */
+import ExploreControls from './ExploreControls.astro';
+
+interface Props {
+  stageWidth: number;
+  stageHeight: number;
+}
+const { stageWidth, stageHeight } = Astro.props;
+---
+<section class="explore" id="explore" aria-labelledby="explore-heading">
+  <h2 id="explore-heading">Explore the data</h2>
+  <p class="explore-lead">Pick a palette, drag the year, and switch the coloring between clicks, middle digit and the year each code arrived. Hover any territory for its codes and its 1947 ancestor. The view lives in the link, so you can copy one and send it.</p>
+  <div class="stage-frame" id="stage-frame">
+    <svg id="stage" viewBox={`0 0 ${stageWidth} ${stageHeight}`} width={stageWidth} height={stageHeight} role="img" aria-labelledby="stage-title">
+      <title id="stage-title">Area codes of the lower 48 states, colored by the clicks it took to dial them</title>
+    </svg>
+  </div>
+  <p class="stage-status mono" id="stage-status" aria-live="polite"></p>
+  <ExploreControls />
+</section>
+
+<style>
+  .explore { max-width: 1200px; margin: 0 auto; padding: 40px 24px 24px; }
+  .explore h2 { font-size: clamp(24px, 2.6vw, 34px); margin-bottom: 10px; }
+  .explore-lead { font-size: 17px; line-height: 1.65; max-width: 72ch; margin-bottom: 20px; }
+  .stage-frame { position: relative; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); background: #0a0c11; }
+  #stage { display: block; width: 100%; height: auto; }
+  .stage-status { min-height: 20px; margin-top: 10px; font-size: 12px; color: var(--text-2); }
+  .explore :global(.controls) { display: grid; }
+  .explore :global(.controls[hidden]) { display: grid; }
+</style>

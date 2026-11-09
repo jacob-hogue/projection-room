@@ -1,0 +1,33 @@
+---
+/** The film, embedded with its poster, plus a download link. */
+interface Props {
+  src: string | null;
+  poster: string;
+  title: string;
+  posterAlt: string;
+  downloadName: string;
+}
+const { src, poster, title, posterAlt, downloadName } = Astro.props;
+---
+<section class="film" aria-label="The film">
+  {src ? (
+    <video class="film-video" controls playsinline preload="metadata" poster={poster} width="1920" height="1080" aria-label={title}>
+      <source src={src} type="video/mp4" />
+    </video>
+  ) : (
+    <img class="film-poster" src={poster} alt={posterAlt} width="1600" height="1000" decoding="async" fetchpriority="high" />
+  )}
+  {src ? (
+    <p class="film-meta mono">
+      <span>56 seconds, silent, captions in the frame.</span>
+      <a href={src} download={downloadName}>Download the film</a>
+    </p>
+  ) : null}
+</section>
+
+<style>
+  .film { max-width: 1200px; margin: 0 auto; padding: 8px 24px 0; }
+  .film-video, .film-poster { display: block; width: 100%; height: auto; border-radius: 12px; border: 1px solid var(--border); background: #0a0c11; }
+  .film-meta { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: 10px; font-size: 12px; color: var(--text-2); }
+  .film-meta a { color: var(--accent); }
+</style>

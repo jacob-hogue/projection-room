@@ -1,0 +1,36 @@
+---
+/** The story as plain reading: one short section per beat of the film. */
+export interface StoryStep {
+  id: string;
+  heading: string;
+  body: string;
+}
+interface Props {
+  steps: StoryStep[];
+}
+const { steps } = Astro.props;
+---
+<section class="story" aria-labelledby="story-heading">
+  <h2 id="story-heading">The story, step by step</h2>
+  <ol class="steps">
+    {steps.map((s, i) => (
+      <li class="step" id={`step-${s.id}`}>
+        <span class="step-index mono">{String(i + 1).padStart(2, '0')}</span>
+        <div>
+          <h3>{s.heading}</h3>
+          <p>{s.body}</p>
+        </div>
+      </li>
+    ))}
+  </ol>
+</section>
+
+<style>
+  .story { max-width: 1200px; margin: 0 auto; padding: 40px 24px 16px; }
+  .story h2 { font-size: clamp(24px, 2.6vw, 34px); margin-bottom: 22px; }
+  .steps { list-style: none; display: grid; gap: 22px; max-width: 72ch; }
+  .step { display: grid; grid-template-columns: 36px 1fr; gap: 14px; align-items: baseline; }
+  .step-index { font-size: 12px; color: var(--accent); letter-spacing: 0.08em; }
+  .step h3 { font-size: 20px; margin-bottom: 6px; }
+  .step p { font-size: 17px; line-height: 1.65; color: var(--text-2); }
+</style>

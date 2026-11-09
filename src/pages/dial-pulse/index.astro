@@ -1,33 +1,52 @@
 ---
 import { existsSync } from 'node:fs';
 import Base from '../../layouts/Base.astro';
-import PieceOpening from '../../components/PieceOpening.astro';
-import ChapterRail, { type Chapter } from '../../components/ChapterRail.astro';
+import ExploreSection from '../../components/ExploreSection.astro';
+import FilmSection from '../../components/FilmSection.astro';
 import PieceIntro from '../../components/PieceIntro.astro';
+import StorySection from '../../components/StorySection.astro';
 import chapters from '../../content/dial-pulse/chapters.json';
 import intro from '../../content/dial-pulse/intro.json';
 
 const base = import.meta.env.BASE_URL;
 const title = 'The dial-pulse map';
 const rule = 'In 1947 the biggest cities got the area codes that were fastest to dial. Every point is colored by how many clicks it took.';
-const loopExists = existsSync(new URL('../../../public/dial-pulse/loop.mp4', import.meta.url));
+const filmExists = existsSync(new URL('../../../public/dial-pulse/film.mp4', import.meta.url));
 const STAGE_W = 1200;
 const STAGE_H = 760;
+const steps = chapters.filter((c) => !('explore' in c && c.explore)).map((c) => ({ id: c.id, heading: c.heading, body: c.body }));
 ---
 <Base title={title} description={rule}>
-  <PieceOpening
-    title={title}
-    rule={rule}
+  <section class="opening">
+    <h1>{title}</h1>
+    <p class="rule">{rule}</p>
+    <ul class="facts mono">
+      <li>Area code polygons: October 2015</li>
+      <li>Method: trace each code back, dissolve, recolor</li>
+      <li>November 2026</li>
+    </ul>
+  </section>
+  <FilmSection
+    src={filmExists ? `${base}dial-pulse/film.mp4` : null}
     poster={`${base}dial-pulse/poster.png`}
+    title={`${title}, the film`}
     posterAlt="The 1947 area code map of the lower 48 states, each territory colored by the clicks it took to dial, gold for the fastest and plum for the slowest."
-    loop={loopExists ? `${base}dial-pulse/loop.mp4` : null}
-    facts={['Area code polygons: October 2015', 'Method: trace each code back, dissolve, recolor', 'November 2026']}
+    downloadName="the-dial-pulse-map.mp4"
   />
   <PieceIntro heading={intro.heading} paragraphs={intro.paragraphs} />
-  <ChapterRail chapters={chapters as Chapter[]} stageWidth={STAGE_W} stageHeight={STAGE_H} />
+  <StorySection steps={steps} />
+  <ExploreSection stageWidth={STAGE_W} stageHeight={STAGE_H} />
 </Base>
 
 <script>
-  import { mountDialPulse } from '../../scripts/dial-pulse-page';
-  mountDialPulse();
+  import { mountExplore } from '../../scripts/dial-pulse-explore';
+  mountExplore();
 </script>
+
+<style>
+  .opening { max-width: 1200px; margin: 0 auto; padding: 56px 24px 20px; }
+  .opening h1 { font-size: clamp(34px, 5vw, 60px); margin-bottom: 14px; }
+  .rule { font-size: clamp(17px, 1.6vw, 21px); color: var(--text-2); line-height: 1.5; max-width: 60ch; }
+  .facts { display: flex; flex-wrap: wrap; gap: 8px 28px; list-style: none; margin-top: 16px; font-size: 12px; color: var(--text-2); letter-spacing: 0.02em; }
+  .facts li::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-right: 8px; vertical-align: middle; }
+</style>
