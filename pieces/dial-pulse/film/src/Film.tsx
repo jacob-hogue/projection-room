@@ -66,7 +66,7 @@ function sceneAt(t: number): Scene {
   if (t < S.present) {
     const year = yearAt(t);
     let focus: string[] | null = null;
-    let dim = 0;
+    let dim = 1; // no event: full brightness; events dim the rest in and out
     if (t >= RUN.split1948 && t < RUN.runTo1992) {
       focus = ['219'];
       dim = Math.min(seg(t, RUN.split1948, RUN.split1948 + 0.5), 1 - seg(t, RUN.runTo1992 - 0.5, RUN.runTo1992));
@@ -121,7 +121,7 @@ export const Film: React.FC<Props> = ({ offsetSeconds = 0 }) => {
       ]);
       if (cancelled || !svgRef.current) return;
       const lineage = loadLineage(lineageJson);
-      const stage = new MapStage(svgRef.current, topo, { width: MAP.width, height: MAP.height, palette: PALETTES.signature, lineage, states });
+      const stage = new MapStage(svgRef.current, topo, { width: MAP.width, height: MAP.height, palette: PALETTES.signature, lineage, states, flashNew: false });
       await stage.warm();
       stageRef.current = stage;
       usRef.current = new Set(stage.territories().map((n) => originalOf(n, lineage)));

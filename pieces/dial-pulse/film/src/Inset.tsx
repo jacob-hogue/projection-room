@@ -29,7 +29,7 @@ export const Inset: React.FC<Props> = ({ topo, states, lineage, year, mode, focu
 
   useLayoutEffect(() => {
     if (!ref.current || stage) return;
-    const s = new MapStage(ref.current, topo, { width: INSET.width, height: INSET.height, palette: PALETTES.signature, lineage, states });
+    const s = new MapStage(ref.current, topo, { width: INSET.width, height: INSET.height, palette: PALETTES.signature, lineage, states, flashNew: false });
     setStage(s);
   }, [topo, states, lineage, stage]);
 

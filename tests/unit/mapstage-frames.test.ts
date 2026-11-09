@@ -115,3 +115,14 @@ describe('MapStage atlas layers', () => {
     expect(stage.state().zoom).toBeGreaterThan(1);
   });
 });
+
+describe('MapStage frame-driven rendering', () => {
+  test('flashNew false never marks changed territories, so frames are deterministic', () => {
+    const el = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    document.body.appendChild(el);
+    const s = new MapStage(el, topo, { width: 600, height: 300, palette: PALETTES.signature, lineage, flashNew: false });
+    s.setYear(1947, 0);
+    s.setYear(1990, 0);
+    expect(el.querySelectorAll('path.area.is-new').length).toBe(0);
+  });
+});

@@ -30,6 +30,8 @@ export interface StageOptions {
   lineage: Lineage;
   /** Optional state polygons (object `states`); their shared borders draw as thin neutral lines. */
   states?: Topology;
+  /** Flash a light outline on territories whose code just changed. Off for frame-by-frame rendering. */
+  flashNew?: boolean;
 }
 
 export interface HoverInfo {
@@ -144,6 +146,7 @@ export class MapStage {
   private readonly outlineCache = new Map<number, Outline[]>();
   private readonly labelCodes: string[];
   private palette: Palette;
+  private readonly flashNew: boolean;
   private year = YEAR_MIN;
   private mode: Mode = 'pulses';
   private labelsOn = false;
@@ -162,6 +165,7 @@ export class MapStage {
     this.topology = topology;
     this.lineage = opts.lineage;
     this.palette = opts.palette;
+    this.flashNew = opts.flashNew ?? true;
     this.width = opts.width;
     this.height = opts.height;
 
@@ -649,7 +653,7 @@ export class MapStage {
     for (const e of entries) {
       if (e.kind !== 'area') continue;
       const prev = this.lastDisplay.get(e.poly.npa);
-      if (prev !== undefined && prev !== e.display) changed.add(e.poly.npa);
+      if (this.flashNew && prev !== undefined && prev !== e.display) changed.add(e.poly.npa);
       this.lastDisplay.set(e.poly.npa, e.display);
     }
 
