@@ -63,6 +63,18 @@ describe('MapStage motion', () => {
     for (const npa of ['212', '718', '516']) expect(area(npa).getAttribute('opacity')).toBe('1');
   });
 
+  test('show brings named territories in while the rest stay blank', async () => {
+    stage.setYear(2000);
+    stage.setBlank(true, 0);
+    await stage.show(['718'], { step: 0, duration: 0 });
+    expect(area('718').getAttribute('opacity')).toBe('1');
+    expect(area('212').getAttribute('opacity')).toBe('0');
+    expect(svg.getAttribute('data-blank')).toBe('true');
+    await stage.show(['212'], { step: 5, duration: 10 });
+    expect(area('212').getAttribute('opacity')).toBe('1');
+    expect(area('516').getAttribute('opacity')).toBe('0');
+  });
+
   test('setYear with a duration tweens the fill and lands on the exact color', async () => {
     stage.setYear(1947, 0);
     const before = area('718').getAttribute('fill');

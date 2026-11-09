@@ -20,6 +20,7 @@
     "astro": "^5.18.2",
     "culori": "^4.0.2",
     "d3": "^7.9.2",
+    "d3-transition": "^3.0.1",
     "polylabel": "^2.1.0",
     "topojson-client": "^3.1.0"
   },

@@ -38,3 +38,6 @@ __pycache__/
 public/*/areas.topojson
 public/*/lineage.json
 tests/e2e/screenshots/
+
+# Piece data copied into public/
+public/*/population_1950.csv

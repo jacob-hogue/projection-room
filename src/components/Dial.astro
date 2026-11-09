@@ -1,0 +1,50 @@
+---
+/** A rotary dial. src/lib/dial.ts turns the finger plate and adds one mark per click. */
+interface Props {
+  number: string;
+}
+const { number } = Astro.props;
+const holes = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
+// Hole i sits 30 degrees further round than the last, starting 60 degrees from the stop.
+const angleOf = (i: number) => -(60 + i * 30);
+const R = 70;
+---
+<div class="dial-wrap" data-dial={number}>
+  <svg class="dial" viewBox="-100 -100 200 200" width="200" height="200" role="img" aria-label={`A rotary dial dialing ${number}`}>
+    <circle r="96" fill="#151823" stroke="rgba(255,255,255,0.08)" />
+    <g class="dial-numbers">
+      {holes.map((h, i) => {
+        const a = (angleOf(i) * Math.PI) / 180;
+        return <text x={R * Math.cos(a)} y={R * Math.sin(a)} text-anchor="middle" dominant-baseline="central">{h}</text>;
+      })}
+    </g>
+    <g class="dial-plate">
+      <circle r="88" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="2" />
+      {holes.map((_, i) => {
+        const a = (angleOf(i) * Math.PI) / 180;
+        return <circle cx={R * Math.cos(a)} cy={R * Math.sin(a)} r="13" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.5" />;
+      })}
+    </g>
+    <circle r="26" fill="#0f1117" stroke="rgba(255,255,255,0.1)" />
+    <path class="dial-stop" d="M 96 -4 L 72 -22 L 76 -4 Z" fill="#4ade80" />
+  </svg>
+  <div class="dial-side">
+    <div class="dial-number mono">{number}</div>
+    <div class="dial-clicks" aria-label="Clicks"></div>
+    <div class="dial-readout mono" aria-live="polite"></div>
+  </div>
+</div>
+
+<style>
+  .dial-wrap { display: flex; align-items: center; gap: 22px; margin-top: 18px; flex-wrap: wrap; }
+  .dial { display: block; flex: none; }
+  .dial-numbers text { font: 500 13px var(--mono); fill: var(--text-2); }
+  .dial-plate { transform-origin: 0 0; transform-box: view-box; }
+  .dial-side { display: grid; gap: 8px; min-width: 150px; }
+  .dial-number { font-size: 28px; color: var(--text-1); letter-spacing: 0.12em; }
+  .dial-clicks { display: flex; gap: 5px; flex-wrap: wrap; min-height: 10px; max-width: 170px; }
+  .dial-clicks :global(.click) { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); animation: click-in 180ms ease-out; }
+  .dial-readout { font-size: 12px; color: var(--text-2); min-height: 16px; }
+  @keyframes click-in { from { transform: scale(0.3); opacity: 0; } to { transform: none; opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .dial-clicks :global(.click) { animation: none; } }
+</style>

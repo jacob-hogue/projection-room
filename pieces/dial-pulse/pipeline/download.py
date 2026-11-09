@@ -23,6 +23,7 @@ SOURCES = {
     "ne_lakes.zip": "https://naciscdn.org/naturalearth/10m/physical/ne_10m_lakes.zip",
     "cb_2024_us_county_500k.zip": "https://www2.census.gov/geo/tiger/GENZ2024/shp/cb_2024_us_county_500k.zip",
     "npa_report.csv": "https://reports.nanpa.com/public/npa_report.csv",
+    "cencounts.csv": "https://data.nber.org/census/population/cencounts/cencounts.csv",
 }
 
 

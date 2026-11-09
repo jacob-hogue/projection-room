@@ -1,13 +1,20 @@
 ---
 /** The pinned map on the left and the chapters that drive it on the right. */
 import ExploreControls from './ExploreControls.astro';
+import Dial from './Dial.astro';
 
+export interface Beat {
+  at: number;
+  do: 'show' | 'zoom' | 'focus' | 'callout' | 'callouts' | 'reveal' | 'play';
+  [key: string]: unknown;
+}
 export interface Chapter {
   id: string;
   heading: string;
   body: string;
+  widget?: { type: 'dial'; number: string } | { type: 'ruler'; rows: { label: string; clicks: number }[] } | { type: 'scatter' };
   state: { year: number; mode: 'pulses' | 'middle' | 'year'; labels: boolean; blank?: boolean };
-  play?: { from: number; to: number; seconds: number };
+  beats?: Beat[];
   explore?: boolean;
 }
 interface Props {
@@ -16,12 +23,17 @@ interface Props {
   stageHeight: number;
 }
 const { chapters, stageWidth, stageHeight } = Astro.props;
+const hasPlay = (c: Chapter) => c.beats?.some((b) => b.do === 'play') ?? false;
 ---
 <section class="rail" id="rail">
   <div class="stage-wrap" id="stage-wrap">
-    <svg id="stage" viewBox={`0 0 ${stageWidth} ${stageHeight}`} width={stageWidth} height={stageHeight} role="img" aria-labelledby="stage-title">
-      <title id="stage-title">Area codes of the lower 48 states, colored by the clicks it took to dial them</title>
-    </svg>
+    <div class="stage-frame" id="stage-frame">
+      <svg id="stage" viewBox={`0 0 ${stageWidth} ${stageHeight}`} width={stageWidth} height={stageHeight} role="img" aria-labelledby="stage-title">
+        <title id="stage-title">Area codes of the lower 48 states, colored by the clicks it took to dial them</title>
+      </svg>
+      <div class="callouts" id="callouts" aria-live="polite"></div>
+      <div class="year-badge mono" id="year-badge" hidden><span class="year-badge-year" data-year></span><span class="year-badge-count" data-count></span></div>
+    </div>
     <p class="stage-status mono" id="stage-status" aria-live="polite"></p>
     <ExploreControls />
   </div>
@@ -35,13 +47,29 @@ const { chapters, stageWidth, stageHeight } = Astro.props;
         data-mode={c.state.mode}
         data-labels={String(c.state.labels)}
         data-blank={c.state.blank ? 'true' : undefined}
-        data-play={c.play ? JSON.stringify(c.play) : undefined}
+        data-beats={c.beats ? JSON.stringify(c.beats) : undefined}
+        data-widget={c.widget ? JSON.stringify(c.widget) : undefined}
         data-explore={c.explore ? 'true' : undefined}
       >
         <span class="chapter-index mono">{String(i + 1).padStart(2, '0')}</span>
         <h2>{c.heading}</h2>
         <p>{c.body}</p>
-        {c.play ? <p class="counter mono" data-counter aria-live="off"></p> : null}
+        {c.widget?.type === 'dial' ? <Dial number={c.widget.number} /> : null}
+        {c.widget?.type === 'ruler' ? (
+          <div class="ruler" aria-label="Clicks compared">
+            {c.widget.rows.map((r) => (
+              <div class="ruler-row">
+                <span class="ruler-label mono">{r.label}</span>
+                <span class="ruler-dots" aria-label={`${r.clicks} clicks`}>
+                  {Array.from({ length: r.clicks }).map(() => <span class="dot"></span>)}
+                </span>
+                <span class="ruler-count mono">{r.clicks}</span>
+              </div>
+            ))}
+          </div>
+        ) : null}
+        {c.widget?.type === 'scatter' ? <div class="scatter" id="scatter" data-scatter></div> : null}
+        {hasPlay(c) ? <p class="counter mono" data-counter aria-live="off"></p> : null}
       </li>
     ))}
   </ol>
@@ -57,29 +85,61 @@ const { chapters, stageWidth, stageHeight } = Astro.props;
   .rail[data-explore="true"] { grid-template-columns: 1fr; }
   .rail[data-explore="true"] .stage-wrap { position: static; order: 2; max-width: 1200px; margin: 0 auto; width: 100%; }
   .rail[data-explore="true"] .chapters { order: 1; }
-  #stage {
-    display: block; width: 100%; height: auto; border-radius: 12px;
-    border: 1px solid var(--border); background: #0a0c11;
-  }
-  #stage :global(.areas), #stage :global(.outlines), #stage :global(.labels), #stage :global(.legend) { transition: opacity 600ms ease; }
-  #stage[data-blank="true"] :global(.areas), #stage[data-blank="true"] :global(.outlines), #stage[data-blank="true"] :global(.labels), #stage[data-blank="true"] :global(.legend) { opacity: 0; }
+  .stage-frame { position: relative; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); background: #0a0c11; }
+  #stage { display: block; width: 100%; height: auto; }
   .stage-status { min-height: 20px; margin-top: 10px; font-size: 12px; color: var(--text-2); }
+
+  /* Callouts: lines in an SVG overlay, labels in HTML. */
+  .callouts { position: absolute; inset: 0; pointer-events: none; }
+  .callouts :global(.callout-lines) { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .callouts :global(.callout-line) { stroke: var(--text-1); stroke-width: 1; stroke-opacity: 0.8; transition: stroke-dashoffset 300ms ease-out; }
+  .callouts :global(.callout) {
+    position: absolute; transform: translate(10px, -50%) translateY(8px); opacity: 0;
+    transition: opacity 250ms ease-out, transform 250ms ease-out;
+    padding: 6px 10px; border-radius: 8px; background: rgba(10, 12, 17, 0.86); border: 1px solid var(--border-hover);
+    backdrop-filter: blur(6px); white-space: nowrap; display: grid; gap: 1px;
+  }
+  .callouts :global(.callout.is-left) { transform: translate(calc(-100% - 10px), -50%) translateY(8px); }
+  .callouts :global(.callout.is-in) { opacity: 1; transform: translate(10px, -50%); }
+  .callouts :global(.callout.is-left.is-in) { transform: translate(calc(-100% - 10px), -50%); }
+  .callouts :global(.callout-title) { font: 600 13px var(--sans); color: var(--text-1); }
+  .callouts :global(.callout-value) { font-size: 11px; color: var(--accent); letter-spacing: 0.02em; }
+
+  .year-badge { position: absolute; right: 18px; bottom: 14px; text-align: right; pointer-events: none; display: grid; gap: 2px; }
+  .year-badge[hidden] { display: none; }
+  .year-badge-year { font-size: clamp(28px, 3vw, 44px); font-weight: 500; color: var(--text-1); line-height: 1; letter-spacing: -0.02em; }
+  .year-badge-count { font-size: 12px; color: var(--text-2); }
+
   .chapters { list-style: none; }
-  .chapter { min-height: 72vh; display: flex; flex-direction: column; justify-content: center; padding: 24px 0; border-left: 2px solid var(--border); padding-left: 24px; transition: border-color 300ms ease; }
+  .chapter { min-height: 72vh; display: flex; flex-direction: column; justify-content: center; padding: 24px 0 24px 24px; border-left: 2px solid var(--border); transition: border-color 300ms ease; }
   .chapter.is-active { border-left-color: var(--accent); }
   .chapter-index { font-size: 12px; color: var(--text-3); margin-bottom: 10px; letter-spacing: 0.08em; }
   .chapter.is-active .chapter-index { color: var(--accent); }
   .chapter h2 { font-size: clamp(22px, 2.2vw, 30px); margin-bottom: 12px; }
-  .chapter p { font-size: 17px; line-height: 1.65; max-width: 44ch; }
+  .chapter p { font-size: 17px; line-height: 1.65; max-width: 46ch; }
+  .chapter > h2, .chapter > p { opacity: 0.55; transform: translateY(6px); transition: opacity 500ms ease, transform 500ms ease; }
+  .chapter.is-active > h2, .chapter.is-active > p { opacity: 1; transform: none; }
   .counter { margin-top: 16px; font-size: 14px; color: var(--text-1); }
   .chapter:last-child { min-height: 40vh; }
+
+  .ruler { margin-top: 18px; display: grid; gap: 10px; }
+  .ruler-row { display: grid; grid-template-columns: 150px 1fr 28px; align-items: center; gap: 10px; font-size: 12px; color: var(--text-2); }
+  .ruler-dots { display: flex; gap: 4px; flex-wrap: wrap; }
+  .ruler .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); opacity: 0; transform: scale(0.4); transition: opacity 200ms ease, transform 200ms ease; }
+  .chapter.is-active .ruler .dot { opacity: 1; transform: none; }
+  .ruler-count { color: var(--text-1); text-align: right; }
+  .scatter { margin-top: 18px; min-height: 0; }
+
   @media (max-width: 899px) {
     .rail { grid-template-columns: 1fr; gap: 0; padding-top: 12px; }
     .stage-wrap { top: 60px; z-index: 5; background: var(--surface); padding-bottom: 8px; }
     .rail[data-explore="true"] .stage-wrap { position: static; }
     .chapter { min-height: 60vh; }
+    .callouts :global(.callout) { padding: 4px 7px; }
+    .callouts :global(.callout-title) { font-size: 11px; }
+    .callouts :global(.callout-value) { font-size: 10px; }
   }
   @media (prefers-reduced-motion: reduce) {
-    #stage :global(.areas), #stage :global(.outlines), #stage :global(.labels), #stage :global(.legend), .chapter { transition: none; }
+    .chapter, .chapter > h2, .chapter > p, .ruler .dot, .callouts :global(.callout), .callouts :global(.callout-line) { transition: none; }
   }
 </style>

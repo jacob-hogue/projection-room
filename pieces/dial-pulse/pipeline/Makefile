@@ -1,8 +1,8 @@
 PY ?= python
 
-.PHONY: all download prepare compute check poster test
+.PHONY: all download prepare compute population check poster test
 
-all: download prepare compute check
+all: download prepare compute population check
 
 download:
 	$(PY) download.py
@@ -12,6 +12,9 @@ prepare:
 
 compute:
 	$(PY) compute.py
+
+population:
+	$(PY) population.py
 
 check:
 	$(PY) check.py

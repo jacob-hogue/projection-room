@@ -11,6 +11,9 @@
  * gets); anything else tweens with d3 transitions.
  */
 import { easeCubicInOut, geoIdentity, geoPath, select, type BaseType, type GeoPath, type GeoProjection, type Selection } from 'd3';
+// selection.transition and selection.interrupt are added by d3-transition as a side effect;
+// a bundler drops it from the d3 barrel unless it is imported for itself.
+import 'd3-transition';
 import polylabel from 'polylabel';
 import { feature, merge, mesh } from 'topojson-client';
 import type { GeometryCollection, GeometryObject, MultiPolygon, Polygon, Topology } from 'topojson-specification';
@@ -142,6 +145,8 @@ export class MapStage {
   private labelsOn = false;
   private legendOn = false;
   private blank = false;
+  /** Display codes shown while blank (the opening beats bring cities in one at a time). */
+  private shown = new Set<string>();
   private focused: Set<string> | null = null;
   private zoom = { k: 1, x: 0, y: 0 };
   private lastDisplay = new Map<string, string>();
@@ -234,12 +239,34 @@ export class MapStage {
   /** Hide the data layers (coast and water stay), or show them again. */
   setBlank(on: boolean, duration = 0): void {
     this.blank = on;
+    this.shown.clear();
     this.root.attr('data-blank', String(on));
     const target = on ? 0 : 1;
     this.fade(this.areas.selectAll<SVGPathElement, Entry>('path'), (e) => (on ? 0 : this.opacityFor(e.display)), duration);
     this.fade(this.casings.selectAll('path'), () => target, duration);
     this.fade(this.lines.selectAll('path'), () => target, duration);
     this.fade(this.labels.selectAll('text'), () => target, duration);
+  }
+
+  /** While blank, bring the territories of the given display codes in, in that order. */
+  show(codes: string[], opts: RevealOptions): Promise<void> {
+    const rank = new Map(codes.map((c, i) => [c, i]));
+    for (const c of codes) this.shown.add(c);
+    const paths = this.areas
+      .selectAll<SVGPathElement, Entry>('path')
+      .filter((e) => rank.has(e.display));
+    if (opts.duration === 0 && opts.step === 0) {
+      paths.interrupt('fade').attr('opacity', (e) => this.opacityFor(e.display));
+      return Promise.resolve();
+    }
+    paths
+      .transition('fade')
+      .delay((e) => (rank.get(e.display) ?? 0) * opts.step)
+      .duration(opts.duration)
+      .ease(easeCubicInOut)
+      .attr('opacity', (e) => this.opacityFor(e.display));
+    const total = (codes.length - 1) * opts.step + opts.duration;
+    return new Promise((resolve) => setTimeout(resolve, total + 20));
   }
 
   /** From blank, bring territories in one after another in the given order (others last). */
@@ -253,6 +280,7 @@ export class MapStage {
     const self = this;
     // Targets are computed as if already revealed; the data-blank attribute flips at the end.
     this.blank = false;
+    this.shown.clear();
     if (opts.duration === 0 && opts.step === 0) {
       this.root.attr('data-blank', 'false');
       paths.attr('opacity', (e) => this.opacityFor(e.display));
@@ -383,7 +411,7 @@ export class MapStage {
   }
 
   private opacityFor(display: string): number {
-    if (this.blank) return 0;
+    if (this.blank && !this.shown.has(display)) return 0;
     if (this.focused && !this.focused.has(display)) return DIM_OPACITY;
     return 1;
   }
