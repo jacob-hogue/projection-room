@@ -16,7 +16,7 @@ export interface StatProps {
   opacity: number;
 }
 
-/** 1947 · NEW YORK / 212 / 5 clicks */
+/** 1947 · NEW YORK / 212 / 5 pulses */
 export const Stat: React.FC<StatProps> = ({ eyebrow, code, number, unit, note, opacity }) => (
   <div style={{ opacity, transform: `translateY(${(1 - opacity) * 10}px)`, fontFamily: SANS }}>
     <div style={{ fontFamily: MONO, fontSize: 15, letterSpacing: '0.1em', color: TEXT_2, textTransform: 'uppercase' }}>{eyebrow}</div>
@@ -60,7 +60,7 @@ export const ClicksLegend: React.FC<{ opacity: number }> = ({ opacity }) => {
   const stops = Array.from({ length: 17 }, (_, i) => 5 + i);
   return (
     <div style={{ opacity, fontFamily: MONO }}>
-      <div style={{ fontSize: 15, letterSpacing: '0.1em', color: TEXT_2, textTransform: 'uppercase', marginBottom: 10 }}>Clicks to dial</div>
+      <div style={{ fontSize: 15, letterSpacing: '0.1em', color: TEXT_2, textTransform: 'uppercase', marginBottom: 10 }}>Pulses to dial</div>
       <div style={{ display: 'flex', gap: 2 }}>
         {stops.map((p) => (
           <div key={p} style={{ flex: 1, height: 16, background: pulseColor(PALETTES.signature, p), borderRadius: 2 }} />

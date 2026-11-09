@@ -50,15 +50,18 @@ function sceneAt(t: number): Scene {
   if (t < S.cities) {
     return { ...base, blank: true, reveal: 0, shown: t >= S.newYork + 0.6 ? ['212'] : [], inset: { opacity: seg(t, S.newYork + 0.8, S.newYork + 1.6), label: 'New York, 1947' } };
   }
-  if (t < S.original) {
+  if (t < S.contrast) {
     const shown = ['212'];
-    if (t >= S.cities + 0.8) shown.push('312');
-    if (t >= S.cities + 2.2) shown.push('213');
+    if (t >= S.cities + 0.8) shown.push('213');
+    if (t >= S.cities + 2.2) shown.push('312');
     if (t >= S.cities + 3.6) shown.push('313');
     return { ...base, blank: true, reveal: 0, shown };
   }
-  if (t < S.exception) return { ...base, reveal: seg(t, S.original + 0.6, S.original + 5.6), labels: t >= S.original + 6 };
-  if (t < S.middle) return { ...base, focus: ['605', '803', '704'], dim: seg(t, S.exception + 0.6, S.exception + 1.6) };
+  if (t < S.middle) {
+    const reveal = seg(t, S.contrast + 0.4, S.contrast + 3.4);
+    const dimOn = t >= S.contrast + 4.6;
+    return { ...base, reveal, focus: dimOn ? ['605', '704'] : null, dim: dimOn ? seg(t, S.contrast + 4.6, S.contrast + 5.6) : 1 };
+  }
   if (t < S.changes) return { ...base, mode: t >= S.middle + 0.6 ? 'middle' : 'pulses' };
   if (t < S.present) {
     const year = yearAt(t);
@@ -83,14 +86,14 @@ function sceneAt(t: number): Scene {
       inset: insetOn ? { opacity: Math.min(seg(t, RUN.hold1992 - 0.4, RUN.hold1992 + 0.4), 1 - seg(t, RUN.runTo2007 - 0.2, RUN.runTo2007 + 0.4)), label: 'Manhattan, 1992' } : null,
     };
   }
-  if (t < S.explanation) {
+  if (t < S.conclusion) {
     return {
       ...base,
       year: 2025,
       focus: ['713', '404', '214', '212'],
-      dim: seg(t, S.present + 0.6, S.present + 1.6),
+      dim: seg(t, S.present + 0.8, S.present + 1.8),
       labels: true,
-      inset: { opacity: seg(t, S.present + 1.2, S.present + 2), label: 'Manhattan, 2025' },
+      inset: { opacity: seg(t, S.present + 1.4, S.present + 2.2), label: 'Manhattan, 2025' },
     };
   }
   return { ...base, year: 2025, labels: true, focus: null, dim: 1 };
@@ -161,8 +164,8 @@ export const Film: React.FC<Props> = ({ offsetSeconds = 0 }) => {
 
   const caption = CAPTIONS.find((c) => t >= c.from && t < c.to);
   const captionAge = caption ? t - caption.from : 0;
-  const captionOpacity = caption ? Math.min(1, captionAge / 0.5) * (caption.to - t < 0.4 ? (caption.to - t) / 0.4 : 1) : 0;
-  const endCard = seg(t, S.end, S.end + 1.2);
+  const captionOpacity = caption ? Math.min(1, captionAge / 0.6) * (caption.to - t < 0.4 ? (caption.to - t) / 0.4 : 1) : 0;
+  const endCard = seg(t, S.end, S.end + 1.4);
   const count = data ? countFor(scene.year, data.lineage, usRef.current) : 0;
   const insetTop = RAIL.top + 300;
 
@@ -172,7 +175,7 @@ export const Film: React.FC<Props> = ({ offsetSeconds = 0 }) => {
       <div style={{ position: 'absolute', left: MAP.left, top: 40, fontSize: 18, fontWeight: 700, letterSpacing: '0.02em', opacity: 1 - endCard }}>
         jacob<span style={{ color: ACCENT }}>.</span>hogue / <span style={{ color: ACCENT }}>projection room</span>
       </div>
-      <div style={{ position: 'absolute', left: MAP.left, top: 84, width: 1760, fontSize: 36, lineHeight: 1.3, color: TEXT, opacity: captionOpacity }}>{caption?.text}</div>
+      <div style={{ position: 'absolute', left: MAP.left, top: 82, width: 1760, fontSize: 30, lineHeight: 1.28, color: TEXT, opacity: captionOpacity }}>{caption?.text}</div>
 
       {/* The map */}
       <div style={{ position: 'absolute', left: MAP.left, top: MAP.top, width: MAP.width, height: MAP.height, opacity: 1 - endCard * 0.85 }}>
@@ -229,48 +232,41 @@ export const Film: React.FC<Props> = ({ offsetSeconds = 0 }) => {
 function railContent(t: number, scene: Scene, count: number): React.ReactNode {
   const fadeIn = (from: number, len = 0.6) => seg(t, from, from + len);
   if (t < S.newYork) return null;
-  if (t < S.cities) return <Stat eyebrow="1947 · New York" code="212" number="5" unit="clicks" note="7.9 million people in its territory in 1950" opacity={fadeIn(S.newYork + 1.4)} />;
-  if (t < S.original) {
+  if (t < S.cities) return <Stat eyebrow="1947 · New York" code="212" number="5" unit="pulses" note="2 + 1 + 2. 7.9 million people in its territory in 1950." opacity={fadeIn(S.newYork + 1.4)} />;
+  if (t < S.contrast) {
     const shown = (t >= S.cities + 0.8 ? 1 : 0) + (t >= S.cities + 2.2 ? 1 : 0) + (t >= S.cities + 3.6 ? 1 : 0);
     return (
       <Rows
-        eyebrow="1947 · the fast codes"
+        eyebrow="1947 · the major markets"
         rows={[
-          { code: '312', name: 'Chicago', value: '6 clicks', color: pulseColor(PALETTES.signature, 6) },
-          { code: '213', name: 'Los Angeles', value: '6 clicks', color: pulseColor(PALETTES.signature, 6) },
-          { code: '313', name: 'Detroit', value: '7 clicks', color: pulseColor(PALETTES.signature, 7) },
+          { code: '213', name: 'Los Angeles', value: '6 pulses', color: pulseColor(PALETTES.signature, 6) },
+          { code: '312', name: 'Chicago', value: '6 pulses', color: pulseColor(PALETTES.signature, 6) },
+          { code: '313', name: 'Detroit', value: '7 pulses', color: pulseColor(PALETTES.signature, 7) },
         ]}
         shown={shown}
         opacity={fadeIn(S.cities + 0.6)}
       />
     );
   }
-  if (t < S.exception) {
-    return (
-      <>
-        <Stat eyebrow="1947 · United States" code="" number="77" unit="area codes" opacity={fadeIn(S.original + 5.8)} />
-        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }}>
-          <ClicksLegend opacity={fadeIn(S.original + 5.8)} />
-        </div>
-      </>
-    );
-  }
   if (t < S.middle) {
-    const shown = (t >= S.exception + 1.2 ? 1 : 0) + (t >= S.exception + 2.6 ? 1 : 0) + (t >= S.exception + 4 ? 1 : 0);
+    const shown = (t >= S.contrast + 5 ? 1 : 0) + (t >= S.contrast + 6.2 ? 1 : 0);
     return (
       <>
-        <Rows
-          eyebrow="1947 · the slow codes"
-          rows={[
-            { code: '605', name: 'South Dakota', sub: '651,000 people', value: '21', color: pulseColor(PALETTES.signature, 21) },
-            { code: '704', name: 'North Carolina', sub: '4.1 million people', value: '21', color: pulseColor(PALETTES.signature, 21) },
-            { code: '803', name: 'South Carolina', sub: '2.1 million people', value: '21', color: pulseColor(PALETTES.signature, 21) },
-          ]}
-          shown={shown}
-          opacity={fadeIn(S.exception + 1)}
-        />
+        {t < S.contrast + 4.6 ? (
+          <Stat eyebrow="1947 · United States" code="" number="77" unit="area codes" note="From 5 pulses to 21" opacity={Math.min(fadeIn(S.contrast + 3.4), 1 - seg(t, S.contrast + 4.2, S.contrast + 4.6))} />
+        ) : (
+          <Rows
+            eyebrow="1947 · 21 pulses"
+            rows={[
+              { code: '605', name: 'South Dakota', sub: '651,000 people', value: '21', color: pulseColor(PALETTES.signature, 21) },
+              { code: '704', name: 'North Carolina', sub: '4.1 million people', value: '21', color: pulseColor(PALETTES.signature, 21) },
+            ]}
+            shown={shown}
+            opacity={fadeIn(S.contrast + 4.8)}
+          />
+        )}
         <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }}>
-          <ClicksLegend opacity={1} />
+          <ClicksLegend opacity={fadeIn(S.contrast + 3.4)} />
         </div>
       </>
     );
@@ -285,7 +281,7 @@ function railContent(t: number, scene: Scene, count: number): React.ReactNode {
   if (t < S.present) {
     let event: React.ReactNode = null;
     if (t >= RUN.split1948 && t < RUN.runTo1992) event = <Stat eyebrow="1948 · the first split" code="219" number="" unit="" note="Cut out of Indiana's 317" opacity={fadeIn(RUN.split1948 + 0.2)} />;
-    else if (t >= RUN.hold1992 && t < RUN.runTo2007) event = <Stat eyebrow="1992 · the first overlay" code="917" number="" unit="" note="Laid over Manhattan's 212. The boundary did not move." opacity={fadeIn(RUN.hold1992 + 0.2)} />;
+    else if (t >= RUN.hold1992 && t < RUN.runTo2007) event = <Stat eyebrow="1992 · the first overlay" code="917" number="" unit="" note="Added over Manhattan's 212. The boundary did not move." opacity={fadeIn(RUN.hold1992 + 0.2)} />;
     else if (t >= RUN.hold2007 && t < RUN.runTo2025) event = <Stat eyebrow="2007 · the last split" code="575" number="" unit="" note="Cut out of New Mexico's 505. Every code since has been an overlay." opacity={fadeIn(RUN.hold2007 + 0.2)} />;
     return (
       <>
@@ -296,7 +292,7 @@ function railContent(t: number, scene: Scene, count: number): React.ReactNode {
       </>
     );
   }
-  if (t < S.explanation) return <Stat eyebrow="2025 · Houston" code="713" number="5" unit="codes" note="713, 281, 832, 346 and 621 share one territory" opacity={fadeIn(S.present + 1.4)} />;
+  if (t < S.conclusion) return <Stat eyebrow="2025 · Houston" code="713" number="5" unit="codes" note="713, 281, 832, 346 and 621 share one territory" opacity={fadeIn(S.present + 1.6)} />;
   return (
     <div style={{ position: 'absolute', right: 0, bottom: 0 }}>
       <Counter year={2025} count={count} opacity={1} />
