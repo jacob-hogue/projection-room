@@ -10,4 +10,5 @@ test('method section lists sources, gaps and the credit, with the diagram and th
   await expect(m.locator('svg.diagram')).toHaveCount(1);
   await expect(m.locator('svg.chart circle')).toHaveCount(77, { timeout: 15000 });
   await expect(m.getByText('150.7 million', { exact: false })).toBeVisible();
+  await expect(m.getByRole('heading', { name: 'Going back in time' })).toBeVisible();
 });
