@@ -11,16 +11,15 @@ export interface PopulationRow {
   population_1950: number;
 }
 
-const CALL_OUT = new Set(['212', '213', '312', '605', '803', '704', '305', '214']);
-const NAMES: Record<string, string> = {
-  '212': 'New York',
-  '213': 'Los Angeles',
-  '312': 'Chicago',
-  '605': 'South Dakota',
-  '803': 'South Carolina',
-  '704': 'W. North Carolina',
-  '305': 'Florida',
-  '214': 'Dallas',
+/** Labelled points, with a label offset [dx, dy] so neighbours do not collide. */
+const CALL_OUT: Record<string, { name: string; dx: number; dy: number }> = {
+  '212': { name: 'New York', dx: -8, dy: 4 },
+  '213': { name: 'Los Angeles', dx: -8, dy: 16 },
+  '312': { name: 'Chicago', dx: -8, dy: -8 },
+  '605': { name: 'South Dakota', dx: 8, dy: -6 },
+  '803': { name: 'South Carolina', dx: 8, dy: 10 },
+  '305': { name: 'Florida', dx: 8, dy: 4 },
+  '214': { name: 'Dallas', dx: 8, dy: 4 },
 };
 
 export function drawScatter(host: HTMLElement, rows: PopulationRow[], color: (clicks: number) => string, reduced: boolean): void {
@@ -88,11 +87,12 @@ export function drawScatter(host: HTMLElement, rows: PopulationRow[], color: (cl
     .append('g')
     .attr('class', 'dot-labels')
     .selectAll('text')
-    .data(ordered.filter((d) => CALL_OUT.has(d.code)))
+    .data(ordered.filter((d) => d.code in CALL_OUT))
     .join('text')
-    .attr('x', (d) => x(d.population_1950) + 7)
-    .attr('y', (d) => y(d.clicks) + 3.5)
+    .attr('x', (d) => x(d.population_1950) + CALL_OUT[d.code].dx)
+    .attr('y', (d) => y(d.clicks) + CALL_OUT[d.code].dy)
+    .attr('text-anchor', (d) => (CALL_OUT[d.code].dx < 0 ? 'end' : 'start'))
     .attr('opacity', reduced ? 1 : 0)
-    .text((d) => `${d.code} ${NAMES[d.code] ?? ''}`.trim());
+    .text((d) => `${d.code} ${CALL_OUT[d.code].name}`);
   if (!reduced) labels.transition().delay(ordered.length * 28 + 200).duration(400).attr('opacity', 1);
 }

@@ -149,6 +149,8 @@ export class MapStage {
   private shown = new Set<string>();
   private focused: Set<string> | null = null;
   private zoom = { k: 1, x: 0, y: 0 };
+  private cameraTarget: string | undefined;
+  private cameraFrom = { k: 1, cx: 0, cy: 0 };
   private lastDisplay = new Map<string, string>();
   private hoverCb: ((info: HoverInfo | null) => void) | null = null;
 
@@ -314,7 +316,12 @@ export class MapStage {
     this.focused = codes ? new Set(codes) : null;
     const paths = this.areas.selectAll<SVGPathElement, Entry>('path');
     this.fade(paths, (e) => this.opacityFor(e.display), duration);
-    const outlines = this.outlinesFor(this.year).filter((o) => this.focused?.has(o.code));
+    this.drawHalos(codes ?? [], 1, duration);
+  }
+
+  private drawHalos(codes: string[], strength: number, duration = 0): void {
+    const wanted = new Set(codes);
+    const outlines = this.outlinesFor(this.year).filter((o) => wanted.has(o.code));
     const fillOf = (code: string) => this.colorFor(code, this.classify(code));
     const rings = outlines.flatMap((o) => HALO_STACK.map((s, i) => ({ o, s, key: `${o.code}:${i}` })));
     const sel = this.halos
@@ -334,30 +341,133 @@ export class MapStage {
       .attr('d', (r) => r.o.d)
       .attr('stroke', (r) => fillOf(r.o.code))
       .attr('stroke-width', (r) => r.s.width);
-    if (duration > 0) all.transition('halo').duration(duration).ease(easeCubicInOut).attr('stroke-opacity', (r) => r.s.opacity);
-    else all.attr('stroke-opacity', (r) => r.s.opacity);
+    if (duration > 0) all.transition('halo').duration(duration).ease(easeCubicInOut).attr('stroke-opacity', (r) => r.s.opacity * strength);
+    else all.interrupt('halo').attr('stroke-opacity', (r) => r.s.opacity * strength);
+  }
+
+  /** Scale and centre (in stage units) that frame a display code's territory. */
+  private centerFor(code: string): { k: number; cx: number; cy: number } {
+    const outline = this.outlinesFor(this.year).find((o) => o.code === code);
+    if (!outline) return { k: 1, cx: this.width / 2, cy: this.height / 2 };
+    const [[x0, y0], [x1, y1]] = outline.bounds;
+    const bw = Math.max(1, x1 - x0);
+    const bh = Math.max(1, y1 - y0);
+    const k = Math.min(MAX_ZOOM, 0.8 / Math.max(bw / this.width, bh / this.height));
+    return { k, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2 };
+  }
+
+  private cameraCenter(): { k: number; cx: number; cy: number } {
+    const { k, x, y } = this.zoom;
+    return { k, cx: (this.width / 2 - x) / k, cy: (this.height / 2 - y) / k };
+  }
+
+  private applyCamera(zoom: { k: number; x: number; y: number }, duration: number): void {
+    this.zoom = zoom;
+    const transform = `translate(${zoom.x},${zoom.y}) scale(${zoom.k})`;
+    if (duration > 0) this.view.transition('zoom').duration(duration).ease(easeCubicInOut).attr('transform', transform);
+    else this.view.interrupt('zoom').attr('transform', transform);
+    this.root.attr('data-zoom', zoom.k.toFixed(2));
+    // Labels are sized for the whole map; let them go while zoomed in.
+    this.fade(this.labels.selectAll('text'), () => (zoom.k > 1.3 ? 0 : 1), duration);
   }
 
   /** Move the camera to a display code's territory, or back to the whole map with null. */
   zoomTo(code: string | null, duration = 0): void {
-    const outline = code ? this.outlinesFor(this.year).find((o) => o.code === code) : undefined;
-    if (!outline) {
-      this.zoom = { k: 1, x: 0, y: 0 };
-    } else {
-      const [[x0, y0], [x1, y1]] = outline.bounds;
-      const bw = Math.max(1, x1 - x0);
-      const bh = Math.max(1, y1 - y0);
-      const k = Math.min(MAX_ZOOM, 0.8 / Math.max(bw / this.width, bh / this.height));
-      const cx = (x0 + x1) / 2;
-      const cy = (y0 + y1) / 2;
-      this.zoom = { k, x: this.width / 2 - k * cx, y: this.height / 2 - k * cy };
+    const c = code ? this.centerFor(code) : { k: 1, cx: this.width / 2, cy: this.height / 2 };
+    this.cameraTarget = code ?? '';
+    this.cameraFrom = c;
+    this.applyCamera({ k: c.k, x: this.width / 2 - c.k * c.cx, y: this.height / 2 - c.k * c.cy }, duration);
+  }
+
+  // Frame-driven setters: deterministic for a given progress, used by the film and the stepper.
+
+  /** Prepare every year's outlines in idle slices so later year changes do no geometry work. */
+  async warm(): Promise<void> {
+    for (let year = YEAR_MIN; year <= YEAR_MAX; year++) {
+      if (!this.outlineCache.has(year)) this.outlinesFor(year);
+      if ((year - YEAR_MIN) % 6 === 5) await new Promise((r) => setTimeout(r, 0));
     }
-    const transform = `translate(${this.zoom.x},${this.zoom.y}) scale(${this.zoom.k})`;
-    if (duration > 0) this.view.transition('zoom').duration(duration).ease(easeCubicInOut).attr('transform', transform);
-    else this.view.attr('transform', transform);
-    this.root.attr('data-zoom', this.zoom.k.toFixed(2));
-    // Labels are sized for the whole map; let them go while zoomed in.
-    this.fade(this.labels.selectAll('text'), () => (this.zoom.k > 1.3 ? 0 : 1), duration);
+  }
+
+  cachedYears(): number {
+    return this.outlineCache.size;
+  }
+
+  /** Camera at progress t (0..1) from where it was toward a territory, or toward the whole map. */
+  cameraAt(code: string | null, t: number): void {
+    const key = code ?? '';
+    if (this.cameraTarget !== key) {
+      this.cameraTarget = key;
+      this.cameraFrom = this.cameraCenter();
+    }
+    const to = code ? this.centerFor(code) : { k: 1, cx: this.width / 2, cy: this.height / 2 };
+    const from = this.cameraFrom;
+    const e = easeCubicInOut(Math.min(1, Math.max(0, t)));
+    const k = from.k + (to.k - from.k) * e;
+    const cx = from.cx + (to.cx - from.cx) * e;
+    const cy = from.cy + (to.cy - from.cy) * e;
+    this.applyCamera({ k, x: this.width / 2 - k * cx, y: this.height / 2 - k * cy }, 0);
+  }
+
+  /** From blank, territories appear in order as t runs 0 to 1; at 1 the stage is no longer blank. */
+  revealAt(order: string[], t: number): void {
+    const n = Math.max(1, this.polys.length);
+    const rank = new Map(order.map((npa, i) => [npa, i]));
+    const indexOf = (npa: string) => rank.get(npa) ?? order.length + this.polys.findIndex((p) => p.npa === npa);
+    const span = n * 0.15;
+    const p = Math.min(1, Math.max(0, t));
+    const done = p >= 1;
+    this.blank = !done;
+    this.shown.clear();
+    this.root.attr('data-blank', String(!done));
+    this.areas
+      .selectAll<SVGPathElement, Entry>('path')
+      .interrupt('fade')
+      .interrupt('reveal')
+      .attr('opacity', (e) => {
+        const own = Math.min(1, Math.max(0, (p * (n + span) - indexOf(e.poly.npa)) / span));
+        return own * (done ? this.opacityFor(e.display) : this.focused && !this.focused.has(e.display) ? DIM_OPACITY : 1);
+      });
+    const lines = Math.min(1, Math.max(0, (p - 0.6) / 0.4));
+    this.casings.selectAll('path').interrupt('reveal').attr('opacity', lines);
+    this.lines.selectAll('path').interrupt('reveal').attr('opacity', lines);
+    this.renderLabels();
+  }
+
+  /** Dim everything but the given display codes by progress t, haloing them in step; null undims. */
+  dimAt(codes: string[] | null, t: number): void {
+    const p = Math.min(1, Math.max(0, t));
+    this.focused = codes && p > 0 ? new Set(codes) : null;
+    const paths = this.areas.selectAll<SVGPathElement, Entry>('path').interrupt('fade');
+    if (codes) {
+      const set = new Set(codes);
+      paths.attr('opacity', (e) => (this.blank && !this.shown.has(e.display) ? 0 : set.has(e.display) ? 1 : 1 - p * (1 - DIM_OPACITY)));
+      this.drawHalos(codes, p);
+    } else {
+      paths.attr('opacity', (e) => (this.blank && !this.shown.has(e.display) ? 0 : DIM_OPACITY + p * (1 - DIM_OPACITY)));
+      this.drawHalos([], 1);
+    }
+  }
+
+  /** Land on a complete state at once: no transitions, no focus, no zoom, data layers shown. */
+  settle(s: { year: number; mode: Mode; labels: boolean; blank?: boolean }): void {
+    this.root.selectAll('*').interrupt('fade').interrupt('color').interrupt('reveal').interrupt('halo').interrupt('zoom');
+    this.focused = null;
+    this.drawHalos([], 1);
+    this.cameraTarget = undefined;
+    this.applyCamera({ k: 1, x: 0, y: 0 }, 0);
+    this.mode = s.mode;
+    this.labelsOn = s.labels;
+    this.blank = s.blank ?? false;
+    this.shown.clear();
+    this.root.attr('data-blank', String(this.blank));
+    this.year = Math.min(YEAR_MAX, Math.max(YEAR_MIN, Math.round(s.year)));
+    this.render(0);
+    const target = this.blank ? 0 : 1;
+    this.areas.selectAll<SVGPathElement, Entry>('path').attr('opacity', (e) => this.opacityFor(e.display));
+    this.casings.selectAll('path').attr('opacity', target);
+    this.lines.selectAll('path').attr('opacity', target);
+    this.labels.selectAll('text').attr('opacity', target);
   }
 
   onHover(cb: (info: HoverInfo | null) => void): void {

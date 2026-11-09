@@ -2,39 +2,51 @@ import { expect, test } from '@playwright/test';
 
 const PAGE = '/projection-room/dial-pulse/';
 
-test('the story runs in beats: dial, camera, callouts, reveal, hand-over', async ({ page }) => {
+test('the story is a stepper: every step lands on a complete state', async ({ page }) => {
   await page.goto(PAGE);
   await expect(page.locator('h1')).toHaveText('The dial-pulse map');
-  const chapters = page.locator('.chapter');
-  await expect(chapters).toHaveCount(11);
+  const steps = page.locator('.chapter');
+  await expect(steps).toHaveCount(11);
   await expect(page.locator('#stage path.area').first()).toBeAttached();
-
-  // 1. The dial dials 212 and the clicks appear.
-  await chapters.nth(0).scrollIntoViewIfNeeded();
-  await expect(chapters.nth(0).locator('svg.dial')).toBeVisible();
-  await expect(chapters.nth(0).locator('.dial-clicks .click')).toHaveCount(5, { timeout: 8000 });
+  await expect(steps.nth(0)).toHaveClass(/is-active/);
   await expect(page.locator('#stage')).toHaveAttribute('data-blank', 'true');
+  await expect(steps.nth(0).locator('svg.dial')).toBeVisible();
+  await expect(steps.nth(0).locator('.dial-clicks .click')).toHaveCount(5, { timeout: 8000 });
 
-  // 2. The camera goes to New York and a callout names 212.
-  await chapters.nth(1).scrollIntoViewIfNeeded();
+  // Next: the camera goes to New York and a callout names 212.
+  await page.getByRole('button', { name: 'Next' }).click();
+  await expect(steps.nth(1)).toHaveClass(/is-active/);
   await expect(page.locator('#stage')).not.toHaveAttribute('data-zoom', '1.00');
   await expect(page.locator('.callout', { hasText: '212' })).toBeVisible({ timeout: 6000 });
 
-  // 4. All seventy-seven fill in and the stage is no longer blank.
-  await chapters.nth(3).scrollIntoViewIfNeeded();
-  await expect(page.locator('#stage')).toHaveAttribute('data-blank', 'false', { timeout: 10000 });
+  // Jumping straight to step 6 (middle digit) lands on its complete state even mid-beat.
+  await steps.nth(5).locator('button, h2').first().click();
+  await expect(steps.nth(5)).toHaveClass(/is-active/);
+  await expect(page.locator('#stage')).toHaveAttribute('data-mode', 'middle');
+  await expect(page.locator('#stage')).toHaveAttribute('data-blank', 'false');
   await expect(page.locator('#stage')).toHaveAttribute('data-zoom', '1.00');
 
-  // 6. The middle-digit view.
-  await chapters.nth(5).scrollIntoViewIfNeeded();
-  await expect(page.locator('#stage')).toHaveAttribute('data-mode', 'middle');
+  // Keyboard: the right arrow advances.
+  await page.keyboard.press('ArrowRight');
+  await expect(steps.nth(6)).toHaveClass(/is-active/);
 
-  // 11. Explore hands over the controls and the year input writes the hash.
-  await chapters.nth(10).scrollIntoViewIfNeeded();
+  // Last step hands over the controls and the year input writes the hash.
+  await steps.nth(10).locator('button, h2').first().click();
   await expect(page.locator('#stage')).toHaveAttribute('data-explore', 'true');
   await page.locator('#year').fill('1999');
   await expect(page).toHaveURL(/year=1999/);
   await expect(page.locator('#stage')).toHaveAttribute('data-year', '1999');
+});
+
+test('play the story advances by itself and can be paused', async ({ page }) => {
+  await page.goto(PAGE);
+  await page.locator('#stage path.area').first().waitFor({ state: 'attached' });
+  const play = page.getByRole('button', { name: 'Play the story' });
+  await play.click();
+  await expect(page.getByRole('button', { name: 'Pause the story' })).toBeVisible();
+  await expect(page.locator('.chapter').nth(1)).toHaveClass(/is-active/, { timeout: 15000 });
+  await page.getByRole('button', { name: 'Pause the story' }).click();
+  await expect(play).toBeVisible();
 });
 
 test('bad hash does not break the page', async ({ page }) => {
@@ -43,14 +55,14 @@ test('bad hash does not break the page', async ({ page }) => {
   await expect(page.locator('#stage')).toHaveAttribute('data-year', '1947');
 });
 
-test('reduced motion shows the poster and skips the beats', async ({ browser }) => {
+test('reduced motion lands each step at once', async ({ browser }) => {
   const ctx = await browser.newContext({ reducedMotion: 'reduce' });
   const page = await ctx.newPage();
   await page.goto(PAGE);
-  await expect(page.locator('.opening img.poster')).toBeVisible();
-  await expect(page.locator('.opening video')).toHaveCount(0);
-  await page.locator('.chapter').nth(3).scrollIntoViewIfNeeded();
+  await page.locator('#stage path.area').first().waitFor({ state: 'attached' });
+  await page.locator('.chapter').nth(3).locator('button, h2').first().click();
   await expect(page.locator('#stage')).toHaveAttribute('data-blank', 'false', { timeout: 3000 });
+  await expect(page.locator('.opening video')).toHaveCount(0);
   await ctx.close();
 });
 

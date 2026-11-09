@@ -46,7 +46,7 @@
   {
     "id": "slow-end",
     "heading": "The slow end",
-    "body": "South Dakota's 605, South Carolina's 803 and western North Carolina's 704 each took 21 clicks: four times New York. Montana, New Mexico, Vermont, Tennessee and northern Virginia took 20.",
+    "body": "South Dakota's 605, South Carolina's 803 and North Carolina's 704 each took 21 clicks: four times New York. Tennessee, Virginia, New Mexico, Montana and Vermont took 20.",
     "widget": { "type": "ruler", "rows": [{ "label": "212 New York", "clicks": 5 }, { "label": "605 South Dakota", "clicks": 21 }] },
     "state": { "year": 1947, "mode": "pulses", "labels": false },
     "beats": [

@@ -129,6 +129,12 @@ const hasPlay = (c: Chapter) => c.beats?.some((b) => b.do === 'play') ?? false;
   .chapter.is-active .ruler .dot { opacity: 1; transform: none; }
   .ruler-count { color: var(--text-1); text-align: right; }
   .scatter { margin-top: 18px; min-height: 0; }
+  .scatter :global(svg) { display: block; width: 100%; height: auto; }
+  .scatter :global(.axis text) { fill: var(--text-2); font: 500 11px var(--mono); }
+  .scatter :global(.axis line) { stroke: rgba(255, 255, 255, 0.07); }
+  .scatter :global(.axis .domain) { display: none; }
+  .scatter :global(.axis-title) { fill: var(--text-2); font: 500 11px var(--mono); }
+  .scatter :global(.dot-labels text) { fill: var(--text-1); font: 600 11px var(--sans); paint-order: stroke; stroke: var(--surface); stroke-width: 3px; stroke-linejoin: round; }
 
   @media (max-width: 899px) {
     .rail { grid-template-columns: 1fr; gap: 0; padding-top: 12px; }
