@@ -8,30 +8,30 @@
       "As the telephone system grew, connecting calls between different parts of the country became more complicated. The solution was a national numbering plan. In 1947, AT&T assigned area codes to geographic territories across the United States and Canada.",
       "An area code was the first part of a telephone number. It told the switching equipment where a call needed to go before the rest of the number directed it to a local exchange.",
       "But there was something unusual about the original system: area codes took different amounts of time to dial.",
-      "A code like 212, assigned to New York City, took just five pulses. A code like 605, assigned to South Dakota, took 21.",
+      "A code like 2-1-2, assigned to New York City, took just five pulses. A code like 6-0-5, assigned to South Dakota, took 21.",
       "That difference is the starting point for this map."
     ]
   },
   {
     "heading": "Who got the fast codes",
     "paragraphs": [
-      "New York City got 212, five clicks, the fastest code on the plan. Its territory held 7.9 million people in 1950, more than any other. Chicago's 312 and Los Angeles's 213 took six clicks; Detroit's 313 and Pittsburgh's 412 took seven. The six codes that cost seven clicks or fewer served territories with a median population of 4.3 million. The big industrial cities of 1947 sit at the bright end of the scale.",
+      "New York City got 2-1-2, five clicks, the fastest code on the plan. Its territory held 7.9 million people in 1950, more than any other. Chicago's 3-1-2 and Los Angeles's 2-1-3 took six clicks; Detroit's 3-1-3 and Pittsburgh's 4-1-2 took seven. The six codes that cost seven clicks or fewer served territories with a median population of 4.3 million. The big industrial cities of 1947 sit at the bright end of the scale.",
       "The plan gave the United States 77 codes and Canada nine. Most of the country took between twelve and twenty clicks to reach, and the 42 codes in that band served a median population of 1.6 million.",
-      "At the slow end, South Dakota's 605, South Carolina's 803 and North Carolina's 704 each took 21 clicks, four times New York. South Dakota had 651,000 people. But 704 covered all of North Carolina, 4.1 million people, so the slow codes went to whole states rather than simply to small populations. The ten codes at 20 or 21 clicks served a median population of 666,000.",
+      "At the slow end, South Dakota's 6-0-5, South Carolina's 8-0-3 and North Carolina's 7-0-4 each took 21 clicks, four times New York. South Dakota had 651,000 people. But 7-0-4 covered all of North Carolina, 4.1 million people, so the slow codes went to whole states rather than simply to small populations. The ten codes at 20 or 21 clicks served a median population of 666,000.",
       "The usual explanation is that the busiest places received the shortest codes, saving time on millions of calls. The pattern is there in the data. Whether it was the stated reason is disputed, and this map does not settle it."
     ]
   },
   {
     "heading": "A 0 in the middle",
     "paragraphs": [
-      "The middle digit was a flag. Only area codes had a 0 or 1 there, which let the switching equipment tell an area code from a local exchange. A 0 meant one code for the whole state, like Florida's 305. A 1 meant the state was split, like the four Texas codes. Of the 77 United States codes, 35 covered whole states."
+      "The middle digit was a flag. Only area codes had a 0 or 1 there, which let the switching equipment tell an area code from a local exchange. A 0 meant one code for the whole state, like Florida's 3-0-5. A 1 meant the state was split, like the four Texas codes. Of the 77 United States codes, 35 covered whole states."
     ]
   },
   {
     "heading": "Running out of numbers",
     "paragraphs": [
-      "The format allowed 152 codes. The first split came in 1948, when 219 was cut out of Indiana's 317. By 1960 the country carried 101 codes, and by 1990 only 114: the plan held for forty years. Then growth used it up. Territories kept splitting, and from 1992 new codes were laid over old ones instead of dividing them; 917 over Manhattan was the first. The count went from 121 codes in 1992 to 233 in 2000. The last boundary split was 575 out of New Mexico's 505 in 2007. Every code since has been an overlay, which is why the hatching appears in the film but the lines stop moving.",
-      "In 2025 the lower 48 states carry 367 codes on 237 territories. Eleven territories carry three or more, and Houston's 713 carries five. The 1947 shape still shows through: 212 is still Manhattan, 313 is still Detroit."
+      "The format allowed 152 codes. The first split came in 1948, when 2-1-9 was cut out of Indiana's 3-1-7. By 1960 the country carried 101 codes, and by 1990 only 114: the plan held for forty years. Then growth used it up. Territories kept splitting, and from 1992 new codes were laid over old ones instead of dividing them; 9-1-7 over Manhattan was the first. The count went from 121 codes in 1992 to 233 in 2000. The last boundary split was 5-7-5 out of New Mexico's 5-0-5 in 2007. Every code since has been an overlay, which is why the hatching appears in the film but the lines stop moving.",
+      "In 2025 the lower 48 states carry 367 codes on 237 territories. Eleven territories carry three or more, and Houston's 7-1-3 carries five. The 1947 shape still shows through: 2-1-2 is still Manhattan, 3-1-3 is still Detroit."
     ]
   },
   {
