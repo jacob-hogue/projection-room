@@ -29,7 +29,7 @@ const GAP = 24;
 const TOP = 240;
 const H = 380;
 /** The drift highlight begins here, as the second caption arrives. */
-const DRIFT_AT = 12.4;
+const DRIFT_AT = 14.4;
 
 export const Problem: React.FC<{ local: number }> = ({ local }) => (
   <>

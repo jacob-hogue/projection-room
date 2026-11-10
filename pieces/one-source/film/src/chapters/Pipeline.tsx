@@ -7,7 +7,7 @@ import { Chip, Stat, StepRail, eyebrow, fmt, rise } from '../parts';
 import { C } from '../theme';
 
 /** Step windows in chapter seconds: detect, validate, publish, serve. */
-export const STEP_AT = [0, 12, 24, 37, 50] as const;
+export const STEP_AT = [0, 14, 27, 40, 54] as const;
 const LEFT = 444;
 const WIDTH = 1412;
 const TOP = 220;

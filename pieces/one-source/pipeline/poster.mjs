@@ -1,5 +1,5 @@
 // Render the piece's poster and gallery card from one frame of the film:
-//   node poster.mjs            (frame 3744, 16 s into the map chapter)
+//   node poster.mjs            (frame 4464, 16 s into the map chapter)
 //   node poster.mjs <frame>
 import { spawnSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
@@ -9,7 +9,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const film = join(here, '..', 'film');
 const pub = join(here, '..', '..', '..', 'public', 'one-source');
 const shrink = join(here, '..', '..', 'dial-pulse', 'pipeline', 'shrink_png.py');
-const frame = process.argv[2] ?? '3744';
+const frame = process.argv[2] ?? '4464';
 const poster = join(pub, 'poster.png');
 const card = join(pub, 'card.png');
 

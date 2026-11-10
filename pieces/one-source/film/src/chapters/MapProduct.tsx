@@ -13,7 +13,7 @@ export const MAP = { left: 64, top: 220, width: 1300, height: 640 } as const;
 const RAIL = { left: 1436, top: 220, width: 420 } as const;
 
 /** Chapter seconds: the question, then the towns answer it; hold; zoom; parcels; hold. */
-export const T = { reveal: 3.0, revealEnd: 7.0, callout: 10.0, zoom: 18.0, zoomEnd: 21.0, parcels: 20.0, parcelsEnd: 26.0 } as const;
+export const T = { reveal: 3.0, revealEnd: 7.0, callout: 11.0, zoom: 20.0, zoomEnd: 23.0, parcels: 22.0, parcelsEnd: 28.0 } as const;
 
 interface Props {
   local: number;
