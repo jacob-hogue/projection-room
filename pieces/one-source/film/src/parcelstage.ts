@@ -171,6 +171,11 @@ export class ParcelStage {
     this.view.attr('transform', `translate(${tx},${ty}) scale(${scale})`);
   }
 
+  /** Fade the town fills toward the ground so the parcels read on their own; k is 0 to 1. */
+  townDim(k: number): void {
+    this.view.select<SVGGElement>('g.towns').attr('opacity', 1 - 0.82 * k);
+  }
+
   /** Outline the town with `id` at `alpha`. */
   setTownOutline(id: number, alpha: number): void {
     const t = this.towns.find((f) => f.properties.id === id);

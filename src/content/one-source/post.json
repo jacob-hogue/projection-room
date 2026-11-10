@@ -1,0 +1,37 @@
+[
+  {
+    "heading": "Five copies of one map",
+    "paragraphs": [
+      "Ask a GIS team where the parcel map lives and you will often get more than one answer. The assessor has a copy because they maintain it. Planning has a copy because they needed one in a hurry. Public works, dispatch and the open data portal each have theirs, refreshed on their own schedules, sometimes by a script and sometimes by a person at a desk at the end of the day.",
+      "The county in the first half of this film is fictional, but the pattern is not. The key field ends up with a different name in every office. The counts drift a few hundred parcels apart. And when two maps disagree, there is no clear way to say which one is right, because nobody ever decided which one was the source."
+    ]
+  },
+  {
+    "heading": "Three problems, three fixes",
+    "paragraphs": [
+      "It helps to split the mess into parts. The first problem is ownership: five copies and none of them authoritative. The second is the refresh itself. A nightly overwrite replaces every row in a hosted layer to carry a few hundred changes, it fails when sync is turned on, and the storage behind the layer grows a little with every run. The third is that the applications that only need to read parcels sit on the same layer that staff edit all day, so every edit is a risk to the readers and every reader is load on the editors.",
+      "None of these needs new technology. One database becomes the source of record, with editor tracking and a GlobalID on every row. A scheduled job moves only the rows that changed. And the readers get their own outputs, written once a night, that nobody edits."
+    ]
+  },
+  {
+    "heading": "What the job does each night",
+    "paragraphs": [
+      "The job runs in four steps. It asks the database which rows have changed since the last run, which the edit tracking answers directly. It checks those rows: do the counts add up, is every polygon valid, does the schema still match what the readers expect. If a check fails, the run stops and the reason goes in the log.",
+      "If the checks pass, the changes are published three ways. The hosted feature layer receives them as edits, so nothing is overwritten and sync keeps working. The same rows are written into a GeoParquet file for anyone doing analysis, and a PMTiles file for anyone drawing a map, each stamped with the run date. Every web map, portal and department application points at one of those three outputs. The run log records what moved, how long it took, and which files are current."
+    ]
+  },
+  {
+    "heading": "The map Massachusetts already has",
+    "paragraphs": [
+      "The second half of the film leaves the fictional county for a real layer. MassGIS, the state's GIS office, gathers the parcels of all 351 cities and towns into one standardized layer. On the day the data was read there were 2,558,082 fee and tax parcels in it, and every one of them carries the date it was last edited.",
+      "That date is what the statewide map shows. Nearly four parcels in five still carry an edit date before 2015, which is roughly when the statewide standard settled, so towns that have touched their parcels since 2023 stand out. Zoom into Westborough and the same date sits on every parcel: 7,164 of them, with edits from 2012 to 2026, and 730 touched since the start of 2023. The town has not been chosen for any reason other than a readable mix of old and new edits."
+    ]
+  },
+  {
+    "heading": "How the film was made",
+    "paragraphs": [
+      "A small Python pipeline asks the MassGIS feature service for statistics grouped by town, which keeps the download to a few hundred kilobytes instead of the eight-gigabyte statewide file, and pulls one town's polygons in pages of two thousand. GeoPandas and Shapely tidy the geometry, and the TopoJSON tools write small files the browser can draw.",
+      "The film itself is a React project rendered with Remotion. Every frame is a pure function of time, so any second of it can be rendered on its own for a check. The diagram is data: the cards are a table of positions, and every arrow is derived from the cards it joins, so moving a card moves its arrows. The map is drawn with D3 from the same files, with the towns tinted by the share of parcels edited since 2023 and the parcels by their last-edit year."
+    ]
+  }
+]

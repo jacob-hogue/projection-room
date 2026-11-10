@@ -41,6 +41,7 @@ export const MapProduct: React.FC<Props> = ({ local, towns, parcels, stats }) =>
     if (!stage || !stats) return;
     stage.townFills(townReveal);
     stage.cameraAt(zoom);
+    stage.townDim(zoom);
     stage.parcelFills(parcelReveal);
     stage.setTownOutline(stats.town.id, Math.max(callout * 0.9, zoom * 0.5 * (1 - parcelReveal)));
     const a = stage.anchor(stats.town.id);

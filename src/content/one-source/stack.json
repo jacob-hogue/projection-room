@@ -1,0 +1,10 @@
+[
+  { "label": "Map graphics", "value": "D3 (d3-geo, TopoJSON), SVG" },
+  { "label": "Data pipeline", "value": "Python, GeoPandas, Shapely; MassGIS feature service" },
+  { "label": "Architecture shown", "value": "PostGIS, GeoParquet, PMTiles, ArcGIS hosted feature layer" },
+  { "label": "Site", "value": "Astro, TypeScript" },
+  { "label": "Video rendering", "value": "Remotion, React" },
+  { "label": "Tests", "value": "Vitest, pytest, Playwright" },
+  { "label": "Hosting", "value": "GitHub Pages" },
+  { "label": "AI integration", "value": "Claude Code pair programming" }
+]

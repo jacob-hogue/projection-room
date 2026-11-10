@@ -20,7 +20,7 @@ export const TYPE = { display: 72, heading: 44, caption: 30, label: 18, data: 22
 export const LINE = { display: 80, heading: 52, caption: 40, label: 24, data: 28 } as const;
 
 /** Frame grid. */
-export const GRID = { safe: 64, header: 48, heading: 104, caption: 900, captionWidth: 1100, width: 1920, height: 1080 } as const;
+export const GRID = { safe: 64, header: 48, heading: 104, caption: 884, captionWidth: 1320, width: 1920, height: 1080 } as const;
 
 /** Five greens, oldest to newest; the last is the accent. */
 export const RAMP = ['#1b2a30', '#1f4a3a', '#237a4e', '#2fb066', '#4ade80'] as const;
