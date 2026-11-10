@@ -94,11 +94,14 @@ export function frameAt(t: number): Frame {
     else if (t >= RUN.hold1992 && t < RUN.runTo2007) spot('212', RUN.hold1992, RUN.runTo2007);
     else if (t >= RUN.hold2007 && t < RUN.runTo2025) spot('575', RUN.hold2007, RUN.runTo2025);
     const insetOn = t >= RUN.hold1992 - 0.4 && t < RUN.runTo2007 + 0.4;
+    // The two-color scheme cross-fades back to pulses as the shot opens, before the years move.
+    const back = EASE.inOut(seg(t, S.changes, S.changes + EASE.reveal));
+    const blend = back < 1
+      ? { from: { year: 1947, mode: 'middle' as Mode }, to: { year: 1947, mode: 'pulses' as Mode }, p: back }
+      : { from: { year: y0, mode: 'pulses' as Mode }, to: { year: y1, mode: 'pulses' as Mode }, p: y1 === y0 ? 1 : y - y0 };
     return {
       ...base,
-      from: { year: y0, mode: 'pulses' },
-      to: { year: y1, mode: 'pulses' },
-      p: y1 === y0 ? 1 : y - y0,
+      ...blend,
       focus,
       dim,
       inset: insetOn
