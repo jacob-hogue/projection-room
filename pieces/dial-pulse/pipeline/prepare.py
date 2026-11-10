@@ -4,7 +4,7 @@ Steps: repair geometry, normalize columns, drop overlay features (they duplicate
 parent's geometry; overlays are rebuilt from lineage.csv), keep the lower 48, clip to the
 state outline minus the Great Lakes, project to Conus Albers (EPSG:5070), clean and
 simplify the polygons as one coverage so shared edges match exactly, then write
-data/areas.topojson (via topo.mjs) with one feature per territory carrying `npa` and `id`.
+data/areas.topojson (via scripts/topo.mjs at the repo root) with one feature per territory carrying `npa` and `id`.
 """
 from __future__ import annotations
 
@@ -146,7 +146,7 @@ def write_topojson(gdf: gpd.GeoDataFrame, path: pathlib.Path, quantization: floa
     out.to_file(geojson, driver="GeoJSON")
     try:
         subprocess.run(
-            ["node", str(HERE / "topo.mjs"), str(geojson), str(path), str(quantization), str(toposimplify_m or 0)],
+            ["node", str(HERE.parents[2] / "scripts" / "topo.mjs"), str(geojson), str(path), str(quantization), str(toposimplify_m or 0)],
             check=True, shell=False,
         )
     finally:
@@ -173,7 +173,7 @@ def write_states(states: gpd.GeoDataFrame, path: pathlib.Path, quantization: flo
     geojson = path.with_suffix(".geojson.tmp")
     out.to_file(geojson, driver="GeoJSON")
     try:
-        subprocess.run(["node", str(HERE / "topo.mjs"), str(geojson), str(path), str(quantization), "0", "states"],
+        subprocess.run(["node", str(HERE.parents[2] / "scripts" / "topo.mjs"), str(geojson), str(path), str(quantization), "0", "states"],
                        check=True, shell=False)
     finally:
         geojson.unlink(missing_ok=True)

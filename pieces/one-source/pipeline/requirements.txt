@@ -1,0 +1,7 @@
+geopandas>=1.0
+shapely>=2.0
+pyogrio>=0.9
+numpy>=1.26
+pillow>=10
+# TopoJSON is written by scripts/topo.mjs with the repo's npm packages (Node 22).
+pytest>=8

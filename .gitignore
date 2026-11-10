@@ -46,3 +46,8 @@ public/*/population_1950.csv
 pieces/*/film/public/
 
 public/*/states.topojson
+
+# One Source piece data copied into public/
+public/*/towns.topojson
+public/*/parcels.topojson
+public/*/stats.json
