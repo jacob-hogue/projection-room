@@ -55,11 +55,11 @@ const body = (n: Node): React.ReactNode => {
     case 'log':
       return <span style={{ fontFamily: MONO, fontSize: 15, color: C.secondary }}>Run log · Manifest</span>;
     case 'hosted':
-      return <span><b style={{ fontWeight: 600 }}>Hosted feature layer</b><br /><span style={{ fontSize: 14, color: C.secondary }}>updated with individual edits, never overwritten</span></span>;
+      return <span><b style={{ fontWeight: 600 }}>Hosted feature layer</b><br /><span style={{ fontSize: 14, color: C.secondary }}>for the ArcGIS Online web maps; edits, never overwrites</span></span>;
     case 'parquet':
-      return <span><b style={{ fontWeight: 600 }}>GeoParquet</b><br /><span style={{ fontSize: 14, color: C.secondary }}>versioned data file</span></span>;
+      return <span><b style={{ fontWeight: 600 }}>GeoParquet</b><br /><span style={{ fontSize: 14, color: C.secondary }}>versioned file, for analysis</span></span>;
     case 'pmtiles':
-      return <span><b style={{ fontWeight: 600 }}>PMTiles</b><br /><span style={{ fontSize: 14, color: C.secondary }}>static vector tile archive</span></span>;
+      return <span><b style={{ fontWeight: 600 }}>PMTiles</b><br /><span style={{ fontSize: 14, color: C.secondary }}>static tiles, for any web map</span></span>;
     case 'readers':
       return (
         <span style={{ fontSize: 20, lineHeight: '26px' }}>

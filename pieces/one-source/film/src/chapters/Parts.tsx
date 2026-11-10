@@ -13,7 +13,7 @@ const PARTS = [
   },
   {
     title: 'Updates overwrite the whole layer',
-    body: 'In this scenario each refresh replaces all 48,000 rows to carry about 300 changes. Overwriting is a common way to refresh a hosted layer, and it fails when sync is turned on and grows storage with every run.',
+    body: 'In this scenario each refresh replaces the whole hosted layer, all 48,000 rows, to carry about 300 changes. Overwriting is the usual way to refresh a hosted layer in ArcGIS Online, and it fails when sync is turned on and grows storage with every run.',
     fix: 'Fix: update only what changed',
   },
   {
