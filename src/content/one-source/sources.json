@@ -1,7 +1,57 @@
 [
-  { "name": "Parcels", "detail": "MassGIS Standardized Assessors' Parcels, read from the Massachusetts Property Tax Parcels feature service on November 10, 2026. Counts, fiscal years and last-edit dates grouped by town; Westborough polygons in full.", "href": "https://www.mass.gov/info-details/massgis-data-property-tax-parcels" },
-  { "name": "Town boundaries", "detail": "MassGIS Community Boundaries (Towns) from Survey Points.", "href": "https://www.mass.gov/info-details/massgis-data-municipalities" },
-  { "name": "The overwrite problem", "detail": "Esri Community threads on keeping hosted feature layers in step with a database, and on sync-enabled layers that refuse an overwrite.", "href": "https://community.esri.com/t5/arcgis-online-questions/sync-hosted-feature-services-to-postgres-database/td-p/1069257" },
-  { "name": "Updating sync-enabled layers", "detail": "Esri Community, applying edits through the ArcGIS API for Python when Update Data is blocked.", "href": "https://community.esri.com/t5/arcgis-api-for-python-questions/updating-sync-enabled-feature-layers-via-python/td-p/1223394" },
-  { "name": "Integration as the top blocker", "detail": "CARTO, State of Spatial Analytics 2026: about 30% of respondents named data access and integration delays as their main obstacle.", "href": "https://carto.com/blog/spatial-analytics-in-2026-whats-changing/" }
+  {
+    "name": "Parcels",
+    "detail": "MassGIS Standardized Assessors' Parcels, read from the Massachusetts Property Tax Parcels feature service on November 10, 2026. Counts, fiscal years and last-edit dates grouped by town; Westborough polygons in full.",
+    "href": "https://www.mass.gov/info-details/massgis-data-property-tax-parcels"
+  },
+  {
+    "name": "Town boundaries",
+    "detail": "MassGIS Community Boundaries (Towns) from Survey Points.",
+    "href": "https://www.mass.gov/info-details/massgis-data-municipalities"
+  },
+  {
+    "name": "The overwrite problem",
+    "detail": "Esri Community threads on keeping hosted feature layers in step with a database, and on sync-enabled layers that refuse an overwrite.",
+    "href": "https://community.esri.com/t5/arcgis-online-questions/sync-hosted-feature-services-to-postgres-database/td-p/1069257"
+  },
+  {
+    "name": "Updating sync-enabled layers",
+    "detail": "Esri Community, applying edits through the ArcGIS API for Python when Update Data is blocked.",
+    "href": "https://community.esri.com/t5/arcgis-api-for-python-questions/updating-sync-enabled-feature-layers-via-python/td-p/1223394"
+  },
+  {
+    "name": "Integration as the top blocker",
+    "detail": "CARTO, State of Spatial Analytics 2026: about 30% of respondents named data access and integration delays as their main obstacle.",
+    "href": "https://carto.com/blog/spatial-analytics-in-2026-whats-changing/"
+  },
+  {
+    "name": "Offline editing with branch versions",
+    "detail": "ArcGIS Enterprise help, Work with offline maps and branch versioned data: GlobalIDs, replica tracking, a version per offline area.",
+    "href": "https://enterprise.arcgis.com/en/server/latest/publish-services/windows/offline-maps-and-branch-versioned-data.htm"
+  },
+  {
+    "name": "Extract Changes",
+    "detail": "ArcGIS REST API, Extract Changes on a feature service with change tracking.",
+    "href": "https://developers.arcgis.com/rest/services-reference/enterprise/extract-changes-feature-service/"
+  },
+  {
+    "name": "Append with update",
+    "detail": "Esri, Updating data gets more flexible with Append: update existing features by a match field, not on sync-enabled layers.",
+    "href": "https://www.esri.com/arcgis-blog/products/arcgis-online/data-management/whats-new-with-hosted-feature-layers-updating-data-gets-more-flexible-with-append"
+  },
+  {
+    "name": "Distributed collaboration",
+    "detail": "ArcGIS Online help, Create a distributed collaboration: copies synchronized on a schedule the Enterprise side sets.",
+    "href": "https://doc.arcgis.com/en/arcgis-online/administer/create-a-collaboration.htm"
+  },
+  {
+    "name": "Parquet in ArcGIS Pro",
+    "detail": "Esri, Enhancing support for Parquet files: native Parquet and GeoParquet from ArcGIS Pro 3.5.",
+    "href": "https://www.esri.com/arcgis-blog/products/arcgis-pro/announcements/geoparquet-arcgis"
+  },
+  {
+    "name": "PMTiles in ArcGIS",
+    "detail": "Esri Community, Introduce a PMTileLayer: no native PMTiles support in the Maps SDK as of 2026.",
+    "href": "https://community.esri.com/t5/arcgis-javascript-maps-sdk-ideas/introduce-a-pmtilelayer/m-p/1623262"
+  }
 ]

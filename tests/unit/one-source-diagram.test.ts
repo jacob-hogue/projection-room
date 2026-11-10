@@ -8,7 +8,7 @@ const onBoundary = (x: number, y: number, n: { x: number; y: number; w: number; 
 describe('architecture diagram', () => {
   test('every arrow head lands on a node edge, one pixel short', () => {
     const heads = edges().filter((s) => s.head);
-    expect(heads.length).toBe(9);
+    expect(heads.length).toBe(10);
     for (const s of heads) {
       const dx = Math.sign(s.x2 - s.x1);
       const dy = Math.sign(s.y2 - s.y1);

@@ -43,7 +43,7 @@ export const NodeCard: React.FC<NodeCardProps> = ({ node, enter, live = false, p
         width: node.w,
         height: node.h,
         boxSizing: 'border-box',
-        padding: node.kind === 'source' ? 20 : node.kind === 'step' ? '14px 16px' : '10px 14px',
+        padding: node.kind === 'source' ? 20 : node.kind === 'service' ? '14px 14px' : node.kind === 'step' ? '14px 16px' : '10px 14px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
