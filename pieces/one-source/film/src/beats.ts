@@ -8,12 +8,16 @@ export const FILM_SECONDS = 186;
 export const DISSOLVE = 0.6;
 
 export const TITLE = 'One Source';
-export const RULE = 'A county keeps five copies of its parcel map. One database and a nightly job replace all of them.';
+export const RULE = 'A county keeps five copies of its parcel map. One database and a nightly update bring them together.';
 export const BYLINE = 'A data film by Jacob Hogue';
 export const URL_LINE = 'jacob-hogue.github.io/projection-room';
 export const SOURCE = 'Parcels: MassGIS Standardized Assessors’ Parcels, feature service read 2026-11-10 · Town boundaries: MassGIS';
 export const STACK_LINE = 'PostGIS · GeoParquet · PMTiles · D3 · Remotion';
 export const PIECE_LABEL = 'One Source · Projection Room 02';
+export const END_LINE = 'When there’s one source of record, every map reads the same parcels.';
+
+/** The one date window the film uses for "recent" edits, as YYYYMMDD. */
+export const CUTOFF = 20230101;
 
 /** Chapter starts. */
 export const S = {
@@ -65,18 +69,18 @@ export interface Caption {
 }
 
 export const CAPTIONS: Caption[] = [
-  { from: 0, to: 8, text: 'A county keeps five copies of its parcel map. This is the story of how one database and a nightly job replace all of them.' },
-  { from: 8, to: 20, text: 'Picture a county of about 180,000 people. It is a composite, but every GIS team will recognise it. The assessor, the planning office, public works, dispatch and the open data portal each keep their own copy of the same parcels.' },
-  { from: 20, to: 32, text: 'Over the years the copies have drifted apart. The key field has a different name in every office, the parcel counts no longer agree, and when two maps disagree there is no agreed way to say which one is correct.' },
-  { from: 32, to: 54, text: 'Pulled apart, the problem turns out to be three smaller ones. Nobody owns the master copy. Every refresh rewrites the whole layer to carry a few hundred changes. And the applications that only need to read sit on the same layer that staff edit all day. Each of the three has a fix that GIS teams already know how to run.' },
-  { from: 54, to: 72, text: 'The fix starts with one database that holds the official parcels, and only the offices that maintain them are allowed to write to it. It tracks who edited each row and when, and every row carries a global identifier that never changes.' },
-  { from: 72, to: 90, text: 'Each night a job finds the rows that changed, checks them, and publishes them in three read-only forms: a hosted feature layer updated with edits rather than overwritten, a GeoParquet file, and a PMTiles file. Every web map, portal and department view reads from those outputs, so the departmental copies can be retired.' },
-  { from: 90, to: 102, text: 'The job begins with a single question: which rows have changed since it last ran? The answer comes from the edit tracking in the database, and on a typical night it is a few hundred rows out of tens of thousands.' },
-  { from: 102, to: 114, text: 'Before anything is published, the changed rows are checked. Do the counts add up? Is every polygon valid? Does the schema still match what the readers expect? A failed check stops the run and writes the reason to the log.' },
-  { from: 114, to: 127, text: 'Publishing applies the changes as edits to the hosted layer, so nothing is overwritten and sync keeps working. The same rows are written into a new GeoParquet file and a new PMTiles file, each with the date in its name.' },
-  { from: 127, to: 140, text: 'Serving is the easy part. Every reader points at one of the three outputs, and none of them needs a copy. When the job finishes, the run log records what moved, how long it took, and which files are current.' },
-  { from: 140, to: 158, text: 'Massachusetts already runs this idea at the scale of a state. MassGIS gathers the parcels of all 351 cities and towns into one standardised layer, 2.56 million parcels, and every parcel carries the date it was last edited. Here each town is tinted by how fresh its parcel data is.' },
-  { from: 158, to: 174, text: 'Zoom into one town and the same date is on every parcel. In Westborough, 7,164 parcels carry edits from 2012 to 2026, and the newest ones glow green. When there is one source of record, every map reads the same parcels.' },
+  { from: 0, to: 8, text: 'A county has five different copies of its parcel map. Here’s how one database and a nightly update can bring them all together.' },
+  { from: 8, to: 20, text: 'Imagine a county with about 180,000 people. It’s a fictional example, but the setup should look familiar to just about any GIS team. The assessor, planning office, public works, dispatch, and open data portal all maintain their own copy of the same parcels.' },
+  { from: 20, to: 32, text: 'Over time, those copies start to drift. The parcel ID field has a different name in each office. The counts don’t match. And when two maps disagree, there’s no clear way to know which one is right.' },
+  { from: 32, to: 54, text: 'There are really three problems here. First, there’s no single authoritative copy. Second, every update replaces the entire layer just to account for a few hundred changes. And third, the applications that only need to read the data share a layer with the staff who edit it. Each problem has a pretty straightforward solution.' },
+  { from: 54, to: 72, text: 'It starts with one database that holds the official parcel data. Only the offices responsible for maintaining it can make changes. The database tracks who edited each record and when, and every parcel has a GlobalID that stays with it.' },
+  { from: 72, to: 90, text: 'Every night, a job picks up the records that have changed, checks them, and publishes three updated outputs: a hosted feature layer, a GeoParquet file, and a PMTiles file. Instead of maintaining separate copies, every web map, portal, and department application reads from these shared outputs.' },
+  { from: 90, to: 102, text: 'The job starts with a simple question: what changed since the last run? Edit tracking in the database gives us that answer. On a typical night, that’s just a few hundred records out of tens of thousands.' },
+  { from: 102, to: 114, text: 'Before publishing anything, the job checks the changes. Do the row counts match? Are all the geometries valid? Does the schema still match what the applications expect? If any check fails, the job stops and records the reason in the log.' },
+  { from: 114, to: 127, text: 'Once everything passes, the changes are published. The hosted feature layer receives individual edits instead of a full overwrite, so sync keeps working. The same changes are also written to a new GeoParquet file and PMTiles file, each stamped with the run date.' },
+  { from: 127, to: 140, text: 'From there, every application reads from one of those outputs. No department needs to maintain its own copy. The run log keeps track of what changed, how long the job took, and which files are up to date.' },
+  { from: 140, to: 158, text: 'Massachusetts already does something similar at the state level. MassGIS brings together parcels from all 351 cities and towns in one standardized layer, covering more than 2.56 million parcels. Each parcel includes the date it was last edited. Nearly four out of five haven’t been updated since before 2015. On this map, towns with parcel edits since 2023 show up in green.' },
+  { from: 158, to: 174, text: 'Zoom into Westborough, and you can see that same edit history at the parcel level. There are 7,164 parcels, with records dating from 2012 through 2026. Of those, 730 have been updated since the start of 2023. With one shared source of record, every map is working from the same data.' },
   { from: 174, to: FILM_SECONDS, text: '' },
 ];
 

@@ -28,6 +28,7 @@ QUANTIZATION = 1e5
 TOWN_TOLERANCE_M = 60
 PARCEL_TOLERANCE_M = 1
 FRESH_BANDS = ("2023to2024", "2025on")
+CUTOFF = 20230101  # the one date window the film uses for "recent" edits
 
 
 def edit_year(v) -> int | None:
@@ -154,7 +155,7 @@ def build_stats(towns: gpd.GeoDataFrame, bands: dict[str, dict[int, int]], parce
             "last": latest,
             "years": {str(k): int(v) for k, v in sorted(years.items())},
             "latest": {"date": latest, "count": on_latest},
-            "since2025": int((parcels["edit"] >= 20250101).sum()),
+            "since2023": int((parcels["edit"] >= CUTOFF).sum()),
             "sample": [{"loc": r.loc, "edit": int(r.edit)} for r in recent.head(7).itertuples()],
         },
     }
