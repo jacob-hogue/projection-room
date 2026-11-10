@@ -3,7 +3,7 @@
  * rendered on its own. Nine shots; the year run is three events (1948, 1992, 2007) and 2025.
  */
 export const FPS = 30;
-export const FILM_SECONDS = 147.5;
+export const FILM_SECONDS = 151;
 export const LOOP_FROM = 86;
 export const LOOP_SECONDS = 7;
 
@@ -33,9 +33,9 @@ export const S = {
   contrast: 47,
   middle: 63,
   changes: 80,
-  present: 111.5,
-  conclusion: 124.5,
-  end: 141.5,
+  present: 115,
+  conclusion: 128,
+  end: 145,
 };
 
 export const CAPTIONS: Caption[] = [
@@ -54,12 +54,12 @@ export const CAPTIONS: Caption[] = [
 /** The year run: hold 1947, step to 1948, run to 1992, hold, run to 2007, hold, run to 2025. */
 export const RUN = {
   split1948: 82.5,
-  runTo1992: 86,
-  hold1992: 90.5,
-  runTo2007: 96,
-  hold2007: 99.5,
-  runTo2025: 105,
-  done: 108.5,
+  runTo1992: 88.5,
+  hold1992: 93,
+  runTo2007: 99,
+  hold2007: 102.5,
+  runTo2025: 108.5,
+  done: 112,
 };
 
 export function yearAt(t: number): number {
