@@ -32,19 +32,19 @@ const SEGS = edges();
 const body = (n: Node): React.ReactNode => {
   switch (n.id) {
     case 'assessor':
-      return <span><span style={eyebrow()}>assessor</span><br />desktop GIS</span>;
+      return <span><span style={eyebrow()}>assessor</span><br />Desktop GIS</span>;
     case 'field':
-      return <span><span style={eyebrow()}>field crews</span><br />Field Maps, offline</span>;
+      return <span><span style={eyebrow()}>field crews</span><br />Field Maps, offline editing</span>;
     case 'planning':
-      return <span><span style={eyebrow()}>planning</span><br />web editor</span>;
+      return <span><span style={eyebrow()}>planning</span><br />Web editor</span>;
     case 'service':
       return (
         <span style={{ fontSize: 15, lineHeight: '22px' }}>
-          <span style={{ ...eyebrow(), fontSize: 12 }}>one editing service</span>
+          <span style={{ ...eyebrow(), fontSize: 12 }}>editing service</span>
           <br />
-          <b style={{ fontSize: 20, lineHeight: '28px', fontWeight: 600 }}>On the source</b>
+          <b style={{ fontSize: 20, lineHeight: '28px', fontWeight: 600 }}>Editing and review</b>
           <br />
-          <span style={{ color: C.secondary }}>editor tracking · offline sync · branch versions for review</span>
+          <span style={{ color: C.secondary }}>editor tracking · offline sync · branch versioning</span>
         </span>
       );
     case 'source':
@@ -54,7 +54,7 @@ const body = (n: Node): React.ReactNode => {
           <br />
           <b style={{ fontSize: 36, lineHeight: '48px', fontWeight: 600 }}>Parcels</b>
           <br />
-          <span style={{ color: C.secondary }}>PostGIS · GlobalIDs</span>
+          <span style={{ color: C.secondary }}>PostgreSQL enterprise geodatabase · GlobalIDs</span>
         </span>
       );
     case 'detect':
@@ -66,15 +66,15 @@ const body = (n: Node): React.ReactNode => {
     case 'log':
       return <span style={{ fontFamily: MONO, fontSize: 15, color: C.secondary }}>Run log · Manifest</span>;
     case 'hosted':
-      return <span style={{ fontSize: 16, lineHeight: '20px' }}><b style={{ fontWeight: 600 }}>Hosted feature layer</b><br /><span style={{ fontSize: 13, lineHeight: '17px', color: C.secondary }}>for ArcGIS Online maps; edits, not overwrites</span></span>;
+      return <span style={{ fontSize: 16, lineHeight: '20px' }}><b style={{ fontWeight: 600 }}>Hosted feature layer</b><br /><span style={{ fontSize: 13, lineHeight: '17px', color: C.secondary }}>ArcGIS Online maps</span></span>;
     case 'parquet':
-      return <span style={{ fontSize: 16, lineHeight: '20px' }}><b style={{ fontWeight: 600 }}>GeoParquet</b><br /><span style={{ fontSize: 13, lineHeight: '17px', color: C.secondary }}>versioned file, for analysis</span></span>;
+      return <span style={{ fontSize: 16, lineHeight: '20px' }}><b style={{ fontWeight: 600 }}>GeoParquet</b><br /><span style={{ fontSize: 13, lineHeight: '17px', color: C.secondary }}>analysis and data exchange</span></span>;
     case 'pmtiles':
-      return <span style={{ fontSize: 16, lineHeight: '20px' }}><b style={{ fontWeight: 600 }}>PMTiles</b><br /><span style={{ fontSize: 13, lineHeight: '17px', color: C.secondary }}>static tiles, for open-source web maps</span></span>;
+      return <span style={{ fontSize: 16, lineHeight: '20px' }}><b style={{ fontWeight: 600 }}>PMTiles</b><br /><span style={{ fontSize: 13, lineHeight: '17px', color: C.secondary }}>open-source web maps</span></span>;
     case 'readers':
       return (
         <span style={{ fontSize: 20, lineHeight: '26px' }}>
-          <span style={eyebrow()}>reads</span>&nbsp;&nbsp; Every web map, portal and application reads from here. Nobody keeps a copy.
+          <span style={eyebrow()}>reads</span>&nbsp;&nbsp; Every web map, portal, and application reads from these outputs. No departmental copies.
         </span>
       );
     default:
@@ -87,7 +87,7 @@ export const Architecture: React.FC<{ local: number }> = ({ local }) => {
   const counts: Record<number, number> = {};
   return (
     <>
-      <Heading text="The solution: one source of record, published nightly" enter={enterAt(local, 0.2)} />
+      <Heading text="One source of record. Updated nightly." enter={enterAt(local, 0.2)} />
       <div style={{ position: 'absolute', left: BAND.x, top: BAND.y, width: BAND.w, height: BAND.h, boxSizing: 'border-box', border: `1px solid ${C.hairline}`, borderRadius: 14, background: 'rgba(17,24,33,0.7)', opacity: band }} />
       <div style={{ position: 'absolute', left: BAND.x + 16, top: BAND.y + 12, ...label, fontSize: 13, opacity: band }}>Nightly update · 02:00</div>
       {SEGS.map((s, i) => {

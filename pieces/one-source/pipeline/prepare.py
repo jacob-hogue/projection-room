@@ -9,6 +9,7 @@ Writes, under pieces/one-source/data/:
 from __future__ import annotations
 
 import collections
+import datetime
 import json
 import pathlib
 import subprocess
@@ -29,6 +30,7 @@ TOWN_TOLERANCE_M = 60
 PARCEL_TOLERANCE_M = 1
 FRESH_BANDS = ("2023to2024", "2025on")
 CUTOFF = 20230101  # the one date window the film uses for "recent" edits
+BATCH_MIN = 20  # the nightly example is the latest edit date with at least this many records
 
 
 def edit_year(v) -> int | None:
@@ -140,7 +142,11 @@ def build_stats(towns: gpd.GeoDataFrame, bands: dict[str, dict[int, int]], parce
     edits = [int(e) for e in parcels["edit"] if e is not None]
     latest = max(edits)
     on_latest = int((parcels["edit"] == latest).sum())
-    recent = parcels[parcels["edit"].notna()].sort_values(["edit", "loc"], ascending=[False, True]).drop_duplicates("loc")
+    # The nightly example is the latest edit date that carries a real batch (20 records or more).
+    by_date = collections.Counter(edits)
+    batch_date = max((d for d, n in by_date.items() if n >= BATCH_MIN), default=latest)
+    batch_rows = parcels[parcels["edit"] == batch_date].sort_values("loc").drop_duplicates("loc")
+    run_day = datetime.date(batch_date // 10000, batch_date // 100 % 100, batch_date % 100) + datetime.timedelta(days=1)
     return {
         "run": f"{RUN_DATE // 10000}-{RUN_DATE // 100 % 100:02d}-{RUN_DATE % 100:02d}",
         "towns": int(len(towns)),
@@ -156,7 +162,8 @@ def build_stats(towns: gpd.GeoDataFrame, bands: dict[str, dict[int, int]], parce
             "years": {str(k): int(v) for k, v in sorted(years.items())},
             "latest": {"date": latest, "count": on_latest},
             "since2023": int((parcels["edit"] >= CUTOFF).sum()),
-            "sample": [{"loc": r.loc, "edit": int(r.edit)} for r in recent.head(7).itertuples()],
+            "batch": {"date": int(batch_date), "count": int(by_date[batch_date]), "run": run_day.isoformat()},
+            "sample": [{"loc": r.loc, "edit": int(r.edit)} for r in batch_rows.head(7).itertuples()],
         },
     }
 

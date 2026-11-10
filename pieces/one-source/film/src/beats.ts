@@ -12,17 +12,17 @@ export const RULE = 'Problem: a county keeps five copies of its parcel data. Sol
 /** The brief on the title card. */
 export const BRIEF = [
   { label: 'Scenario', text: 'Five county offices work from one parcel map.' },
-  { label: 'Users', text: 'Assessor, planning, public works, dispatch, open data portal.' },
   { label: 'Problem', text: 'Each office keeps its own copy. The copies disagree.' },
-  { label: 'Assumptions', text: 'A fictional county with illustrative numbers. ArcGIS Online for web maps, ArcGIS Enterprise for editing.' },
   { label: 'Solution', text: 'One database of record, one editing service, and a nightly job that publishes read-only outputs.' },
 ] as const;
+/** Under the title: what the scenario assumes. */
+export const BRIEF_NOTE = 'Illustrative county scenario \u00b7 ArcGIS Online \u00b7 ArcGIS Enterprise';
 export const BYLINE = 'A data film by Jacob Hogue';
 export const URL_LINE = 'jacob-hogue.github.io/projection-room';
 export const SOURCE = 'Parcels: MassGIS Standardized Assessors’ Parcels, feature service read 2026-11-10 · Town boundaries: MassGIS';
 export const STACK_LINE = 'PostGIS · GeoParquet · PMTiles · D3 · Remotion';
 export const PIECE_LABEL = 'One Source · Projection Room 02';
-export const END_LINE = 'One source of record, a nightly update, and every map reads the same parcels.';
+export const END_LINE = 'One source of record. Every map reads the same parcels.';
 /** The closing summary. */
 export const SUMMARY = [
   { label: 'Problem', text: 'Five copies, no single source.' },
@@ -84,17 +84,17 @@ export interface Caption {
 
 export const CAPTIONS: Caption[] = [
   { from: 0, to: 16, text: '' },
-  { from: 16, to: 30, text: 'Five offices, five jobs, one set of parcels. Each office keeps its own copy.' },
-  { from: 30, to: 46, text: 'The copies drift. Field names differ, counts no longer match, and nobody can say which map is right.' },
-  { from: 46, to: 76, text: 'Three problems hide in there. Each one has a known fix.' },
-  { from: 76, to: 96, text: 'One database holds the parcels. Everyone edits it through one service, in the office or in the field.' },
-  { from: 96, to: 116, text: 'Each night a job carries the changes to three read-only outputs. Everyone else reads those.' },
-  { from: 116, to: 130, text: 'Step one: what changed since last night? Edit tracking answers that.' },
-  { from: 130, to: 143, text: 'Step two: check the changes. Counts, geometry, schema. A failure stops the run.' },
-  { from: 143, to: 156, text: 'Step three: publish. Edits, not overwrites, so sync keeps working.' },
-  { from: 156, to: 170, text: 'Step four: serve. Every application reads an output. Nobody keeps a copy.' },
-  { from: 170, to: 190, text: 'Massachusetts already runs one parcel layer for 351 towns. Towns with edits since 2023 show in green.' },
-  { from: 190, to: 206, text: 'Westborough, parcel by parcel. 730 of 7,164 edited since 2023.' },
+  { from: 16, to: 30, text: 'Five offices, five copies of the same parcel data. Each office maintains its own version.' },
+  { from: 30, to: 46, text: 'Over time, the copies drift. Field names differ, counts stop matching, and nobody knows which map to trust.' },
+  { from: 46, to: 76, text: 'There are three problems here, and each has a straightforward fix.' },
+  { from: 76, to: 96, text: 'One database holds the official parcel data. Staff edit it through a single service, whether they\u2019re at their desks or out in the field.' },
+  { from: 96, to: 116, text: 'Each night, a job picks up the changes and publishes three read-only outputs. Everyone else reads from those.' },
+  { from: 116, to: 130, text: 'First, find what changed since the last run. The database\u2019s edit tracking tells us.' },
+  { from: 130, to: 143, text: 'Next, validate the changes: row counts, geometry, and schema. If anything fails, the job stops.' },
+  { from: 143, to: 156, text: 'Then publish. The hosted feature layer gets individual edits, not a full overwrite, so sync keeps working.' },
+  { from: 156, to: 170, text: 'Finally, serve. Every application reads from one of the outputs. No department needs its own copy.' },
+  { from: 170, to: 190, text: 'MassGIS brings together parcels from all 351 Massachusetts towns in one standardized layer. Towns with parcel edits since 2023 show up in green.' },
+  { from: 190, to: 206, text: 'Here\u2019s Westborough, parcel by parcel. 730 of its 7,164 parcels have been edited since 2023.' },
   { from: 206, to: FILM_SECONDS, text: '' },
 ];
 

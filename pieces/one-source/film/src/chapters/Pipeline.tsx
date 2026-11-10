@@ -1,4 +1,4 @@
-import { CUTOFF, EASE, seg } from '../beats';
+import { EASE, seg } from '../beats';
 import { type Stats, formatDate, share } from '../changes';
 import { Heading } from '../chrome';
 import { MONO } from '../fonts';
@@ -27,8 +27,8 @@ const HEADINGS = ['Step 1 of 4: find what changed', 'Step 2 of 4: check the chan
 const panel: React.CSSProperties = { borderRadius: 12, background: C.surface, border: `1px solid ${C.hairline}`, boxSizing: 'border-box' };
 const cell: React.CSSProperties = { display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 24, padding: '9px 26px' };
 
-/** Output files carry the run date. */
-const fileDate = (stats: Stats): string => stats.run;
+/** Output files carry the run date: the night after the batch of edits. */
+const fileDate = (stats: Stats): string => stats.town.batch.run;
 
 const Detect: React.FC<{ local: number; stats: Stats }> = ({ local, stats }) => {
   const t = stats.town;
@@ -36,8 +36,8 @@ const Detect: React.FC<{ local: number; stats: Stats }> = ({ local, stats }) => 
     <>
       <div style={{ position: 'absolute', left: LEFT, top: TOP, width: WIDTH, display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 24 }}>
         <Stat eyebrow="source records" value={t.n} enter={enterAt(local, 0.6, EASE.state)} />
-        <Stat eyebrow={`edited since ${formatDate(CUTOFF)}`} value={t.since2023} enter={enterAt(local, 1.2, EASE.state)} live />
-        <Stat eyebrow="share of the layer updated" value={share(t.since2023, t.n)} enter={enterAt(local, 1.8, EASE.state)} />
+        <Stat eyebrow="changed since the last run" value={t.batch.count} enter={enterAt(local, 1.2, EASE.state)} live />
+        <Stat eyebrow="share of the layer updated" value={share(t.batch.count, t.n)} enter={enterAt(local, 1.8, EASE.state)} />
       </div>
       <div style={{ position: 'absolute', left: LEFT, top: TOP + 176, width: WIDTH, ...panel, overflow: 'hidden', fontFamily: MONO, fontSize: 19, ...rise(enterAt(local, 2.4, EASE.state)) }}>
         <div style={{ ...cell, borderBottom: `1px solid ${C.hairline}`, ...eyebrow(), fontSize: 13 }}>
@@ -57,7 +57,7 @@ const Detect: React.FC<{ local: number; stats: Stats }> = ({ local, stats }) => 
           </div>
         ))}
         <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 26px', fontSize: 14, color: C.muted, ...rise(enterAt(local, 6.0, EASE.state)) }}>
-          <div>{fmt(t.since2023)} of {fmt(t.n)} records</div>
+          <div>{fmt(t.batch.count)} of {fmt(t.n)} records</div>
           <div>from edit tracking</div>
         </div>
       </div>
@@ -100,7 +100,7 @@ const Validate: React.FC<{ local: number; stats: Stats }> = ({ local, stats }) =
         })}
       </div>
       <div style={{ position: 'absolute', left: LEFT, top: TOP + 3 * 116 + 20, fontSize: 24, lineHeight: '34px', color: C.secondary, ...rise(enterAt(l, 6.6, EASE.state)) }}>
-        All three checks passed. A failure stops the run and goes in the log.
+        All three checks passed. If anything fails, the job stops.
       </div>
     </>
   );
@@ -111,7 +111,7 @@ const Publish: React.FC<{ local: number; stats: Stats }> = ({ local, stats }) =>
   const t = stats.town;
   const date = fileDate(stats);
   const outputs = [
-    { name: 'Hosted feature layer', file: `${fmt(t.since2023)} edits applied, no overwrite`, done: 'applied' },
+    { name: 'Hosted feature layer', file: `${fmt(t.batch.count)} edits applied, no overwrite`, done: 'applied' },
     { name: 'GeoParquet', file: `parcels_${date}.parquet`, done: 'written' },
     { name: 'PMTiles', file: `parcels_${date}.pmtiles`, done: 'written' },
   ];
@@ -146,10 +146,10 @@ const Serve: React.FC<{ local: number; stats: Stats }> = ({ local, stats }) => {
   const t = stats.town;
   const date = fileDate(stats);
   const log = [
-    `run ${stats.run} 02:00`,
-    `${fmt(t.since2023)} records changed since last run`,
+    `run ${date} 02:00`,
+    `${fmt(t.batch.count)} records changed since last run`,
     '3 checks passed',
-    `hosted layer: ${fmt(t.since2023)} edits applied`,
+    `hosted layer: ${fmt(t.batch.count)} edits applied`,
     `parcels_${date}.parquet written`,
     `parcels_${date}.pmtiles written`,
     'done',

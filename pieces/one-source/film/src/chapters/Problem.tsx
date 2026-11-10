@@ -33,9 +33,9 @@ const DRIFT_AT = 14.4;
 
 export const Problem: React.FC<{ local: number }> = ({ local }) => (
   <>
-    <Heading text="The problem: five copies of one parcel map" enter={enterAt(local, 0.2)} />
+    <Heading text="Five offices. Five copies." enter={enterAt(local, 0.2)} />
     <div style={{ position: 'absolute', left: 64, top: 168, fontSize: 22, lineHeight: '30px', color: C.secondary, ...rise(enterAt(local, 0.6)) }}>
-      Example County. Five offices, five copies, five answers to the same question.
+      Each office has its own version of the parcel data.
     </div>
     {OFFICES.map((o, i) => {
       const enter = staggerAt(local, 1.2, i, 0.6, EASE.state);

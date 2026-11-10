@@ -28,6 +28,8 @@ export interface Stats {
     latest: { date: number; count: number };
     /** Parcels with an edit date on or after the film's CUTOFF (2023-01-01). */
     since2023: number;
+    /** The latest edit date with a real batch of records, and the night after it. */
+    batch: { date: number; count: number; run: string };
     sample: { loc: string; edit: number }[];
   };
 }

@@ -7,18 +7,18 @@ import { C } from '../theme';
 
 const PARTS = [
   {
-    title: 'No single source of truth',
+    title: 'No single source of record',
     body: 'Five copies, none authoritative. Fix a lot line in one and the other four stay wrong.',
     fix: 'Fix: one source of record',
   },
   {
-    title: 'Updates overwrite the whole layer',
+    title: 'Every update replaces the whole layer',
     body: 'Each refresh replaces all 48,000 rows to carry about 300 changes. It fails when sync is on, and storage grows every run.',
     fix: 'Fix: update only what changed',
   },
   {
     title: 'Readers and editors share a layer',
-    body: 'Apps that only read sit on the layer staff edit all day. Every edit is a risk, every reader is load.',
+    body: 'Apps that only read sit on the layer staff edit all day. Edits affect readers. Readers add load.',
     fix: 'Fix: separate read and write access',
   },
 ];
@@ -30,7 +30,7 @@ const H = 400;
 
 export const Parts: React.FC<{ local: number }> = ({ local }) => (
   <>
-    <Heading text="Three parts, three fixes" enter={enterAt(local, 0.2)} />
+    <Heading text="Three problems. Three fixes." enter={enterAt(local, 0.2)} />
     {PARTS.map((p, i) => {
       const enter = staggerAt(local, 1.0, i, 1.2, EASE.state);
       const fix = staggerAt(local, 4.0, i, 1.2, EASE.state);
