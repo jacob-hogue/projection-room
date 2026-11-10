@@ -11,7 +11,7 @@ import stack from '../../content/one-source/stack.json';
 
 const base = import.meta.env.BASE_URL;
 const title = 'One Source';
-const rule = 'A county keeps five copies of its parcel map. One database and a nightly update bring them together.';
+const rule = 'Problem: a county keeps five copies of its parcel data. Solution: one shared database with a nightly update that every map reads from.';
 const filmPath = join(process.cwd(), 'public', 'one-source', 'film.mp4');
 const filmExists = existsSync(filmPath);
 // The version changes with every render, so browsers never resume an old copy under the same URL.

@@ -22,7 +22,7 @@ const stepAlpha = (local: number, i: number): number => {
   return Math.min(seg(local, start, start + FADE), 1 - seg(local, end, end + FADE));
 };
 
-const HEADINGS = ['Step 1 of 4: find what changed', 'Step 2 of 4: validate the changes', 'Step 3 of 4: publish the updates', 'Step 4 of 4: serve every application'];
+const HEADINGS = ['The nightly job, step 1 of 4: find what changed', 'The nightly job, step 2 of 4: validate the changes', 'The nightly job, step 3 of 4: publish the updates', 'The nightly job, step 4 of 4: serve every application'];
 
 const panel: React.CSSProperties = { borderRadius: 12, background: C.surface, border: `1px solid ${C.hairline}`, boxSizing: 'border-box' };
 const cell: React.CSSProperties = { display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 24, padding: '9px 26px' };

@@ -1,21 +1,28 @@
-import { BYLINE, EASE, RULE, TITLE } from '../beats';
+import { BRIEF, BYLINE, EASE, TITLE } from '../beats';
 import { MONO } from '../fonts';
-import { enterAt } from '../frame';
+import { enterAt, staggerAt } from '../frame';
 import { rise } from '../parts';
-import { C, LINE, TYPE } from '../theme';
+import { C, GRID } from '../theme';
 
-/** The title card: eyebrow, title, rule and byline settle in one after another. */
-export const Opening: React.FC<{ local: number }> = ({ local }) => {
-  const a = enterAt(local, 0.4, EASE.reveal);
-  const b = enterAt(local, 1.0, EASE.reveal);
-  const c = enterAt(local, 1.8, EASE.reveal);
-  const d = enterAt(local, 2.6, EASE.reveal);
-  return (
-    <div style={{ position: 'absolute', left: 64, top: 0, width: 1792, height: 1080, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 28 }}>
-      <div style={{ fontFamily: MONO, fontSize: 16, letterSpacing: '0.14em', textTransform: 'uppercase', color: C.green, ...rise(a) }}>A data film</div>
-      <div style={{ fontSize: 112, lineHeight: '120px', fontWeight: 600, letterSpacing: '-0.02em', ...rise(b) }}>{TITLE}</div>
-      <div style={{ maxWidth: 1000, fontSize: TYPE.caption, lineHeight: `${LINE.caption}px`, color: C.secondary, ...rise(c) }}>{RULE}</div>
-      <div style={{ fontFamily: MONO, fontSize: 17, color: C.muted, ...rise(d) }}>{BYLINE}</div>
+/** The title card is a brief: scenario, users, problem, assumptions, solution, one line after another. */
+export const Opening: React.FC<{ local: number }> = ({ local }) => (
+  <div style={{ position: 'absolute', left: GRID.safe, top: GRID.heading, width: 1792, display: 'flex', flexDirection: 'column', gap: 28 }}>
+    <div style={{ display: 'flex', alignItems: 'baseline', gap: 24, ...rise(enterAt(local, 0.4, EASE.reveal)) }}>
+      <div style={{ fontSize: 72, lineHeight: '80px', fontWeight: 600, letterSpacing: '-0.015em' }}>{TITLE}</div>
+      <div style={{ fontFamily: MONO, fontSize: 16, letterSpacing: '0.14em', textTransform: 'uppercase', color: C.muted }}>{BYLINE}</div>
     </div>
-  );
-};
+    <div style={{ display: 'flex', flexDirection: 'column', borderTop: `1px solid ${C.hairline}` }}>
+      {BRIEF.map((row, i) => {
+        const enter = staggerAt(local, 1.2, i, 1.0, EASE.reveal);
+        const isSolution = row.label === 'Solution';
+        const color = isSolution ? C.green : row.label === 'Problem' ? C.amber : C.secondary;
+        return (
+          <div key={row.label} style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: 32, alignItems: 'baseline', padding: '22px 0', borderBottom: `1px solid ${C.hairline}`, ...rise(enter) }}>
+            <div style={{ fontFamily: MONO, fontSize: 18, letterSpacing: '0.12em', textTransform: 'uppercase', color }}>{row.label}</div>
+            <div style={{ maxWidth: 1300, fontSize: 32, lineHeight: '42px', fontWeight: isSolution ? 500 : 400, color: C.text }}>{row.text}</div>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+);

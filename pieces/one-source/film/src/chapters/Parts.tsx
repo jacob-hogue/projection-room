@@ -12,8 +12,8 @@ const PARTS = [
     fix: 'Fix: one source of record',
   },
   {
-    title: 'Every update replaces everything',
-    body: 'The nightly update replaces all 48,000 rows just to carry about 300 changes. Sync can prevent the overwrite from completing, and the storage behind the layer grows with every run.',
+    title: 'Updates overwrite the whole layer',
+    body: 'In this scenario each refresh replaces all 48,000 rows to carry about 300 changes. Overwriting is a common way to refresh a hosted layer, and it fails when sync is turned on and grows storage with every run.',
     fix: 'Fix: update only what changed',
   },
   {
@@ -30,7 +30,7 @@ const H = 440;
 
 export const Parts: React.FC<{ local: number }> = ({ local }) => (
   <>
-    <Heading text="Three problems. Three straightforward fixes." enter={enterAt(local, 0.2)} />
+    <Heading text="Breaking the problem into three parts, each with a known fix" enter={enterAt(local, 0.2)} />
     {PARTS.map((p, i) => {
       const enter = staggerAt(local, 1.0, i, 1.2, EASE.state);
       const fix = staggerAt(local, 4.0, i, 1.2, EASE.state);

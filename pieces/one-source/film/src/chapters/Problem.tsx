@@ -7,6 +7,8 @@ import { C } from '../theme';
 
 interface Office {
   name: string;
+  /** What this user does with the parcels. */
+  uses: string;
   field: string;
   count: number;
   note: string;
@@ -15,11 +17,11 @@ interface Office {
 
 /** Example County is fictional; the caption says so. */
 export const OFFICES: Office[] = [
-  { name: 'Assessor', field: 'Parcel_ID', count: 48212, note: 'Updated by hand each night' },
-  { name: 'Planning', field: 'ParcelNumber', count: 48190, note: 'Copied over once a month' },
-  { name: 'Public works', field: 'PID', count: 47955, note: 'Last copied in 2024' },
-  { name: 'Dispatch', field: 'PARCEL_NO', count: 48201, note: 'Copied once a week' },
-  { name: 'Open data portal', field: 'MapLot', count: 46880, note: 'Last overwrite failed', failed: true },
+  { name: 'Assessor', uses: 'values property', field: 'Parcel_ID', count: 48212, note: 'Updated by hand each night' },
+  { name: 'Planning', uses: 'reviews permits', field: 'ParcelNumber', count: 48190, note: 'Copied over once a month' },
+  { name: 'Public works', uses: 'maintains roads and pipes', field: 'PID', count: 47955, note: 'Last copied in 2024' },
+  { name: 'Dispatch', uses: 'routes emergency calls', field: 'PARCEL_NO', count: 48201, note: 'Copied once a week' },
+  { name: 'Open data portal', uses: 'publishes to the public', field: 'MapLot', count: 46880, note: 'Last overwrite failed', failed: true },
 ];
 
 const CARD_W = 339;
@@ -31,9 +33,9 @@ const DRIFT_AT = 12.4;
 
 export const Problem: React.FC<{ local: number }> = ({ local }) => (
   <>
-    <Heading text="Five offices. Five versions of the same parcel map." enter={enterAt(local, 0.2)} />
+    <Heading text="The problem: five users, five copies of one parcel map" enter={enterAt(local, 0.2)} />
     <div style={{ position: 'absolute', left: 64, top: 168, fontSize: 22, lineHeight: '30px', color: C.secondary, ...rise(enterAt(local, 0.6)) }}>
-      Meet Example County. Each office maintains its own version of the parcel data. Here&rsquo;s what each one thinks is current.
+      Example County, 180,000 people. Five offices use the parcels every day, and each keeps its own copy. Here is what each one believes is current.
     </div>
     {OFFICES.map((o, i) => {
       const enter = staggerAt(local, 1.2, i, 0.6, EASE.state);
@@ -60,7 +62,10 @@ export const Problem: React.FC<{ local: number }> = ({ local }) => (
             ...rise(enter),
           }}
         >
-          <div style={eyebrow(C.amber)}>{o.name}</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={eyebrow(C.amber)}>{o.name}</div>
+            <div style={{ fontSize: 18, lineHeight: '24px', color: C.secondary }}>{o.uses}</div>
+          </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <div style={{ fontFamily: MONO, fontSize: 15, color: C.muted }}>key field</div>
             <div style={{ fontFamily: MONO, fontSize: 30, fontWeight: 500, color: fieldColor }}>{o.field}</div>
