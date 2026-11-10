@@ -55,12 +55,23 @@ export function codeInEffectFor(territory: string, year: number, l: Lineage): st
 }
 
 /** All codes a territory carries in `year`: code in effect first, then overlays by year. */
-export function polygonCodes(territory: string, year: number, l: Lineage): string[] {
-  const base = codeInEffectFor(territory, year, l);
-  const kids = new Map<string, string[]>();
+const overlayChildren = new WeakMap<Lineage, Map<string, string[]>>();
+
+/** Overlay codes by parent, built once per lineage table. */
+function overlayKids(l: Lineage): Map<string, string[]> {
+  let kids = overlayChildren.get(l);
+  if (kids) return kids;
+  kids = new Map<string, string[]>();
   for (const [code, r] of Object.entries(l.codes)) {
     if (r.type === 'overlay' && r.parent) kids.set(r.parent, [...(kids.get(r.parent) ?? []), code]);
   }
+  overlayChildren.set(l, kids);
+  return kids;
+}
+
+export function polygonCodes(territory: string, year: number, l: Lineage): string[] {
+  const base = codeInEffectFor(territory, year, l);
+  const kids = overlayKids(l);
   const found = [base];
   const seen = new Set(found);
   const stack = [base];

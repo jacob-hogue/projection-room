@@ -76,7 +76,7 @@ export function frameAt(t: number): Frame {
       to: { year: 1947, mode: 'middle' },
       p,
       focus: p < 1 ? ['605', '704'] : null,
-      dim: 1 - p,
+      dim: p < 1 ? 1 - p : 1,
     };
   }
 
@@ -123,7 +123,7 @@ export function frameAt(t: number): Frame {
 
   // The spotlight eases out under the conclusion.
   const undim = EASE.inOut(seg(t, S.conclusion + 0.2, S.conclusion + 0.2 + EASE.reveal));
-  return { ...base, ...still(2025, 'pulses'), labels: 1, focus: undim < 1 ? ['713', '404', '214', '212'] : null, dim: 1 - undim };
+  return { ...base, ...still(2025, 'pulses'), labels: 1, focus: undim < 1 ? ['713', '404', '214', '212'] : null, dim: undim < 1 ? 1 - undim : 1 };
 }
 
 /** Apply a frame to a stage. `order` is the reveal order (fastest code first). */
@@ -144,7 +144,8 @@ export function applyFrame(stage: MapStage, f: Frame, order: string[]): void {
   }
   stage.setBlank(false, 0);
   stage.blendAt(f.from, f.to, f.p);
-  stage.dimAt(f.focus, f.dim);
+  // No focus means full brightness, whatever dim says; dimAt(null, 0) would read as fully dimmed.
+  stage.dimAt(f.focus, f.focus ? f.dim : 1);
   stage.setLabels(f.labels > 0);
   stage.setLabelOpacity(f.labels);
 }

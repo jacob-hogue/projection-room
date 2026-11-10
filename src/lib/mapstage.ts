@@ -83,7 +83,7 @@ const MONO = '"JetBrains Mono", ui-monospace, monospace';
 const AREA_SEAM = 0.6;
 const CASING_WIDTH = 1.4;
 const LINE_WIDTH = 0.5;
-const COAST_BLOOM_WIDTH = 7;
+const COAST_BLOOM_WIDTH = 9;
 const COAST_GLOW_WIDTH = 3;
 const COAST_WIDTH = 0.6;
 /** Firefly stack for a focused territory: wide and faint under narrow and bright. */
@@ -207,8 +207,6 @@ export class MapStage {
       .attr('height', opts.height)
       .attr('role', 'img');
     const defs = this.root.append('defs');
-    defs.append('filter').attr('id', 'bloom').attr('x', '-10%').attr('y', '-10%').attr('width', '120%').attr('height', '120%')
-      .append('feGaussianBlur').attr('stdDeviation', 5);
     defs
       .append('pattern')
       .attr('id', 'hatch')
@@ -553,7 +551,7 @@ export class MapStage {
       const d1 = displayCode(codes1, to.year, this.lineage);
       const fill0 = this.colorIn(from.mode, d0);
       const fill1 = this.colorIn(to.mode, d1);
-      const fill = q <= 0 ? fill0 : q >= 1 || fill0 === fill1 ? fill1 : mixOklab(fill0, fill1, q);
+      const fill = q <= 0 ? fill0 : q >= 1 || fill0 === fill1 ? fill1 : mixCached(fill0, fill1, q);
       const hatch0 = hasOverlay(codes0, from.year, this.lineage) ? 1 : 0;
       const hatch1 = hasOverlay(codes1, to.year, this.lineage) ? 1 : 0;
       const base = { poly, codes: codes1, display: d1, fill, cls: this.classify(d1), hatch0, hatch1 };
@@ -726,10 +724,10 @@ export class MapStage {
       .attr('d', d)
       .attr('fill', 'none')
       .attr('stroke', TEXT)
-      .attr('stroke-opacity', 0.1)
+      .attr('stroke-opacity', 0.06)
       .attr('stroke-width', COAST_BLOOM_WIDTH)
       .attr('stroke-linejoin', 'round')
-      .attr('filter', 'url(#bloom)')
+      .attr('stroke-linecap', 'round')
       .attr('vector-effect', 'non-scaling-stroke');
     g.append('path')
       .attr('class', 'coast coast-glow')
@@ -1038,10 +1036,22 @@ function isSmall(o: Outline): boolean {
   return x1 - x0 < 60 || y1 - y0 < 40;
 }
 
-/** Mix two hex colors in OKLab. */
+/** Mix two hex colors in OKLCH, which keeps chroma through the middle of a mix. */
 function mixOklab(a: string, b: string, p: number): string {
-  // OKLCH keeps chroma through the middle of a mix, so a gold to coral change never passes through mud.
   return formatHex(interpolate([a, b], 'oklch')(p));
+}
+
+/** Many territories share a color pair in a frame; mix each pair once. */
+const mixCache = new Map<string, string>();
+function mixCached(a: string, b: string, p: number): string {
+  const key = `${a}|${b}|${p.toFixed(4)}`;
+  let v = mixCache.get(key);
+  if (v === undefined) {
+    if (mixCache.size > 20000) mixCache.clear();
+    v = mixOklab(a, b, p);
+    mixCache.set(key, v);
+  }
+  return v;
 }
 
 function ringArea(ring: number[][]): number {
