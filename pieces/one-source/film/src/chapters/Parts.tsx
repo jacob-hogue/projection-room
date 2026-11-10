@@ -26,7 +26,7 @@ const PARTS = [
 const W = 578;
 const GAP = 29;
 const TOP = 240;
-const H = 520;
+const H = 400;
 
 export const Parts: React.FC<{ local: number }> = ({ local }) => (
   <>
