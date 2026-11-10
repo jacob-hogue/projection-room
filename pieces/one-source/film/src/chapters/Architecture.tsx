@@ -74,7 +74,7 @@ const body = (n: Node): React.ReactNode => {
     case 'readers':
       return (
         <span style={{ fontSize: 20, lineHeight: '26px' }}>
-          <span style={eyebrow()}>reads</span>&nbsp;&nbsp; Every web map, open data portal, and department application reads from these shared outputs. No department needs its own copy.
+          <span style={eyebrow()}>reads</span>&nbsp;&nbsp; Every web map, portal and application reads from here. Nobody keeps a copy.
         </span>
       );
     default:
@@ -87,7 +87,7 @@ export const Architecture: React.FC<{ local: number }> = ({ local }) => {
   const counts: Record<number, number> = {};
   return (
     <>
-      <Heading text="The solution: one shared source of record, published nightly" enter={enterAt(local, 0.2)} />
+      <Heading text="The solution: one source of record, published nightly" enter={enterAt(local, 0.2)} />
       <div style={{ position: 'absolute', left: BAND.x, top: BAND.y, width: BAND.w, height: BAND.h, boxSizing: 'border-box', border: `1px solid ${C.hairline}`, borderRadius: 14, background: 'rgba(17,24,33,0.7)', opacity: band }} />
       <div style={{ position: 'absolute', left: BAND.x + 16, top: BAND.y + 12, ...label, fontSize: 13, opacity: band }}>Nightly update · 02:00</div>
       {SEGS.map((s, i) => {

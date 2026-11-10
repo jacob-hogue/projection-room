@@ -11,11 +11,11 @@ export const TITLE = 'One Source';
 export const RULE = 'Problem: a county keeps five copies of its parcel data. Solution: one shared database with a nightly update that every map reads from.';
 /** The brief on the title card. */
 export const BRIEF = [
-  { label: 'Scenario', text: 'A county GIS team supports five offices that all work from the same parcel map.' },
-  { label: 'Users', text: 'The assessor, planning, public works, dispatch, and the open data portal.' },
-  { label: 'Problem', text: 'Each office keeps its own copy of the parcel data. There is no single source, and the copies disagree.' },
-  { label: 'Assumptions', text: 'The county and its numbers are illustrative. Its public web maps run on ArcGIS Online, so each copy is a hosted layer, the online copy a web map reads, and each refresh replaces that whole layer. Editing runs on ArcGIS Enterprise. Three offices edit parcels; the rest only read. The design is not tied to that stack.' },
-  { label: 'Solution', text: 'One shared database as the source of record, edited through one service with editor tracking, and a nightly job that publishes read-only outputs for everyone else.' },
+  { label: 'Scenario', text: 'Five county offices work from one parcel map.' },
+  { label: 'Users', text: 'Assessor, planning, public works, dispatch, open data portal.' },
+  { label: 'Problem', text: 'Each office keeps its own copy. The copies disagree.' },
+  { label: 'Assumptions', text: 'A fictional county with illustrative numbers. ArcGIS Online for web maps, ArcGIS Enterprise for editing.' },
+  { label: 'Solution', text: 'One database of record, one editing service, and a nightly job that publishes read-only outputs.' },
 ] as const;
 export const BYLINE = 'A data film by Jacob Hogue';
 export const URL_LINE = 'jacob-hogue.github.io/projection-room';
@@ -25,9 +25,9 @@ export const PIECE_LABEL = 'One Source · Projection Room 02';
 export const END_LINE = 'One source of record, a nightly update, and every map reads the same parcels.';
 /** The closing summary. */
 export const SUMMARY = [
-  { label: 'Problem', text: 'Five copies of one parcel map, and no single source.' },
-  { label: 'Solution', text: 'One database, a nightly job, three read-only outputs.' },
-  { label: 'Result', text: 'Every map, portal and application reads the same parcels.' },
+  { label: 'Problem', text: 'Five copies, no single source.' },
+  { label: 'Solution', text: 'One database, one editing service, a nightly job.' },
+  { label: 'Result', text: 'Every map reads the same parcels.' },
 ] as const;
 
 /** The one date window the film uses for "recent" edits, as YYYYMMDD. */
@@ -84,17 +84,17 @@ export interface Caption {
 
 export const CAPTIONS: Caption[] = [
   { from: 0, to: 16, text: '' },
-  { from: 16, to: 30, text: 'The users first. The assessor values property. Planning reviews permits. Public works maintains roads and pipes. Dispatch routes emergency calls. The open data portal publishes it all. Every one of them needs the same parcels, and every one of them keeps a separate copy.' },
-  { from: 30, to: 46, text: 'That is the core problem. Five copies, refreshed on five schedules, with no single source. In this scenario the county runs ArcGIS Online, so each copy is a hosted layer, the online copy its web maps read, and each refresh replaces the whole layer. Field names differ, counts no longer match, and when two maps disagree nobody can say which is right.' },
-  { from: 46, to: 76, text: 'Break it down and there are three separate problems. One: no single source of record. Two: in this scenario, every update overwrites the whole hosted layer to carry a few hundred changes. Three: the applications that only read parcels share a layer with the staff who edit them. Each one has a known fix, and together the fixes make up the solution.' },
-  { from: 76, to: 96, text: 'The solution starts with one database as the source of record. Everyone who edits parcels, in the office or in the field with Field Maps, edits it through one service on that database. Editor tracking records who changed each record and when. Each offline area gets its own branch version, so the assessor reviews field edits before they post. Every parcel keeps a GlobalID for life.' },
-  { from: 96, to: 116, text: 'A nightly job carries the changes out to three read-only outputs: a hosted feature layer for the ArcGIS Online web maps, a GeoParquet file for analysis, and a PMTiles file for open-source web maps. Every map, portal and application reads from one of those. The five copies go away. On a different GIS stack the outputs change; the shape does not.' },
-  { from: 116, to: 130, text: 'Here is the job, step by step. It starts with a simple question: what changed since the last run? Edit tracking in the database answers it. On a typical night that is a few hundred records out of tens of thousands.' },
-  { from: 130, to: 143, text: 'Before publishing anything, the job checks the changes. Do the row counts match? Are all the geometries valid? Does the schema still match what the applications expect? If any check fails, the job stops and records the reason in the log.' },
-  { from: 143, to: 156, text: 'Once everything passes, the changes are published. The hosted feature layer receives individual edits instead of a full overwrite, so sync keeps working. The same changes are written to a new GeoParquet file and PMTiles file, each stamped with the run date.' },
-  { from: 156, to: 170, text: 'From there, every application reads from one of those outputs. No department needs its own copy. The run log keeps track of what changed, how long the job took, and which files are current.' },
-  { from: 170, to: 190, text: 'This is what the solution looks like at state scale. MassGIS already runs one shared parcel layer for all 351 cities and towns, 2.56 million parcels, each with the date it was last edited. Nearly four out of five have not been updated since before 2015. Towns with edits since 2023 show in green.' },
-  { from: 190, to: 206, text: 'Zoom into Westborough and the same edit history is on every parcel: 7,164 parcels, edits from 2012 through 2026, and 730 of them since the start of 2023. One source of record, and every map reads the same data.' },
+  { from: 16, to: 30, text: 'Five offices, five jobs, one set of parcels. Each office keeps its own copy.' },
+  { from: 30, to: 46, text: 'The copies drift. Field names differ, counts no longer match, and nobody can say which map is right.' },
+  { from: 46, to: 76, text: 'Three problems hide in there. Each one has a known fix.' },
+  { from: 76, to: 96, text: 'One database holds the parcels. Everyone edits it through one service, in the office or in the field.' },
+  { from: 96, to: 116, text: 'Each night a job carries the changes to three read-only outputs. Everyone else reads those.' },
+  { from: 116, to: 130, text: 'Step one: what changed since last night? Edit tracking answers that.' },
+  { from: 130, to: 143, text: 'Step two: check the changes. Counts, geometry, schema. A failure stops the run.' },
+  { from: 143, to: 156, text: 'Step three: publish. Edits, not overwrites, so sync keeps working.' },
+  { from: 156, to: 170, text: 'Step four: serve. Every application reads an output. Nobody keeps a copy.' },
+  { from: 170, to: 190, text: 'Massachusetts already runs one parcel layer for 351 towns. Towns with edits since 2023 show in green.' },
+  { from: 190, to: 206, text: 'Westborough, parcel by parcel. 730 of 7,164 edited since 2023.' },
   { from: 206, to: FILM_SECONDS, text: '' },
 ];
 

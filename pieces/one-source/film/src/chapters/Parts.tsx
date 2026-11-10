@@ -8,17 +8,17 @@ import { C } from '../theme';
 const PARTS = [
   {
     title: 'No single source of truth',
-    body: 'Five copies of the parcel data, and none is clearly authoritative. When someone corrects a lot line in one system, the other four can still be wrong.',
+    body: 'Five copies, none authoritative. Fix a lot line in one and the other four stay wrong.',
     fix: 'Fix: one source of record',
   },
   {
     title: 'Updates overwrite the whole layer',
-    body: 'In this scenario each refresh replaces the whole hosted layer, all 48,000 rows, to carry about 300 changes. Overwriting is the usual way to refresh a hosted layer in ArcGIS Online, and it fails when sync is turned on and grows storage with every run.',
+    body: 'Each refresh replaces all 48,000 rows to carry about 300 changes. It fails when sync is on, and storage grows every run.',
     fix: 'Fix: update only what changed',
   },
   {
     title: 'Readers and editors share a layer',
-    body: 'Applications that only need to view parcel data use the same layer that staff edit throughout the day. That creates unnecessary load and introduces risk for applications that should just be reading.',
+    body: 'Apps that only read sit on the layer staff edit all day. Every edit is a risk, every reader is load.',
     fix: 'Fix: separate read and write access',
   },
 ];
@@ -30,7 +30,7 @@ const H = 520;
 
 export const Parts: React.FC<{ local: number }> = ({ local }) => (
   <>
-    <Heading text="Breaking the problem into three parts, each with a known fix" enter={enterAt(local, 0.2)} />
+    <Heading text="Three parts, three fixes" enter={enterAt(local, 0.2)} />
     {PARTS.map((p, i) => {
       const enter = staggerAt(local, 1.0, i, 1.2, EASE.state);
       const fix = staggerAt(local, 4.0, i, 1.2, EASE.state);

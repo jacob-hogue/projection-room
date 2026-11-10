@@ -22,7 +22,7 @@ const stepAlpha = (local: number, i: number): number => {
   return Math.min(seg(local, start, start + FADE), 1 - seg(local, end, end + FADE));
 };
 
-const HEADINGS = ['The nightly job, step 1 of 4: find what changed', 'The nightly job, step 2 of 4: validate the changes', 'The nightly job, step 3 of 4: publish the updates', 'The nightly job, step 4 of 4: serve every application'];
+const HEADINGS = ['Step 1 of 4: find what changed', 'Step 2 of 4: check the changes', 'Step 3 of 4: publish', 'Step 4 of 4: serve'];
 
 const panel: React.CSSProperties = { borderRadius: 12, background: C.surface, border: `1px solid ${C.hairline}`, boxSizing: 'border-box' };
 const cell: React.CSSProperties = { display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 24, padding: '9px 26px' };
@@ -58,7 +58,7 @@ const Detect: React.FC<{ local: number; stats: Stats }> = ({ local, stats }) => 
         ))}
         <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 26px', fontSize: 14, color: C.muted, ...rise(enterAt(local, 6.0, EASE.state)) }}>
           <div>{fmt(t.since2023)} of {fmt(t.n)} records</div>
-          <div>based on edit tracking, not a full comparison</div>
+          <div>from edit tracking</div>
         </div>
       </div>
       <div style={{ position: 'absolute', left: 64, top: 600, width: 340, ...panel, padding: '18px 20px', fontFamily: MONO, fontSize: 15, lineHeight: '24px', color: C.secondary, ...rise(enterAt(local, 4.0, EASE.state)) }}>
@@ -100,7 +100,7 @@ const Validate: React.FC<{ local: number; stats: Stats }> = ({ local, stats }) =
         })}
       </div>
       <div style={{ position: 'absolute', left: LEFT, top: TOP + 3 * 116 + 20, fontSize: 24, lineHeight: '34px', color: C.secondary, ...rise(enterAt(l, 6.6, EASE.state)) }}>
-        All three checks passed. If any check fails, the job stops and records the reason in the log.
+        All three checks passed. A failure stops the run and goes in the log.
       </div>
     </>
   );

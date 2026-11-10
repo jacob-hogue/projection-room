@@ -9,7 +9,7 @@ import { FRESH_LABELS, ParcelStage, YEAR_LABELS } from '../parcelstage';
 import { Stat, eyebrow, fmt, rise } from '../parts';
 import { C, RAMP } from '../theme';
 
-export const MAP = { left: 64, top: 220, width: 1300, height: 640 } as const;
+export const MAP = { left: 64, top: 220, width: 1300, height: 616 } as const;
 const RAIL = { left: 1436, top: 220, width: 420 } as const;
 
 /** Chapter seconds: the question, then the towns answer it; hold; zoom; parcels; hold. */
@@ -52,14 +52,14 @@ export const MapProduct: React.FC<Props> = ({ local, towns, parcels, stats }) =>
   const frameEnter = enterAt(local, 0.2, EASE.state);
   const t = stats?.town;
   // The heading asks the question the map answers; it changes with the camera.
-  const headingText = zoomed ? `${t?.name ?? ''}, parcel by parcel` : 'The result at state scale: which towns have updated their parcels since 2023?';
+  const headingText = zoomed ? `${t?.name ?? ''}, parcel by parcel` : 'Which towns have updated their parcels since 2023?';
   const headingEnter = zoomed ? enterAt(local, T.zoom + 1.5, EASE.state) : Math.min(enterAt(local, 0.2, EASE.state), 1 - seg(local, T.zoom + 1.0, T.zoom + 1.5));
 
   return (
     <>
       <Heading text={headingText} enter={headingEnter} />
       <div style={{ position: 'absolute', left: 64, top: 168, fontSize: 22, lineHeight: '30px', color: C.secondary, ...rise(Math.min(enterAt(local, 0.6), 1 - seg(local, T.zoom + 1.0, T.zoom + 1.5))) }}>
-        351 towns. 2.56 million parcels. One statewide view.
+        351 towns. 2.56 million parcels. One layer.
       </div>
 
       <div style={{ position: 'absolute', left: MAP.left, top: MAP.top, width: MAP.width, height: MAP.height, boxSizing: 'border-box', borderRadius: 12, background: '#080b10', border: `1px solid ${C.hairline}`, overflow: 'hidden', ...rise(frameEnter) }}>
