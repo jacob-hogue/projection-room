@@ -18,6 +18,7 @@ import polylabel from 'polylabel';
 import { feature, merge, mesh } from 'topojson-client';
 import type { GeometryCollection, GeometryObject, MultiPolygon, Polygon, Topology } from 'topojson-specification';
 import { displayCode, hasOverlay, originalOf, polygonCodes, type Lineage } from './lineage';
+import { formatHex, interpolate } from 'culori';
 import { PULSE_MAX, PULSE_MIN, RAMP_STEPS, pulseColor, type Palette } from './palette';
 import { middleDigitClass, pulses, type MiddleDigitClass } from './pulses';
 
@@ -123,6 +124,19 @@ interface Outline {
   /** Pole of inaccessibility of the largest part, in stage pixels. */
   anchor: [number, number];
   bounds: [[number, number], [number, number]];
+  /** Perimeter in stage pixels, for drawing a new boundary in. */
+  length: number;
+}
+
+/** A map state a blended frame moves between. */
+export interface FrameState {
+  year: number;
+  mode: Mode;
+}
+
+export interface ShownAlpha {
+  code: string;
+  alpha: number;
 }
 
 type G = Selection<SVGGElement, unknown, null, undefined>;
@@ -133,6 +147,8 @@ export class MapStage {
   private readonly areas: G;
   private readonly casings: G;
   private readonly lines: G;
+  private readonly casingsPrev: G;
+  private readonly linesPrev: G;
   private readonly halos: G;
   private readonly labels: G;
   private readonly legend: G;
@@ -225,6 +241,8 @@ export class MapStage {
         .attr('pointer-events', 'none');
     }
     const outlines = this.view.append('g').attr('class', 'outlines');
+    this.casingsPrev = outlines.append('g').attr('class', 'outline-casings-prev');
+    this.linesPrev = outlines.append('g').attr('class', 'outline-lines-prev');
     this.casings = outlines.append('g').attr('class', 'outline-casings');
     this.lines = outlines.append('g').attr('class', 'outline-lines');
     this.halos = this.view.append('g').attr('class', 'halos');
@@ -495,6 +513,133 @@ export class MapStage {
     this.labels.selectAll('text').attr('opacity', target);
   }
 
+  /**
+   * One blended frame between two states. Fills mix in OKLab, hatches fade, boundaries that
+   * are new in `to` draw themselves in, and boundaries that changed shape cross-fade. At p = 1
+   * the stage is exactly the `to` state. Deterministic for a given p.
+   */
+  blendAt(from: FrameState, to: FrameState, p: number): void {
+    const q = Math.min(1, Math.max(0, p));
+    this.year = Math.min(YEAR_MAX, Math.max(YEAR_MIN, Math.round(to.year)));
+    this.mode = to.mode;
+    this.root.attr('data-year', this.year).attr('data-mode', this.mode).attr('data-palette', this.palette.name);
+
+    type Blended = Entry & { hatch0: number; hatch1: number };
+    const entries: Blended[] = [];
+    for (const poly of this.polys) {
+      const codes0 = polygonCodes(poly.npa, from.year, this.lineage);
+      const codes1 = polygonCodes(poly.npa, to.year, this.lineage);
+      const d0 = displayCode(codes0, from.year, this.lineage);
+      const d1 = displayCode(codes1, to.year, this.lineage);
+      const fill0 = this.colorIn(from.mode, d0);
+      const fill1 = this.colorIn(to.mode, d1);
+      const fill = q <= 0 ? fill0 : q >= 1 || fill0 === fill1 ? fill1 : mixOklab(fill0, fill1, q);
+      const hatch0 = hasOverlay(codes0, from.year, this.lineage) ? 1 : 0;
+      const hatch1 = hasOverlay(codes1, to.year, this.lineage) ? 1 : 0;
+      const base = { poly, codes: codes1, display: d1, fill, cls: this.classify(d1), hatch0, hatch1 };
+      entries.push({ kind: 'area', ...base });
+      if (hatch0 || hatch1) entries.push({ kind: 'hatch', ...base });
+    }
+    const self = this;
+    this.areas
+      .selectAll<SVGPathElement, Blended>('path')
+      .data(entries, (e) => `${e.kind}:${e.poly.npa}`)
+      .join(
+        (enter) =>
+          enter
+            .append('path')
+            .attr('d', (e) => e.poly.d)
+            .attr('vector-effect', 'non-scaling-stroke')
+            .on('mouseenter', function (_event, e) {
+              if (e.kind !== 'area') return;
+              this.classList.add('is-hover');
+              self.hoverCb?.({ npa: e.poly.npa, codes: e.codes, pulses: pulses(e.display), original: originalOf(e.poly.npa, self.lineage) });
+            })
+            .on('mouseleave', function () {
+              this.classList.remove('is-hover');
+              self.hoverCb?.(null);
+            }),
+        (update) => update,
+        (exit) => exit.remove(),
+      )
+      .interrupt('fade')
+      .interrupt('color')
+      .attr('class', (e) => e.kind)
+      .attr('data-npa', (e) => e.poly.npa)
+      .attr('data-codes', (e) => e.codes.join(','))
+      .attr('data-display', (e) => e.display)
+      .attr('data-class', (e) => e.cls)
+      .attr('fill', (e) => (e.kind === 'area' ? e.fill : 'url(#hatch)'))
+      .attr('stroke', (e) => (e.kind === 'area' ? e.fill : null))
+      .attr('stroke-width', (e) => (e.kind === 'area' ? AREA_SEAM : null))
+      .attr('stroke-linejoin', (e) => (e.kind === 'area' ? 'round' : null))
+      .attr('pointer-events', (e) => (e.kind === 'area' ? null : 'none'))
+      .attr('opacity', (e) => {
+        const base = this.opacityFor(e.display);
+        return e.kind === 'area' ? base : base * (e.hatch0 + (e.hatch1 - e.hatch0) * q);
+      })
+      .order();
+
+    // Boundaries: the `to` set draws in or cross-fades; the `from` versions of changed shapes fade out.
+    const prev = new Map(this.outlinesFor(from.year).map((o) => [o.code, o]));
+    const next = this.outlinesFor(to.year);
+    const nextCodes = new Set(next.map((o) => o.code));
+    const changed = next.filter((o) => prev.has(o.code) && prev.get(o.code)!.d !== o.d).map((o) => prev.get(o.code)!);
+    const gone = [...prev.values()].filter((o) => !nextCodes.has(o.code));
+    const lineOpacity = this.blank ? 0 : 1;
+    const nextOpacity = (o: Outline) => (!prev.has(o.code) ? lineOpacity : prev.get(o.code)!.d !== o.d ? lineOpacity * q : lineOpacity);
+    const nextDash = (o: Outline) => (!prev.has(o.code) ? o.length * (1 - q) : null);
+    this.drawOutlineSet(this.casings, 'outline-casing', SURFACE, 0.9, CASING_WIDTH, next, nextOpacity, nextDash);
+    this.drawOutlineSet(this.lines, 'outline', TEXT, 0.35, LINE_WIDTH, next, nextOpacity, nextDash);
+    const prevData = q >= 1 ? [] : [...changed, ...gone];
+    this.drawOutlineSet(this.casingsPrev, 'outline-casing', SURFACE, 0.9, CASING_WIDTH, prevData, () => lineOpacity * (1 - q), () => null);
+    this.drawOutlineSet(this.linesPrev, 'outline', TEXT, 0.35, LINE_WIDTH, prevData, () => lineOpacity * (1 - q), () => null);
+
+    if (this.focused) this.drawHalos([...this.focused], 1);
+    this.renderLabels();
+    this.renderLegend();
+  }
+
+  private drawOutlineSet(
+    g: G,
+    cls: string,
+    stroke: string,
+    strokeOpacity: number,
+    width: number,
+    data: Outline[],
+    opacity: (o: Outline) => number,
+    dash: (o: Outline) => number | null,
+  ): void {
+    g.selectAll<SVGPathElement, Outline>('path')
+      .data(data, (o) => o.code)
+      .join('path')
+      .interrupt('fade')
+      .interrupt('reveal')
+      .attr('class', cls)
+      .attr('data-code', (o) => o.code)
+      .attr('d', (o) => o.d)
+      .attr('fill', 'none')
+      .attr('stroke', stroke)
+      .attr('stroke-opacity', strokeOpacity)
+      .attr('stroke-width', width)
+      .attr('stroke-linejoin', 'round')
+      .attr('vector-effect', 'non-scaling-stroke')
+      .attr('stroke-dasharray', (o) => (dash(o) === null ? null : o.length))
+      .attr('stroke-dashoffset', (o) => dash(o))
+      .attr('opacity', (o) => opacity(o));
+  }
+
+  /** While blank, set each named territory's opacity directly (others stay hidden). */
+  showAt(items: ShownAlpha[]): void {
+    const alpha = new Map(items.map((i) => [i.code, Math.min(1, Math.max(0, i.alpha))]));
+    this.shown.clear();
+    for (const [code, a] of alpha) if (a > 0) this.shown.add(code);
+    this.areas
+      .selectAll<SVGPathElement, Entry>('path')
+      .interrupt('fade')
+      .attr('opacity', (e) => alpha.get(e.display) ?? 0);
+  }
+
   onHover(cb: (info: HoverInfo | null) => void): void {
     this.hoverCb = cb;
   }
@@ -585,7 +730,11 @@ export class MapStage {
   }
 
   private colorFor(display: string, cls: MiddleDigitClass): string {
-    switch (this.mode) {
+    return this.colorIn(this.mode, display, cls);
+  }
+
+  private colorIn(mode: Mode, display: string, cls: MiddleDigitClass = this.classify(display)): string {
+    switch (mode) {
       case 'pulses':
         return pulseColor(this.palette, pulses(display));
       case 'middle':
@@ -636,7 +785,7 @@ export class MapStage {
     const out: Outline[] = [];
     for (const [code, polys] of byCode) {
       const merged = merge(this.topology, polys.map((p) => p.geom as GeometryObject as Polygon | MultiPolygon));
-      out.push({ code, d: this.path(merged) ?? '', anchor: this.anchorFor(merged), bounds: this.path.bounds(merged) });
+      out.push({ code, d: this.path(merged) ?? '', anchor: this.anchorFor(merged), bounds: this.path.bounds(merged), length: this.path.measure(merged) });
     }
     out.sort((a, b) => Number(a.code) - Number(b.code));
     this.outlineCache.set(year, out);
@@ -856,6 +1005,11 @@ export class MapStage {
 function isSmall(o: Outline): boolean {
   const [[x0, y0], [x1, y1]] = o.bounds;
   return x1 - x0 < 60 || y1 - y0 < 40;
+}
+
+/** Mix two hex colors in OKLab. */
+function mixOklab(a: string, b: string, p: number): string {
+  return formatHex(interpolate([a, b], 'oklab')(p));
 }
 
 function ringArea(ring: number[][]): number {

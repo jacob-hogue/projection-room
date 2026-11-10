@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, test } from 'vitest';
 import type { Topology } from 'topojson-specification';
 import { loadLineage } from '../../src/lib/lineage';
 import { MapStage, DIM_OPACITY } from '../../src/lib/mapstage';
-import { PALETTES } from '../../src/lib/palette';
+import { PALETTES, pulseColor } from '../../src/lib/palette';
 import lineageFixture from '../fixtures/lineage-stage.json';
 
 /**
@@ -124,5 +124,68 @@ describe('MapStage frame-driven rendering', () => {
     s.setYear(1947, 0);
     s.setYear(1990, 0);
     expect(el.querySelectorAll('path.area.is-new').length).toBe(0);
+  });
+});
+
+describe('MapStage blended frames', () => {
+  const fillOf = (npa: string) => area(npa).getAttribute('fill')!;
+
+  test('blendAt mixes fills between two modes in step with p', () => {
+    const from = { year: 1947, mode: 'pulses' as const };
+    const to = { year: 1947, mode: 'middle' as const };
+    stage.blendAt(from, to, 0);
+    expect(fillOf('212')).toBe(pulseColor(PALETTES.signature, 5));
+    stage.blendAt(from, to, 1);
+    expect(fillOf('212')).toBe(PALETTES.signature.middle.subdivided);
+    stage.blendAt(from, to, 0.5);
+    const mid = fillOf('212');
+    expect(mid).not.toBe(pulseColor(PALETTES.signature, 5));
+    expect(mid).not.toBe(PALETTES.signature.middle.subdivided);
+    expect(mid).toMatch(/^#[0-9a-f]{6}$/);
+  });
+
+  test('blendAt across a split year draws the new boundary in and bleeds the new fill', () => {
+    const from = { year: 1983, mode: 'pulses' as const };
+    const to = { year: 1984, mode: 'pulses' as const };
+    const outline718 = () => svg.querySelector<SVGPathElement>('path.outline[data-code="718"]');
+    stage.blendAt(from, to, 0);
+    expect(fillOf('718')).toBe(pulseColor(PALETTES.signature, 5)); // still reads as 212
+    const o0 = outline718()!;
+    expect(o0).not.toBeNull();
+    const length = Number(o0.getAttribute('stroke-dasharray'));
+    expect(length).toBeGreaterThan(0);
+    expect(Number(o0.getAttribute('stroke-dashoffset'))).toBeCloseTo(length, 3);
+    stage.blendAt(from, to, 0.5);
+    const half = Number(outline718()!.getAttribute('stroke-dashoffset'));
+    expect(half).toBeGreaterThan(0);
+    expect(half).toBeLessThan(length);
+    expect(fillOf('718')).not.toBe(pulseColor(PALETTES.signature, 5));
+    expect(fillOf('718')).not.toBe(pulseColor(PALETTES.signature, 16));
+    stage.blendAt(from, to, 1);
+    expect(Number(outline718()!.getAttribute('stroke-dashoffset'))).toBe(0);
+    expect(fillOf('718')).toBe(pulseColor(PALETTES.signature, 16));
+    expect(svg.querySelectorAll('path.outline').length).toBe(3);
+  });
+
+  test('blendAt across an overlay year fades the hatch in', () => {
+    const from = { year: 1991, mode: 'pulses' as const };
+    const to = { year: 1992, mode: 'pulses' as const };
+    const hatch = () => svg.querySelector<SVGPathElement>('path.area[data-npa="212"] + path.hatch');
+    stage.blendAt(from, to, 0);
+    expect(hatch()).not.toBeNull();
+    expect(Number(hatch()!.getAttribute('opacity'))).toBe(0);
+    stage.blendAt(from, to, 0.5);
+    expect(Number(hatch()!.getAttribute('opacity'))).toBeCloseTo(0.5, 5);
+    stage.blendAt(from, to, 1);
+    expect(Number(hatch()!.getAttribute('opacity'))).toBe(1);
+  });
+
+  test('showAt fades named territories to the given alphas while blank', () => {
+    stage.setYear(2000);
+    stage.setBlank(true, 0);
+    stage.showAt([{ code: '718', alpha: 0.4 }, { code: '212', alpha: 1 }]);
+    expect(Number(area('718').getAttribute('opacity'))).toBeCloseTo(0.4, 5);
+    expect(Number(area('212').getAttribute('opacity'))).toBe(1);
+    expect(Number(area('516').getAttribute('opacity'))).toBe(0);
   });
 });
