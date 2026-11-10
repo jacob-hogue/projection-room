@@ -59,8 +59,8 @@ function sceneAt(t: number): Scene {
   }
   if (t < S.middle) {
     const reveal = seg(t, S.contrast + 0.6, S.contrast + 4.6);
-    const dimOn = t >= S.contrast + 7.4;
-    return { ...base, reveal, focus: dimOn ? ['605', '704'] : null, dim: dimOn ? seg(t, S.contrast + 7.4, S.contrast + 8.4) : 1 };
+    const dimOn = t >= S.contrast + 9.0;
+    return { ...base, reveal, focus: dimOn ? ['605', '704'] : null, dim: dimOn ? seg(t, S.contrast + 9.0, S.contrast + 10.0) : 1 };
   }
   if (t < S.changes) return { ...base, mode: t >= S.middle + 0.8 ? 'middle' : 'pulses' };
   if (t < S.present) {
@@ -69,13 +69,13 @@ function sceneAt(t: number): Scene {
     let dim = 1; // no event: full brightness; events dim the rest in and out
     if (t >= RUN.split1948 && t < RUN.runTo1992) {
       focus = ['219'];
-      dim = Math.min(seg(t, RUN.split1948, RUN.split1948 + 0.5), 1 - seg(t, RUN.runTo1992 - 0.5, RUN.runTo1992));
+      dim = Math.min(seg(t, RUN.split1948, RUN.split1948 + 0.8), 1 - seg(t, RUN.runTo1992 - 0.8, RUN.runTo1992));
     } else if (t >= RUN.hold1992 && t < RUN.runTo2007) {
       focus = ['212'];
-      dim = Math.min(seg(t, RUN.hold1992, RUN.hold1992 + 0.5), 1 - seg(t, RUN.runTo2007 - 0.5, RUN.runTo2007));
+      dim = Math.min(seg(t, RUN.hold1992, RUN.hold1992 + 0.8), 1 - seg(t, RUN.runTo2007 - 0.8, RUN.runTo2007));
     } else if (t >= RUN.hold2007 && t < RUN.runTo2025) {
       focus = ['575'];
-      dim = Math.min(seg(t, RUN.hold2007, RUN.hold2007 + 0.5), 1 - seg(t, RUN.runTo2025 - 0.5, RUN.runTo2025));
+      dim = Math.min(seg(t, RUN.hold2007, RUN.hold2007 + 0.8), 1 - seg(t, RUN.runTo2025 - 0.8, RUN.runTo2025));
     }
     const insetOn = t >= RUN.hold1992 - 0.4 && t < RUN.runTo2007 + 0.4;
     return {
@@ -249,11 +249,11 @@ function railContent(t: number, scene: Scene, count: number): React.ReactNode {
     );
   }
   if (t < S.middle) {
-    const shown = (t >= S.contrast + 7.8 ? 1 : 0) + (t >= S.contrast + 9.4 ? 1 : 0);
+    const shown = (t >= S.contrast + 9.4 ? 1 : 0) + (t >= S.contrast + 11.2 ? 1 : 0);
     return (
       <>
-        {t < S.contrast + 7.4 ? (
-          <Stat eyebrow="1947 · United States" code="" number="77" unit="area codes" note="From 5 pulses to 21" opacity={Math.min(fadeIn(S.contrast + 4.8), 1 - seg(t, S.contrast + 7.0, S.contrast + 7.4))} />
+        {t < S.contrast + 9.0 ? (
+          <Stat eyebrow="1947 · United States" code="" number="77" unit="area codes" note="From 5 pulses to 21" opacity={Math.min(fadeIn(S.contrast + 4.8), 1 - seg(t, S.contrast + 8.6, S.contrast + 9.0))} />
         ) : (
           <Rows
             eyebrow="1947 · 21 pulses"
@@ -262,7 +262,7 @@ function railContent(t: number, scene: Scene, count: number): React.ReactNode {
               { code: '704', name: 'North Carolina', sub: '4.1 million people', value: '21', color: pulseColor(PALETTES.signature, 21) },
             ]}
             shown={shown}
-            opacity={fadeIn(S.contrast + 7.6)}
+            opacity={fadeIn(S.contrast + 9.2)}
           />
         )}
         <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }}>

@@ -72,7 +72,7 @@ export function dialState(t: number): { angle: number; clicks: number; finger: n
 
 export const Dial: React.FC<{ t: number }> = ({ t }) => {
   const { angle, clicks, finger } = dialState(t);
-  const fade = Math.min(seg(t, 0.3, 0.9), 1 - seg(t, 15.2, 15.8));
+  const fade = Math.min(seg(t, 0.3, 0.9), 1 - seg(t, 16.2, 16.8));
   const digitsDone = PLAN.filter((d) => t >= d.releaseAt + travelFor(d.digit) / RETURN_DPS).length;
   return (
     <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', display: 'flex', alignItems: 'center', gap: 64, opacity: fade }}>
