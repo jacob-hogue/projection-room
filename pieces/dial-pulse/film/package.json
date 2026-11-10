@@ -4,13 +4,15 @@
   "type": "module",
   "scripts": {
     "studio": "remotion studio src/index.ts",
-    "render": "remotion render src/index.ts DialPulse ../../../public/dial-pulse/film.mp4",
+    "render": "remotion render src/index.ts DialPulse ../../../public/dial-pulse/film.mp4 --codec=h264 --crf=20",
     "render:loop": "remotion render src/index.ts Loop ../../../public/dial-pulse/loop.mp4",
     "still": "remotion still src/index.ts DialPulse ../../../public/dial-pulse/film-still.png --frame=300",
     "prestudio": "node scripts/sync.mjs",
     "prerender": "node scripts/sync.mjs",
     "prestill": "node scripts/sync.mjs",
-    "frames": "node scripts/frames.mjs"
+    "frames": "node scripts/frames.mjs",
+    "render:slice": "node scripts/slice.mjs",
+    "prerender:slice": "node scripts/sync.mjs"
   },
   "dependencies": {
     "@remotion/cli": "4.0.541",

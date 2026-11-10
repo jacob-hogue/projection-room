@@ -221,7 +221,7 @@ function railContent(t: number, yearF: number, count: number): React.ReactNode {
       <>
         {event}
         <div style={{ position: 'absolute', right: 0, bottom: 0 }}>
-          <Counter year={Math.floor(yearF)} count={count} enter={enterAt(S.changes + 0.6)} />
+          <Counter year={Math.round(yearF)} count={count} enter={enterAt(S.changes + 0.6)} />
         </div>
       </>
     );

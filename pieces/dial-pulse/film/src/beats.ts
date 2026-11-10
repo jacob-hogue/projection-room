@@ -2,7 +2,7 @@
  * The film's timeline in seconds. Every value here is deterministic in t, so a frame can be
  * rendered on its own. Nine shots; the year run is three events (1948, 1992, 2007) and 2025.
  */
-export const FPS = 30;
+export const FPS = 24;
 export const FILM_SECONDS = 151;
 export const LOOP_FROM = 86;
 export const LOOP_SECONDS = 7;
