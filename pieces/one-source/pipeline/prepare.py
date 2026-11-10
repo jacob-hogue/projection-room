@@ -139,7 +139,7 @@ def build_stats(towns: gpd.GeoDataFrame, bands: dict[str, dict[int, int]], parce
     edits = [int(e) for e in parcels["edit"] if e is not None]
     latest = max(edits)
     on_latest = int((parcels["edit"] == latest).sum())
-    recent = parcels[parcels["edit"].notna()].sort_values(["edit", "loc"], ascending=[False, True])
+    recent = parcels[parcels["edit"].notna()].sort_values(["edit", "loc"], ascending=[False, True]).drop_duplicates("loc")
     return {
         "run": f"{RUN_DATE // 10000}-{RUN_DATE // 100 % 100:02d}-{RUN_DATE % 100:02d}",
         "towns": int(len(towns)),
