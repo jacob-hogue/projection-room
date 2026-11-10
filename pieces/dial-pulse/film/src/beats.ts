@@ -62,16 +62,29 @@ export const RUN = {
   done: 112,
 };
 
+/** Year at time t as a continuous value: the map blends between the two years around it. */
 export function yearAt(t: number): number {
   if (t < RUN.split1948) return 1947;
-  if (t < RUN.runTo1992) return 1948;
-  if (t < RUN.hold1992) return Math.round(1948 + easeInOut(seg(t, RUN.runTo1992, RUN.hold1992)) * (1992 - 1948));
+  if (t < RUN.runTo1992) return 1947 + easeInOut(seg(t, RUN.split1948, RUN.split1948 + EASE.reveal));
+  if (t < RUN.hold1992) return 1948 + easeInOut(seg(t, RUN.runTo1992, RUN.hold1992)) * (1992 - 1948);
   if (t < RUN.runTo2007) return 1992;
-  if (t < RUN.hold2007) return Math.round(1992 + easeInOut(seg(t, RUN.runTo2007, RUN.hold2007)) * (2007 - 1992));
+  if (t < RUN.hold2007) return 1992 + easeInOut(seg(t, RUN.runTo2007, RUN.hold2007)) * (2007 - 1992);
   if (t < RUN.runTo2025) return 2007;
-  if (t < RUN.done) return Math.round(2007 + easeInOut(seg(t, RUN.runTo2025, RUN.done)) * (2025 - 2007));
+  if (t < RUN.done) return 2007 + easeInOut(seg(t, RUN.runTo2025, RUN.done)) * (2025 - 2007);
   return 2025;
 }
+
+/** The film's motion vocabulary: three durations in seconds and two curves. Every move uses one of each. */
+export const EASE = {
+  /** Something arrives: rail text, a label, an inset. */
+  enter: 0.4,
+  /** A state changes: a fill, a spotlight, a mode. */
+  state: 0.8,
+  /** Something is revealed or redrawn: a boundary, the color scheme, a spotlight leaving. */
+  reveal: 1.2,
+  out: (p: number): number => 1 - Math.pow(1 - clamp(p), 3),
+  inOut: (p: number): number => easeInOut(clamp(p)),
+};
 
 export function clamp(v: number): number {
   return Math.min(1, Math.max(0, v));

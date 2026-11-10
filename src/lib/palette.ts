@@ -40,8 +40,8 @@ export const PALETTES = {
     // Speed reads as brightness: gold for five pulses down to a near-black plum for
     // twenty-eight. Chroma stays moderate through the middle so the common twelve to
     // twenty pulse territories read as a quiet rose and the gold highlights carry the map.
-    ramp: stepped(['#f5d98a', '#e2876f', '#c04a84', '#6a3389', '#3b2563'], 'oklch'),
-    middle: { whole: '#f5d98a', subdivided: '#e2876f', later: LATER_GRAY },
+    ramp: stepped(['#f7dc8f', '#f08b62', '#d9468c', '#7e3ea6', '#3b2563'], 'oklch'),
+    middle: { whole: '#f7dc8f', subdivided: '#f08b62', later: LATER_GRAY },
   },
   cool: {
     name: 'cool',

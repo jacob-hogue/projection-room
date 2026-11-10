@@ -81,8 +81,9 @@ const SANS = '"DM Sans", system-ui, sans-serif';
 const MONO = '"JetBrains Mono", ui-monospace, monospace';
 
 const AREA_SEAM = 0.6;
-const CASING_WIDTH = 1.6;
+const CASING_WIDTH = 1.4;
 const LINE_WIDTH = 0.5;
+const COAST_BLOOM_WIDTH = 7;
 const COAST_GLOW_WIDTH = 3;
 const COAST_WIDTH = 0.6;
 /** Firefly stack for a focused territory: wide and faint under narrow and bright. */
@@ -205,8 +206,10 @@ export class MapStage {
       .attr('width', opts.width)
       .attr('height', opts.height)
       .attr('role', 'img');
-    this.root
-      .append('defs')
+    const defs = this.root.append('defs');
+    defs.append('filter').attr('id', 'bloom').attr('x', '-10%').attr('y', '-10%').attr('width', '120%').attr('height', '120%')
+      .append('feGaussianBlur').attr('stdDeviation', 5);
+    defs
       .append('pattern')
       .attr('id', 'hatch')
       .attr('patternUnits', 'userSpaceOnUse')
@@ -235,7 +238,7 @@ export class MapStage {
         .attr('d', d)
         .attr('fill', 'none')
         .attr('stroke', TEXT)
-        .attr('stroke-opacity', 0.18)
+        .attr('stroke-opacity', 0.14)
         .attr('stroke-width', 0.6)
         .attr('stroke-linejoin', 'round')
         .attr('vector-effect', 'non-scaling-stroke')
@@ -608,10 +611,10 @@ export class MapStage {
     const nextOpacity = (o: Outline) => (!prev.has(o.code) ? lineOpacity : prev.get(o.code)!.d !== o.d ? lineOpacity * q : lineOpacity);
     const nextDash = (o: Outline) => (!prev.has(o.code) ? o.length * (1 - q) : null);
     this.drawOutlineSet(this.casings, 'outline-casing', SURFACE, 0.9, CASING_WIDTH, next, nextOpacity, nextDash);
-    this.drawOutlineSet(this.lines, 'outline', TEXT, 0.35, LINE_WIDTH, next, nextOpacity, nextDash);
+    this.drawOutlineSet(this.lines, 'outline', TEXT, 0.42, LINE_WIDTH, next, nextOpacity, nextDash);
     const prevData = q >= 1 ? [] : [...changed, ...gone];
     this.drawOutlineSet(this.casingsPrev, 'outline-casing', SURFACE, 0.9, CASING_WIDTH, prevData, () => lineOpacity * (1 - q), () => null);
-    this.drawOutlineSet(this.linesPrev, 'outline', TEXT, 0.35, LINE_WIDTH, prevData, () => lineOpacity * (1 - q), () => null);
+    this.drawOutlineSet(this.linesPrev, 'outline', TEXT, 0.42, LINE_WIDTH, prevData, () => lineOpacity * (1 - q), () => null);
 
     if (this.focused) this.drawHalos([...this.focused], 1);
     this.renderLabels();
@@ -718,6 +721,16 @@ export class MapStage {
     // Exterior arcs only: arcs with the same polygon on both sides are the land edge.
     const d = this.path(mesh(this.topology, object, (a, b) => a === b)) ?? '';
     const g = this.view.append('g').attr('class', 'coast');
+    g.append('path')
+      .attr('class', 'coast coast-bloom')
+      .attr('d', d)
+      .attr('fill', 'none')
+      .attr('stroke', TEXT)
+      .attr('stroke-opacity', 0.1)
+      .attr('stroke-width', COAST_BLOOM_WIDTH)
+      .attr('stroke-linejoin', 'round')
+      .attr('filter', 'url(#bloom)')
+      .attr('vector-effect', 'non-scaling-stroke');
     g.append('path')
       .attr('class', 'coast coast-glow')
       .attr('d', d)
@@ -1027,7 +1040,8 @@ function isSmall(o: Outline): boolean {
 
 /** Mix two hex colors in OKLab. */
 function mixOklab(a: string, b: string, p: number): string {
-  return formatHex(interpolate([a, b], 'oklab')(p));
+  // OKLCH keeps chroma through the middle of a mix, so a gold to coral change never passes through mud.
+  return formatHex(interpolate([a, b], 'oklch')(p));
 }
 
 function ringArea(ring: number[][]): number {

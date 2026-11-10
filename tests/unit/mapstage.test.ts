@@ -121,7 +121,7 @@ describe('MapStage', () => {
     expect(water).not.toBeNull();
     expect(water!.getAttribute('fill')).not.toBe('#0f1117');
     const coast = svg.querySelectorAll('path.coast');
-    expect(coast.length).toBe(2); // soft outer casing, then the thin light edge
+    expect(coast.length).toBe(3); // blurred bloom, soft casing, then the thin light edge
     for (const c of coast) {
       expect(c.getAttribute('d')).toMatch(/^M/);
       expect(c.getAttribute('fill')).toBe('none');
