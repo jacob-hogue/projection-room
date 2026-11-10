@@ -26,7 +26,7 @@ const PARTS = [
 const W = 578;
 const GAP = 29;
 const TOP = 240;
-const H = 440;
+const H = 520;
 
 export const Parts: React.FC<{ local: number }> = ({ local }) => (
   <>
@@ -57,8 +57,8 @@ export const Parts: React.FC<{ local: number }> = ({ local }) => (
           <div style={{ width: 56, height: 56, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', background: C.raised, border: `1px solid ${C.hairline}`, fontFamily: MONO, fontSize: 22, color: C.secondary }}>
             0{i + 1}
           </div>
-          <div style={{ fontSize: 40, lineHeight: '48px', fontWeight: 600 }}>{p.title}</div>
-          <div style={{ fontSize: 24, lineHeight: '34px', color: C.secondary }}>{p.body}</div>
+          <div style={{ fontSize: 38, lineHeight: '46px', fontWeight: 600 }}>{p.title}</div>
+          <div style={{ fontSize: 23, lineHeight: '33px', color: C.secondary }}>{p.body}</div>
           <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: 12, fontFamily: MONO, fontSize: 16, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.green, ...rise(fix) }}>
             <span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: 999, background: C.green }} />
             <span>{p.fix}</span>

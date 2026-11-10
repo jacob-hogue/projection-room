@@ -45,6 +45,8 @@ export const Caption: React.FC<{ t: number }> = ({ t }) => {
   const c = captionAt(t);
   if (!c || !c.text) return null;
   const p = enterAt(t - c.from, 0, EASE.enter);
+  // Four lines fit above the frame's edge; a long caption steps down one size to stay inside.
+  const long = c.text.split(/\s+/).length > 64;
   return (
     <div
       style={{
@@ -52,8 +54,8 @@ export const Caption: React.FC<{ t: number }> = ({ t }) => {
         left: GRID.safe,
         top: GRID.caption,
         width: GRID.captionWidth,
-        fontSize: TYPE.caption,
-        lineHeight: `${LINE.caption}px`,
+        fontSize: long ? 27 : TYPE.caption,
+        lineHeight: `${long ? 36 : LINE.caption}px`,
         opacity: p,
         transform: `translateY(${(1 - p) * 6}px)`,
       }}

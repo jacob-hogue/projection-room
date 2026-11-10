@@ -55,7 +55,7 @@ const body = (n: Node): React.ReactNode => {
     case 'log':
       return <span style={{ fontFamily: MONO, fontSize: 15, color: C.secondary }}>Run log · Manifest</span>;
     case 'hosted':
-      return <span><b style={{ fontWeight: 600 }}>Hosted feature layer</b><br /><span style={{ fontSize: 14, color: C.secondary }}>for the ArcGIS Online web maps; edits, never overwrites</span></span>;
+      return <span><b style={{ fontWeight: 600 }}>Hosted feature layer</b><br /><span style={{ fontSize: 14, color: C.secondary }}>for ArcGIS Online maps; edits, not overwrites</span></span>;
     case 'parquet':
       return <span><b style={{ fontWeight: 600 }}>GeoParquet</b><br /><span style={{ fontSize: 14, color: C.secondary }}>versioned file, for analysis</span></span>;
     case 'pmtiles':
