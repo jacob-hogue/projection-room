@@ -189,3 +189,27 @@ describe('MapStage blended frames', () => {
     expect(Number(area('516').getAttribute('opacity'))).toBe(0);
   });
 });
+
+describe('MapStage label opacity', () => {
+  test('setLabelOpacity fades the labels without removing them', () => {
+    stage.setYear(1947);
+    stage.setLabels(true);
+    stage.setLabelOpacity(0.25);
+    const label = svg.querySelector('text.label')!;
+    expect(label).not.toBeNull();
+    expect(Number(label.getAttribute('opacity'))).toBeCloseTo(0.25, 5);
+    stage.setLabelOpacity(1);
+    expect(Number(label.getAttribute('opacity'))).toBe(1);
+  });
+});
+
+describe('MapStage hatch blend survives a dim pass', () => {
+  test('dimAt keeps a half-faded hatch at half', () => {
+    stage.blendAt({ year: 1991, mode: 'pulses' }, { year: 1992, mode: 'pulses' }, 0.5);
+    stage.dimAt(null, 1);
+    const hatch = svg.querySelector<SVGPathElement>('path.area[data-npa="212"] + path.hatch')!;
+    expect(Number(hatch.getAttribute('opacity'))).toBeCloseTo(0.5, 5);
+    stage.dimAt(['516'], 1);
+    expect(Number(hatch.getAttribute('opacity'))).toBeCloseTo(0.5 * 0.22, 5);
+  });
+});

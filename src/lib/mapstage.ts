@@ -166,6 +166,7 @@ export class MapStage {
   private year = YEAR_MIN;
   private mode: Mode = 'pulses';
   private labelsOn = false;
+  private labelAlpha = 1;
   private legendOn = false;
   private blank = false;
   /** Display codes shown while blank (the opening beats bring cities in one at a time). */
@@ -274,6 +275,12 @@ export class MapStage {
   setLabels(on: boolean): void {
     this.labelsOn = on;
     this.renderLabels();
+  }
+
+  /** Opacity of the city labels (1 = full). Used by frame-driven renders to fade them in. */
+  setLabelOpacity(alpha: number): void {
+    this.labelAlpha = Math.min(1, Math.max(0, alpha));
+    this.labels.selectAll('text').interrupt('fade').attr('opacity', this.zoom.k > 1.3 ? 0 : this.labelAlpha);
   }
 
   setLegend(on: boolean): void {
@@ -480,14 +487,24 @@ export class MapStage {
   /** Dim everything but the given display codes by progress t, haloing them in step; null undims. */
   dimAt(codes: string[] | null, t: number): void {
     const p = Math.min(1, Math.max(0, t));
+    const self = this;
     this.focused = codes && p > 0 ? new Set(codes) : null;
     const paths = this.areas.selectAll<SVGPathElement, Entry>('path').interrupt('fade');
+    // A hatch mid-fade (from blendAt) keeps its own alpha on top of the dim.
+    const own = (el: SVGPathElement) => {
+      const a = el.getAttribute('data-alpha');
+      return a === null ? 1 : Number(a);
+    };
     if (codes) {
       const set = new Set(codes);
-      paths.attr('opacity', (e) => (this.blank && !this.shown.has(e.display) ? 0 : set.has(e.display) ? 1 : 1 - p * (1 - DIM_OPACITY)));
+      paths.attr('opacity', function (e) {
+        return own(this) * (self.blank && !self.shown.has(e.display) ? 0 : set.has(e.display) ? 1 : 1 - p * (1 - DIM_OPACITY));
+      });
       this.drawHalos(codes, p);
     } else {
-      paths.attr('opacity', (e) => (this.blank && !this.shown.has(e.display) ? 0 : DIM_OPACITY + p * (1 - DIM_OPACITY)));
+      paths.attr('opacity', function (e) {
+        return own(this) * (self.blank && !self.shown.has(e.display) ? 0 : DIM_OPACITY + p * (1 - DIM_OPACITY));
+      });
       this.drawHalos([], 1);
     }
   }
@@ -574,6 +591,7 @@ export class MapStage {
       .attr('stroke-width', (e) => (e.kind === 'area' ? AREA_SEAM : null))
       .attr('stroke-linejoin', (e) => (e.kind === 'area' ? 'round' : null))
       .attr('pointer-events', (e) => (e.kind === 'area' ? null : 'none'))
+      .attr('data-alpha', (e) => (e.kind === 'hatch' ? e.hatch0 + (e.hatch1 - e.hatch0) * q : null))
       .attr('opacity', (e) => {
         const base = this.opacityFor(e.display);
         return e.kind === 'area' ? base : base * (e.hatch0 + (e.hatch1 - e.hatch0) * q);
@@ -930,7 +948,7 @@ export class MapStage {
       .attr('paint-order', 'stroke')
       .attr('text-anchor', 'middle')
       .attr('letter-spacing', '0.01em')
-      .attr('opacity', this.zoom.k > 1.3 ? 0 : 1);
+      .attr('opacity', this.zoom.k > 1.3 ? 0 : this.labelAlpha);
     text
       .select('.label-city')
       .attr('x', (o) => o.anchor[0])
