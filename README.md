@@ -9,7 +9,7 @@ Short videos by [Jacob Hogue](https://jacob-hogue.github.io) on maps, data visua
 | No. | Title |
 |---|---|
 | 01 | [The dial-pulse map](https://jacob-hogue.github.io/projection-room/dial-pulse/) |
-| 02 | [One Source](https://jacob-hogue.github.io/projection-room/one-source/) |
+| 02 | [The Parcel Problem](https://jacob-hogue.github.io/projection-room/parcel-problem/) |
 
 ## Build
 

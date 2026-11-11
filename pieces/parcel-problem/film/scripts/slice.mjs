@@ -11,6 +11,6 @@ const fps = 24;
 const a = Math.round(Number(from) * fps);
 const b = Math.round(Number(to) * fps) - 1;
 const out = outArg ?? join(process.env.TEMP ?? '.', `slice-${from}-${to}.mp4`);
-const r = spawnSync('npx', ['remotion', 'render', 'src/index.ts', 'OneSource', out, `--frames=${a}-${b}`, '--codec=h264', '--crf=20', '--log=error'], { stdio: 'inherit', shell: true });
+const r = spawnSync('npx', ['remotion', 'render', 'src/index.ts', 'ParcelProblem', out, `--frames=${a}-${b}`, '--codec=h264', '--crf=20', '--log=error'], { stdio: 'inherit', shell: true });
 if (r.status !== 0) process.exit(r.status ?? 1);
 console.log(`${from}s to ${to}s -> ${out}`);

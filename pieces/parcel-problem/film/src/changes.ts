@@ -11,7 +11,7 @@ export interface ChangeRow {
   kind: 'changed';
 }
 
-/** The shape of pieces/one-source/data/stats.json. */
+/** The shape of pieces/parcel-problem/data/stats.json. */
 export interface Stats {
   run: string;
   towns: number;

@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const film = join(here, '..', 'film');
-const pub = join(here, '..', '..', '..', 'public', 'one-source');
+const pub = join(here, '..', '..', '..', 'public', 'parcel-problem');
 const shrink = join(here, '..', '..', 'dial-pulse', 'pipeline', 'shrink_png.py');
 const frame = process.argv[2] ?? '4464';
 const poster = join(pub, 'poster.png');
@@ -19,7 +19,7 @@ const run = (cmd, args, cwd) => {
 };
 
 run('node', ['scripts/sync.mjs'], film);
-run('npx', ['remotion', 'still', 'src/index.ts', 'OneSource', `"${poster}"`, `--frame=${frame}`, '--log=error'], film);
+run('npx', ['remotion', 'still', 'src/index.ts', 'ParcelProblem', `"${poster}"`, `--frame=${frame}`, '--log=error'], film);
 run('python', [`"${shrink}"`, `"${poster}"`], here);
 run('python', [`"${shrink}"`, `"${poster}"`, `"${card}"`], here);
 console.log(`poster and card from frame ${frame}`);

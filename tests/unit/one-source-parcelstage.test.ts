@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { freshColor, revealOrder, yearColor } from '../../pieces/one-source/film/src/parcelstage';
+import { freshColor, revealOrder, yearColor } from '../../pieces/parcel-problem/film/src/parcelstage';
 
 describe('parcel stage ramps', () => {
   test('fresh and year map onto the same five greens', () => {

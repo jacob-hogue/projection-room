@@ -7,7 +7,7 @@ export const FILM_SECONDS = 222;
 /** Chapters cross-dissolve over this many seconds. */
 export const DISSOLVE = 0.6;
 
-export const TITLE = 'One Source';
+export const TITLE = 'The Parcel Problem';
 export const RULE = 'Problem: a county keeps five copies of its parcel data. Solution: one shared database with a nightly update that every map reads from.';
 /** The brief on the title card. */
 export const BRIEF = [
@@ -22,7 +22,7 @@ export const BYLINE = 'A data film by Jacob Hogue';
 export const URL_LINE = 'jacob-hogue.github.io/projection-room';
 export const SOURCE = 'Parcels: MassGIS Standardized Assessors’ Parcels, feature service read 2026-11-10 · Town boundaries: MassGIS';
 export const STACK_LINE = 'PostGIS · GeoParquet · PMTiles · D3 · Remotion';
-export const PIECE_LABEL = 'One Source · Projection Room 02';
+export const PIECE_LABEL = 'The Parcel Problem · Projection Room 02';
 export const END_LINE = 'One source of record. Every map reads the same parcels.';
 /** The closing summary. */
 export const SUMMARY = [

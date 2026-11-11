@@ -1,4 +1,4 @@
-"""Fetch and cache the One Source piece's data. Nothing here is committed; see README.
+"""Fetch and cache The Parcel Problem's data. Nothing here is committed; see README.
 
 Sources (both public, published by MassGIS):
 - Massachusetts Property Tax Parcels feature service: statistics grouped by town, and the
@@ -18,8 +18,8 @@ from dataclasses import dataclass
 from typing import Callable
 
 HERE = pathlib.Path(__file__).resolve().parent
-CACHE = HERE.parent.parent.parent / ".cache" / "one-source"
-UA = "projection-room-one-source/0.1 (https://jacob-hogue.github.io/projection-room/)"
+CACHE = HERE.parent.parent.parent / ".cache" / "parcel-problem"
+UA = "projection-room-parcel-problem/0.1 (https://jacob-hogue.github.io/projection-room/)"
 
 SERVICE = "https://services1.arcgis.com/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Property_Tax_Parcels/FeatureServer/0/query"
 TOWNS_ZIP = "https://s3.us-east-1.amazonaws.com/download.massgis.digital.mass.gov/shapefiles/state/townssurvey_shp.zip"

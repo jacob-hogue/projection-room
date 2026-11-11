@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
-import { CAPTIONS, DISSOLVE, FILM_SECONDS, S, chapterAt } from '../../pieces/one-source/film/src/beats';
-import { frameAt } from '../../pieces/one-source/film/src/frame';
+import { CAPTIONS, DISSOLVE, FILM_SECONDS, S, chapterAt } from '../../pieces/parcel-problem/film/src/beats';
+import { frameAt } from '../../pieces/parcel-problem/film/src/frame';
 
 describe('captions', () => {
   test('cover the film with no gaps or overlaps', () => {

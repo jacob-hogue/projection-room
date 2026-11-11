@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { NODES, edges } from '../../pieces/one-source/film/src/diagram';
+import { NODES, edges } from '../../pieces/parcel-problem/film/src/diagram';
 
 const byId = (id: string) => NODES.find((n) => n.id === id)!;
 const onBoundary = (x: number, y: number, n: { x: number; y: number; w: number; h: number }) =>

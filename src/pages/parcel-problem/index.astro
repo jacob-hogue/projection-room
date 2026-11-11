@@ -5,17 +5,17 @@ import Base from '../../layouts/Base.astro';
 import FilmSection from '../../components/FilmSection.astro';
 import Post from '../../components/Post.astro';
 import TechStack from '../../components/TechStack.astro';
-import post from '../../content/one-source/post.json';
-import sources from '../../content/one-source/sources.json';
-import stack from '../../content/one-source/stack.json';
+import post from '../../content/parcel-problem/post.json';
+import sources from '../../content/parcel-problem/sources.json';
+import stack from '../../content/parcel-problem/stack.json';
 
 const base = import.meta.env.BASE_URL;
-const title = 'One Source';
+const title = 'The Parcel Problem';
 const rule = 'Problem: a county keeps five copies of its parcel data. Solution: one shared database with a nightly update that every map reads from.';
-const filmPath = join(process.cwd(), 'public', 'one-source', 'film.mp4');
+const filmPath = join(process.cwd(), 'public', 'parcel-problem', 'film.mp4');
 const filmExists = existsSync(filmPath);
 // The version changes with every render, so browsers never resume an old copy under the same URL.
-const filmSrc = filmExists ? `${base}one-source/film.mp4?v=${Math.floor(statSync(filmPath).mtimeMs / 1000)}` : null;
+const filmSrc = filmExists ? `${base}parcel-problem/film.mp4?v=${Math.floor(statSync(filmPath).mtimeMs / 1000)}` : null;
 ---
 <Base title={title} description={rule}>
   <section class="opening">
@@ -29,10 +29,10 @@ const filmSrc = filmExists ? `${base}one-source/film.mp4?v=${Math.floor(statSync
   </section>
   <FilmSection
     src={filmSrc}
-    poster={`${base}one-source/poster.png`}
+    poster={`${base}parcel-problem/poster.png`}
     title={`${title}, the film`}
     posterAlt="Massachusetts with every town tinted by the share of its parcels edited since 2023, the freshest towns in bright green, beside a rail of statewide counts."
-    downloadName="one-source.mp4"
+    downloadName="the-parcel-problem.mp4"
   />
   <TechStack items={stack} />
   <Post sections={post} sources={sources} />

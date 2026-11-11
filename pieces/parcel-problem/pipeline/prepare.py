@@ -1,6 +1,6 @@
-"""Build the One Source piece's data from the cached MassGIS downloads.
+"""Build The Parcel Problem's data from the cached MassGIS downloads.
 
-Writes, under pieces/one-source/data/:
+Writes, under pieces/parcel-problem/data/:
 - towns.topojson: the 351 towns (EPSG:26986) with id, name, n (fee and tax parcels), fresh
   (share of parcels edited in 2023 or later) and last (latest edit date, YYYYMMDD).
 - parcels.topojson: Westborough's fee and tax parcels with loc, year and edit.
