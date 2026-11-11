@@ -17,7 +17,7 @@ export const BRIEF = [
   { label: 'Solution', text: 'One database of record, one editing service, and a nightly job that publishes read-only outputs.' },
 ] as const;
 /** Under the title: what the scenario assumes. */
-export const BRIEF_NOTE = 'Illustrative county scenario \u00b7 ArcGIS Online \u00b7 ArcGIS Enterprise';
+export const BRIEF_NOTE = 'Illustrative county scenario · illustrative numbers';
 export const BYLINE = 'A data film by Jacob Hogue';
 export const URL_LINE = 'jacob-hogue.github.io/projection-room';
 export const SOURCE = 'Parcels: MassGIS Standardized Assessors’ Parcels, feature service read 2026-11-10 · Town boundaries: MassGIS';
