@@ -22,9 +22,9 @@
     ]
   },
   {
-    "heading": "Massachusetts already does this",
+    "heading": "The real data at the end",
     "paragraphs": [
-      "The second half of the film leaves the fictional county because the real version of the same idea already exists at state scale. In Massachusetts, all 351 cities and towns deliver their assessor parcels to one standard, MassGIS assembles them into one standardized parcel layer, and state agencies, towns and the public read that one layer instead of keeping copies. On the day the data was read there were 2,558,082 fee and tax parcels in it, and every one of them carries the date it was last edited. It is the closest public example of a shared source of record for parcels, which is why the film ends there.",
+      "The second half of the film uses real data. Massachusetts publishes one standardized parcel layer for all 351 cities and towns: each town delivers its assessor parcels to the MassGIS standard, and MassGIS assembles, checks and publishes them as one layer and one feature service. How MassGIS runs that behind the scenes is not public and is not what this film describes. What the public data shows is the result: one schema statewide and a last-edit date on every one of 2,558,082 parcels (fee and tax polygons, the two types that make up the taxable map, counted on the day the data was read).",
       "That date is what the statewide map shows. Nearly four parcels in five still carry an edit date before 2015, which is roughly when the statewide standard settled, so towns that have touched their parcels since 2023 stand out. Zoom into Westborough and the same date sits on every parcel: 7,164 of them, with edits from 2012 to 2026, and 730 touched since the start of 2023. The town has not been chosen for any reason other than a readable mix of old and new edits."
     ]
   },

@@ -5,6 +5,11 @@
     "href": "https://www.mass.gov/info-details/massgis-data-property-tax-parcels"
   },
   {
+    "name": "The MassGIS parcel standard",
+    "detail": "MassGIS Standard for Digital Parcels and Related Data Sets, version 3: what each town delivers and how MassGIS publishes it.",
+    "href": "https://www.mass.gov/info-details/massgis-standard-for-digital-parcels-and-related-data-sets"
+  },
+  {
     "name": "Town boundaries",
     "detail": "MassGIS Community Boundaries (Towns) from Survey Points.",
     "href": "https://www.mass.gov/info-details/massgis-data-municipalities"
