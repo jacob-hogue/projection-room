@@ -44,13 +44,6 @@
     ]
   },
   {
-    "heading": "How I made the video",
-    "paragraphs": [
-      "I drew every frame in Python, a programming language, using pycairo, a drawing library. FFmpeg, a video processing tool, encoded one file per scene. Those files were joined without re-encoding, so joining them didn’t require another pass converting the frames into video.",
-      "The 48,212 dots, the block of 24 lots, and the diagram are drawn from the same numbers the captions quote. The drawings and captions use the same inputs."
-    ]
-  },
-  {
     "heading": "Closing",
     "paragraphs": [
       "Copies to keep in step fall from 5 to 0. Rows rewritten per refresh fall from 48,212 to 312, and places where a parcel can be edited fall from 5 to 1.",
