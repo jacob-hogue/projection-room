@@ -12,7 +12,8 @@ export const RULE = 'Problem: a county keeps five copies of its parcel data. Sol
 /** The brief on the title card. */
 export const BRIEF = [
   { label: 'Scenario', text: 'Five county offices work from one parcel map.' },
-  { label: 'Problem', text: 'Each office keeps its own copy. The copies disagree.' },
+  { label: 'Assumptions', text: 'ArcGIS Online for web maps, ArcGIS Enterprise for editing. Each office keeps its own copy as a hosted layer and refreshes it by overwriting the whole layer.' },
+  { label: 'Problem', text: 'Five copies, no single source. The copies disagree.' },
   { label: 'Solution', text: 'One database of record, one editing service, and a nightly job that publishes read-only outputs.' },
 ] as const;
 /** Under the title: what the scenario assumes. */
@@ -85,7 +86,7 @@ export interface Caption {
 export const CAPTIONS: Caption[] = [
   { from: 0, to: 16, text: '' },
   { from: 16, to: 30, text: 'Five offices, five copies of the same parcel data. Each office maintains its own version.' },
-  { from: 30, to: 46, text: 'Over time, the copies drift. Field names differ, counts stop matching, and nobody knows which map to trust.' },
+  { from: 30, to: 46, text: 'Each office refreshes its copy by overwriting the whole layer. Over time, the copies drift. Field names differ, counts stop matching, and nobody knows which map to trust.' },
   { from: 46, to: 76, text: 'There are three problems here, and each has a straightforward fix.' },
   { from: 76, to: 96, text: 'One database holds the official parcel data. Staff edit it through a single service, whether they\u2019re at their desks or out in the field.' },
   { from: 96, to: 116, text: 'Each night, a job picks up the changes and publishes three read-only outputs. Everyone else reads from those.' },

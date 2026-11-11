@@ -16,13 +16,13 @@ export const Opening: React.FC<{ local: number }> = ({ local }) => (
     </div>
     <div style={{ display: 'flex', flexDirection: 'column', borderTop: `1px solid ${C.hairline}` }}>
       {BRIEF.map((row, i) => {
-        const enter = staggerAt(local, 1.4, i, 1.4, EASE.reveal);
+        const enter = staggerAt(local, 1.4, i, 1.6, EASE.reveal);
         const isSolution = row.label === 'Solution';
         const color = isSolution ? C.green : row.label === 'Problem' ? C.amber : C.secondary;
         return (
-          <div key={row.label} style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: 32, alignItems: 'baseline', padding: '28px 0', borderBottom: `1px solid ${C.hairline}`, ...rise(enter) }}>
+          <div key={row.label} style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: 32, alignItems: 'baseline', padding: '24px 0', borderBottom: `1px solid ${C.hairline}`, ...rise(enter) }}>
             <div style={{ fontFamily: MONO, fontSize: 18, letterSpacing: '0.12em', textTransform: 'uppercase', color }}>{row.label}</div>
-            <div style={{ maxWidth: 1300, fontSize: 36, lineHeight: '48px', fontWeight: isSolution ? 500 : 400, color: C.text }}>{row.text}</div>
+            <div style={{ maxWidth: 1300, fontSize: 34, lineHeight: '46px', fontWeight: isSolution ? 500 : 400, color: C.text }}>{row.text}</div>
           </div>
         );
       })}
