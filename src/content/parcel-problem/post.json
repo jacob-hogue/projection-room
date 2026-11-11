@@ -2,7 +2,7 @@
   {
     "heading": "One lot becomes two",
     "paragraphs": [
-      "On Monday afternoon, an assessor splits one lot into two. The parcel map, which shows every piece of land in a county and records who owns it, should now show both lots.",
+      "On Monday afternoon, an assessor splits one lot into two. The parcel map, which records the county's land parcels, should now show both lots.",
       "Five county offices use that map every day. The assessor sets property values, and planning reviews building permits. Public works maintains roads and pipes. Dispatch sends fire crews and ambulances, while the open data portal publishes the map to the public.",
       "In the example county in “The Parcel Problem,” there are 48,212 parcels. The numbers are illustrative, but the question is concrete: when a parcel changes, which map shows it?"
     ]
@@ -18,37 +18,40 @@
   {
     "heading": "A refresh replaces too much",
     "paragraphs": [
-      "Each copy is a hosted layer in ArcGIS Online, the online copy of a map that web maps and apps read.",
-      "The usual refresh overwrites the whole layer. It deletes and reloads every row, with each row representing a parcel. To carry a typical day’s 312 changes, it rewrites 47,900 unchanged rows too.",
+      "Each copy is a hosted layer in ArcGIS Online, an online map layer used by web maps and apps.",
+      "The simplest refresh replaces the entire hosted layer. It deletes and reloads every row, with each row representing a parcel. To carry a typical day’s 312 changes, it rewrites 47,900 unchanged rows too.",
       "That approach also runs into a restriction. Offline sync, which lets field crews edit without a signal and send their work back later, prevents a hosted layer from being overwritten.",
-      "There are separate problems here. The county needs one official record instead of competing copies. Refreshes need to send only changes. Readers also need their own read-only outputs rather than sharing a layer with editors."
+      "Making five copies update faster would still leave five copies. The county needs one place to edit and a controlled way to distribute changes to everyone else."
     ]
   },
   {
     "heading": "One place to edit",
     "paragraphs": [
-      "The design starts with one database of record, the place that holds the official parcels.",
+      "The design starts with one database of record, the authoritative parcel database.",
       "Staff reach it through one editing service on ArcGIS Enterprise. The service is a door into the database, not another copy, so there is nothing to sync between them. The assessor works at a desk. Planning and public works use a web browser. Field crews use Field Maps, a phone app for map work, offline when needed.",
       "The database records who made each change and when. Those stamps are called editor tracking.",
-      "Each office edits in its own version, a private draft of the record that nobody else sees yet. A field crew with no signal edits on the phone, and when the signal returns those edits sync into a draft too. The assessor's office reconciles each draft against the record and posts it. A parcel changed in two drafts is flagged for a person to decide, so one office never silently overwrites another. Only posted edits become the record."
+      "Each office works in its own version, a private working copy of the official record. Changes remain separate until someone reconciles them against the latest record and posts them. If two versions change the same parcel, the system flags a conflict for someone to resolve. A field crew can work offline in Field Maps, then synchronize its edits when connectivity returns.",
+      "This is branch versioning in ArcGIS Enterprise. It needs an enterprise geodatabase, a GlobalID on every parcel, replica tracking, and a feature service published with sync and version management turned on."
     ]
   },
   {
     "heading": "Only the changes move",
     "paragraphs": [
-      "At 2:00 am each night, an automated job asks the database what was added, edited or deleted since its last run.",
+      "At 2:00 am each night, an automated job uses change tracking to retrieve everything added, edited, or deleted since its last successful run. Editor tracking says who changed a parcel and when. Change tracking, the feature service's Extract Changes operation, is what lists the inserts, updates, and deletes.",
       "It checks row counts, whether parcel shapes are valid, and whether column names match what the outputs expect. If a check fails, the run stops and yesterday's outputs stay live. Otherwise it publishes only the changes.",
-      "For the typical day shown, that means applying edits to 312 parcels, or 0.6 percent of the rows, in the hosted layer. Nothing is overwritten.",
-      "The same changes go into a GeoParquet file, a format that stores geographic records so analysts can query them directly. They also go into a PMTiles file, a format containing map tiles that web maps outside ArcGIS can draw.",
+      "For the typical day shown, that means applying edits to 312 parcels, or 0.6 percent of the rows, in the hosted layer. The other 47,900 records remain untouched.",
+      "Analysts receive a GeoParquet file, which stores geographic records in a format suited to data analysis. Web applications outside ArcGIS receive PMTiles, a compact package of map tiles that can be displayed without querying the operational database.",
       "Every office reads from these outputs instead of maintaining its own copy. Monday afternoon’s lot split appears on all five maps by Tuesday morning."
     ]
   },
   {
     "heading": "Closing",
     "paragraphs": [
-      "Copies to keep in step fall from 5 to 0. Rows rewritten per refresh fall from 48,212 to 312, and places where a parcel can be edited fall from 5 to 1.",
-      "The result comes from separating editing from reading and giving changes a defined path between them.",
-      "A lot changes once in the official record. After review where needed and the nightly checks, every office can read that change without maintaining another map."
+      "Copies to keep in step fall from 5 to 0. Rows rewritten per refresh fall from 48,212 to 312. Places where a parcel can be edited fall from 5 to 1.",
+      "The improvement comes from separating editing from distribution.",
+      "The county maintains one authoritative parcel record. Changes are reviewed, validated, and published to the systems that need them.",
+      "One lot becomes two in the official record. By the next morning, every office is working from the same change.",
+      "One record. One path for changes. Five ways to use the data."
     ]
   }
 ]

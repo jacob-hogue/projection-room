@@ -35,7 +35,7 @@ export const PIECES: Piece[] = [
     date: 'November 2026',
     category: 'architecture',
     demonstrates: ['system design', 'ArcGIS Enterprise and Online', 'change-based publishing', 'GeoParquet and PMTiles'],
-    runtime: '6:29',
+    runtime: '6:46',
   },
   {
     slug: 'spatial-join',

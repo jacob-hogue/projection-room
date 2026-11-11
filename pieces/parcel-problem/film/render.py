@@ -283,7 +283,7 @@ def lerp_col(a, b, t): return tuple(lerp(x, y, t) for x, y in zip(a, b))
 COPIES = (C_DUR, scene_copies, C_CAPS)
 
 O_DUR, O_CAPS, OS = beats(["Each copy is a hosted layer: the online version\nof the map that web maps and apps read.",
-                           "To refresh it, the office overwrites the whole layer.\nEvery row is deleted and loaded again.",
+                           "The simplest refresh overwrites the whole layer.\nEvery row is deleted and loaded again.",
                            "But only 312 parcels changed that day.\nThe other 47,900 were rewritten for nothing.",
                            "And once field crews turn on offline sync,\nthe layer refuses to be overwritten at all."], (1.0, 3.5, 4.5, 1.5))
 def scene_overwrite(c, t):
@@ -328,7 +328,8 @@ P3 = [("No single source of record", "Five copies, and none of them is the offic
       ("Every refresh rewrites everything", f"{PARCELS:,} rows moved to carry {CHANGED} changes.", "Send only what changed"),
       ("Readers share a layer with editors", "Apps that only look sit on the map staff edit.", "Give readers their own read-only outputs")]
 T_DUR, T_CAPS, TS = beats(["So there are three separate problems here.",
-                           "Each one has a fix that GIS teams already use."], (4.0, 3.5))
+                           "Each one has a fix that GIS teams already use.",
+                           "Faster copies would still be five copies. The county needs\none place to edit and one path for changes."], (4.0, 3.5, 0.5))
 def scene_three(c, t):
     header(c, 4, "Three problems", sm(t, 0.2, 0.9))
     for i, (prob, plain, fix) in enumerate(P3):
@@ -391,10 +392,10 @@ def scene_source(c, t):
             text(c, k, x, 790, 28, MUTE, aa); text(c, v, x, 834, 36, INK, aa, True)
 SOURCE = (S_DUR, scene_source, S_CAPS)
 
-DRAFTS = [("Planning draft", TARGET), ("Public works draft", TARGET), ("Field crew draft", 16)]
-V_DUR, V_CAPS, VS = beats(["Each office edits in its own version: a private draft\nthat nobody else sees yet.",
-                           "A field crew with no signal edits on the phone.\nWhen the signal returns, those edits sync into a draft too.",
-                           "The assessor's office checks each draft against the record.\nA parcel changed in two drafts is flagged for a person to decide.",
+DRAFTS = [("Planning version", TARGET), ("Public works version", TARGET), ("Field crew version", 16)]
+V_DUR, V_CAPS, VS = beats(["Each office works in its own version: a private working copy\nof the record. Its changes stay separate until posted.",
+                           "A field crew with no signal edits on the phone.\nWhen the signal returns, those edits sync into a version too.",
+                           "Someone reconciles each version against the latest record.\nA parcel changed in two versions is flagged for a person to resolve.",
                            "Only posted edits become the record."], (2.5, 3.0, 3.5, 3.5))
 def scene_review(c, t):
     header(c, 6, "Review before it counts", sm(t, 0.2, 0.9))
@@ -424,20 +425,20 @@ def scene_review(c, t):
     fa = flag * (1 - sm(t, VS[3] + 0.2, VS[3] + 0.7))
     if fa > 0:
         box(c, 560, 660, 880, 96, fa, AMBER, (0.12, 0.09, 0.02))
-        text(c, "Flagged: parcel 07-118-022 changed in two drafts", 590, 720, 32, AMBER, fa, True)
+        text(c, "Conflict: parcel 07-118-022 changed in two versions", 590, 720, 32, AMBER, fa, True)
     pa = sm(t, VS[3] + 1.4, VS[3] + 2.0)
     if pa > 0:
         box(c, 560, 660, 880, 96, pa, GREEN, (0.03, 0.10, 0.05))
-        text(c, "Posted: three drafts, one record", 590, 720, 32, GREEN, pa, True)
+        text(c, "Posted: three versions, one record", 590, 720, 32, GREEN, pa, True)
     da = sm(t, VS[0] + 1.2, VS[0] + 1.9)
     text(c, "Version", 1490, 320, 34, TEAL, da, True)
-    for i, l in enumerate(["A private draft", "of the record."]): text(c, l, 1490, 372 + i * 42, 32, MUTE, da)
+    for i, l in enumerate(["A private working", "copy of the record."]): text(c, l, 1490, 372 + i * 42, 32, MUTE, da)
 REVIEW = (V_DUR, scene_review, V_CAPS)
 
-J_DUR, J_CAPS, JS = beats(["Each night a job asks the database one question:\nwhat was added, edited or deleted since the last run?",
+J_DUR, J_CAPS, JS = beats(["Each night a job uses change tracking to fetch everything\nadded, edited or deleted since its last successful run.",
                            "It checks those changes before anyone sees them. If a check\nfails, the run stops and yesterday's outputs stay live.",
-                           "Then it sends only those 312 changes to the hosted layer.\nNothing is overwritten.",
-                           "The same changes go into two files: one for analysts,\nand one for web maps outside ArcGIS."], (3.0, 3.0, 4.5, 3.0))
+                           "Then it sends only those 312 changes to the hosted layer.\nThe other 47,900 rows are left untouched.",
+                           "Analysts get a GeoParquet file they can query. Web maps\noutside ArcGIS get PMTiles, a package of map tiles."], (3.0, 3.0, 4.5, 3.0))
 def scene_job(c, t):
     header(c, 7, "The nightly job", sm(t, 0.2, 0.9))
     grid_frame(c, sm(t, 0.3, 1.0))
@@ -457,6 +458,9 @@ def scene_job(c, t):
         w = digits(c, f"{int(CHANGED * found)}", RX - 3, 690, 120, TEAL, a)
         text(c, f"of {PARCELS:,} parcels changed", RX + w + 24, 650, 36, MUTE, a)
         text(c, "added, edited or deleted", RX + w + 24, 694, 28, DIM, a)
+        a5 = sm(t, JS[0] + 3.8, JS[0] + 4.5) * o1
+        text(c, "Change tracking", RX, 780, 36, TEAL, a5, True)
+        text(c, "The editing service's log of every add, edit and delete.", RX, 824, 28, MUTE, a5)
     elif step == 2:
         for i, (k, v) in enumerate([("Row counts", "nothing lost or doubled"), ("Shapes", "every parcel outline is valid"), ("Column names", "the same ones the apps expect")]):
             a = sm(t, JS[1] + 0.5 + i * 0.3, JS[1] + 1.1 + i * 0.3) * o2; y = 580 + i * 88
@@ -475,8 +479,8 @@ def scene_job(c, t):
             text(c, f"{CHANGED} ÷ {PARCELS:,} = 0.6% of the rows", RX, 836, 32, INK, sm(t, JS[2] + 4.2, JS[2] + 4.9) * b)
         if t >= JS[3]:
             for i, (k, v, col) in enumerate([("Hosted layer", "for web maps in ArcGIS Online", GREEN),
-                                             ("GeoParquet file", "one file analysts can query directly", TEAL),
-                                             ("PMTiles file", "one file that other web maps can draw", TEAL)]):
+                                             ("GeoParquet file", "geographic records, for analysis", TEAL),
+                                             ("PMTiles file", "map tiles, for display outside ArcGIS", TEAL)]):
                 a = sm(t, JS[3] + 0.4 + i * 1.0, JS[3] + 1.0 + i * 1.0); y = 590 + i * 92
                 c.new_path(); c.arc(RX + 12, y - 12, 9, 0, 2 * math.pi); c.set_source_rgba(*col, a); c.fill()
                 text(c, k, RX + 40, y, 38, INK, a, True); text(c, v, RX + 40, y + 38, 28, MUTE, a)
@@ -533,7 +537,7 @@ def scene_closing(c, t):
     a = sm(t, 0.3, 1.2)
     text(c, "THE PROJECTION ROOM", W / 2, 400, 26, TEAL, a, True, align="c", track=4)
     text(c, "The Parcel Problem", W / 2, 540, 124, INK, a, True, align="c", fam="Inter Display")
-    text(c, "One source of record. Every map reads the same parcels.", W / 2, 624, 40, MUTE, sm(t, 0.9, 1.8), align="c")
+    text(c, "One record. One path for changes. Five ways to use the data.", W / 2, 624, 40, MUTE, sm(t, 0.9, 1.8), align="c")
     text(c, "jacob-hogue.github.io/projection-room", W / 2, 720, 28, DIM, sm(t, 1.4, 2.2), align="c")
 CLOSING = (4.6, scene_closing, [(0.5, 4.2, "That was the parcel problem. Thank you for watching.")])
 

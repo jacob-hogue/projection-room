@@ -38,102 +38,107 @@ Each copy is a hosted layer: the online version
 of the map that web maps and apps read.
 
 9
-00:01:40,900 --> 00:01:54,800
-To refresh it, the office overwrites the whole layer.
+00:01:40,900 --> 00:01:53,800
+The simplest refresh overwrites the whole layer.
 Every row is deleted and loaded again.
 
 10
-00:01:55,400 --> 00:02:09,300
+00:01:54,400 --> 00:02:08,300
 But only 312 parcels changed that day.
 The other 47,900 were rewritten for nothing.
 
 11
-00:02:09,900 --> 00:02:21,800
+00:02:08,900 --> 00:02:20,800
 And once field crews turn on offline sync,
 the layer refuses to be overwritten at all.
 
 12
-00:02:23,300 --> 00:02:33,200
+00:02:22,300 --> 00:02:32,200
 So there are three separate problems here.
 
 13
-00:02:33,800 --> 00:02:44,700
+00:02:32,800 --> 00:02:43,700
 Each one has a fix that GIS teams already use.
 
 14
-00:02:46,200 --> 00:02:57,600
+00:02:44,300 --> 00:02:56,700
+Faster copies would still be five copies. The county needs
+one place to edit and one path for changes.
+
+15
+00:02:58,200 --> 00:03:09,600
 Start with one database that holds the official parcels.
 This is the source of record.
 
-15
-00:02:58,200 --> 00:03:12,100
+16
+00:03:10,200 --> 00:03:24,100
 Staff edit it through one editing service. It is a door
 into the database, not another copy.
 
-16
-00:03:12,700 --> 00:03:25,600
+17
+00:03:24,700 --> 00:03:37,600
 The database stamps every change with who made it
 and when. That stamp is called editor tracking.
 
-17
-00:03:27,100 --> 00:03:39,500
-Each office edits in its own version: a private draft
-that nobody else sees yet.
-
 18
-00:03:40,100 --> 00:03:56,000
-A field crew with no signal edits on the phone.
-When the signal returns, those edits sync into a draft too.
+00:03:39,100 --> 00:03:54,000
+Each office works in its own version: a private working copy
+of the record. Its changes stay separate until posted.
 
 19
-00:03:56,600 --> 00:04:13,500
-The assessor's office checks each draft against the record.
-A parcel changed in two drafts is flagged for a person to decide.
+00:03:54,600 --> 00:04:10,500
+A field crew with no signal edits on the phone.
+When the signal returns, those edits sync into a version too.
 
 20
-00:04:14,100 --> 00:04:23,000
-Only posted edits become the record.
+00:04:11,100 --> 00:04:27,500
+Someone reconciles each version against the latest record.
+A parcel changed in two versions is flagged for a person to resolve.
 
 21
-00:04:24,500 --> 00:04:39,400
-Each night a job asks the database one question:
-what was added, edited or deleted since the last run?
+00:04:28,100 --> 00:04:37,000
+Only posted edits become the record.
 
 22
-00:04:40,000 --> 00:04:55,400
+00:04:38,500 --> 00:04:53,400
+Each night a job uses change tracking to fetch everything
+added, edited or deleted since its last successful run.
+
+23
+00:04:54,000 --> 00:05:09,400
 It checks those changes before anyone sees them. If a check
 fails, the run stops and yesterday's outputs stay live.
 
-23
-00:04:56,000 --> 00:05:09,900
-Then it sends only those 312 changes to the hosted layer.
-Nothing is overwritten.
-
 24
-00:05:10,500 --> 00:05:24,400
-The same changes go into two files: one for analysts,
-and one for web maps outside ArcGIS.
+00:05:10,000 --> 00:05:25,900
+Then it sends only those 312 changes to the hosted layer.
+The other 47,900 rows are left untouched.
 
 25
-00:05:25,900 --> 00:05:38,800
+00:05:26,500 --> 00:05:41,400
+Analysts get a GeoParquet file they can query. Web maps
+outside ArcGIS get PMTiles, a package of map tiles.
+
+26
+00:05:42,900 --> 00:05:55,800
 Now every office reads from those outputs.
 Nobody keeps a copy of their own.
 
-26
-00:05:39,400 --> 00:05:55,800
+27
+00:05:56,400 --> 00:06:12,800
 The assessor splits a lot on Monday afternoon.
 By Tuesday morning, all five maps show it.
 
-27
-00:05:57,300 --> 00:06:11,200
+28
+00:06:14,300 --> 00:06:28,200
 Before: five copies and five refresh jobs.
 After: one source of record and one nightly job.
 
-28
-00:06:11,800 --> 00:06:23,200
+29
+00:06:28,800 --> 00:06:40,200
 All five maps now show the same parcels,
 and each refresh moves 99 percent fewer rows.
 
-29
-00:06:24,700 --> 00:06:28,400
+30
+00:06:41,700 --> 00:06:45,400
 That was the parcel problem. Thank you for watching.
