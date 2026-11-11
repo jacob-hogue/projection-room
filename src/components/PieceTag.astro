@@ -1,0 +1,19 @@
+---
+/** A piece's category, as a small colored label. */
+import { CATEGORIES, type Category } from '../content/pieces';
+interface Props {
+  category: Category;
+  class?: string;
+}
+const { category, class: className = '' } = Astro.props;
+const info = CATEGORIES[category];
+---
+<span class={`piece-tag mono ${className}`} style={`--tag: ${info.color}`}>{info.label}</span>
+
+<style>
+  .piece-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--tag);
+  }
+  .piece-tag::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--tag); }
+</style>

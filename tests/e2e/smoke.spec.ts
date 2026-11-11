@@ -12,3 +12,10 @@ test('The Parcel Problem page has its film or poster', async ({ page }) => {
   await expect(page.locator('h1')).toHaveText('The Parcel Problem');
   await expect(page.locator('video, .film-poster').first()).toBeVisible();
 });
+
+test('gallery cards carry a category tag and a demonstrates line', async ({ page }) => {
+  await page.goto('/projection-room/');
+  const first = page.locator('.piece-card').first();
+  await expect(first.locator('.piece-tag')).toHaveText('Solution architecture');
+  await expect(first.locator('.piece-demo')).toContainText('Demonstrates');
+});

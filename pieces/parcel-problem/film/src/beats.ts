@@ -94,8 +94,8 @@ export const CAPTIONS: Caption[] = [
   { from: 130, to: 143, text: 'Next, validate the changes: row counts, geometry, and schema. If anything fails, the job stops.' },
   { from: 143, to: 156, text: 'Then publish. The hosted feature layer gets individual edits, not a full overwrite, so sync keeps working.' },
   { from: 156, to: 170, text: 'Finally, serve. Every application reads from one of the outputs. No department needs its own copy.' },
-  { from: 170, to: 190, text: 'MassGIS brings together parcels from all 351 Massachusetts towns in one standardized layer. Towns with parcel edits since 2023 show up in green.' },
-  { from: 190, to: 206, text: 'Here\u2019s Westborough, parcel by parcel. 730 of its 7,164 parcels have been edited since 2023.' },
+  { from: 170, to: 190, text: 'This is not hypothetical. Massachusetts already runs one shared parcel layer: every town delivers to one standard, MassGIS publishes one layer, and the whole state reads it. Towns with parcel edits since 2023 show in green.' },
+  { from: 190, to: 206, text: 'Zoom in and the same record is there for every parcel. In Westborough, 730 of 7,164 parcels have been edited since 2023.' },
   { from: 206, to: FILM_SECONDS, text: '' },
 ];
 

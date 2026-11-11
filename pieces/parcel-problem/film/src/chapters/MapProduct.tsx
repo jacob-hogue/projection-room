@@ -52,14 +52,14 @@ export const MapProduct: React.FC<Props> = ({ local, towns, parcels, stats }) =>
   const frameEnter = enterAt(local, 0.2, EASE.state);
   const t = stats?.town;
   // The heading asks the question the map answers; it changes with the camera.
-  const headingText = zoomed ? `${t?.name ?? ''}, parcel by parcel` : 'Which towns have updated their parcels since 2023?';
+  const headingText = zoomed ? `${t?.name ?? ''}, parcel by parcel` : 'A real example: Massachusetts shares one parcel layer for 351 towns';
   const headingEnter = zoomed ? enterAt(local, T.zoom + 1.5, EASE.state) : Math.min(enterAt(local, 0.2, EASE.state), 1 - seg(local, T.zoom + 1.0, T.zoom + 1.5));
 
   return (
     <>
       <Heading text={headingText} enter={headingEnter} />
       <div style={{ position: 'absolute', left: 64, top: 168, fontSize: 22, lineHeight: '30px', color: C.secondary, ...rise(Math.min(enterAt(local, 0.6), 1 - seg(local, T.zoom + 1.0, T.zoom + 1.5))) }}>
-        351 towns. 2.56 million parcels. One layer.
+        2.56 million parcels, one standard, one place to read them. Towns with edits since 2023 in green.
       </div>
 
       <div style={{ position: 'absolute', left: MAP.left, top: MAP.top, width: MAP.width, height: MAP.height, boxSizing: 'border-box', borderRadius: 12, background: '#080b10', border: `1px solid ${C.hairline}`, overflow: 'hidden', ...rise(frameEnter) }}>
@@ -88,7 +88,7 @@ export const MapProduct: React.FC<Props> = ({ local, towns, parcels, stats }) =>
       </div>
 
       <div style={{ position: 'absolute', left: RAIL.left, top: RAIL.top, width: RAIL.width, display: 'flex', flexDirection: 'column', gap: 18 }}>
-        <div style={{ ...eyebrow(C.green), fontSize: 14, ...rise(enterAt(local, T.reveal, EASE.state)) }}>The result</div>
+        <div style={{ ...eyebrow(C.green), fontSize: 14, ...rise(enterAt(local, T.reveal, EASE.state)) }}>The real thing</div>
         <Stat eyebrow="towns, one shared schema" value={stats?.towns ?? 0} enter={enterAt(local, T.reveal + 0.4, EASE.state)} size={56} />
         <Stat eyebrow="parcels" value={stats?.parcels ?? 0} enter={enterAt(local, T.reveal + 1.0, EASE.state)} size={56} />
         <Stat eyebrow="source of record" value={1} enter={enterAt(local, T.reveal + 1.6, EASE.state)} size={56} live />

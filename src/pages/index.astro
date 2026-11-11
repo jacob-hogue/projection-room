@@ -1,35 +1,35 @@
 ---
 import Base from '../layouts/Base.astro';
+import PieceTag from '../components/PieceTag.astro';
+import { CATEGORIES, PIECES, SHOW_FILTERS } from '../content/pieces';
 const base = import.meta.env.BASE_URL;
-const pieces = [
-  {
-    slug: 'parcel-problem',
-    title: 'The Parcel Problem',
-    rule: 'Problem: a county keeps five copies of its parcel data. Solution: one shared database with a nightly update that every map reads from.',
-    date: 'November 2026',
-    poster: `${base}parcel-problem/card.png`,
-  },
-  {
-    slug: 'dial-pulse',
-    title: 'The dial-pulse map',
-    rule: 'In 1947 the biggest cities got the area codes that were fastest to dial. Every territory is colored by how many clicks it took.',
-    date: 'November 2026',
-    poster: `${base}dial-pulse/card.png`,
-  },
-];
+const categories = Object.entries(CATEGORIES).filter(([key]) => PIECES.some((p) => p.category === key));
 ---
 <Base title="The Projection Room">
   <section class="intro">
     <h1>The Projection Room</h1>
     <p>Short videos by Jacob Hogue on maps, data visualization, spatial analysis and solution architecture. Each one comes with a written piece on what it shows and how it was built.</p>
   </section>
+  {SHOW_FILTERS ? (
+    <nav class="filters" aria-label="Filter by category">
+      <button type="button" class="chip mono is-on" data-filter="all" aria-pressed="true">All</button>
+      {categories.map(([key, info]) => (
+        <button type="button" class="chip mono" data-filter={key} aria-pressed="false" style={`--tag: ${info.color}`}>{info.label}</button>
+      ))}
+    </nav>
+  ) : null}
   <section class="pieces" aria-label="Pieces">
-    {pieces.map((p) => (
-      <a class="piece-card" href={`${base}${p.slug}/`}>
-        <img src={p.poster} alt="" width="1600" height="880" loading="lazy" decoding="async" />
+    {PIECES.map((p) => (
+      <a class="piece-card" href={`${base}${p.slug}/`} data-category={p.category}>
+        <img src={`${base}${p.slug}/card.png`} alt="" width="1600" height="880" loading="lazy" decoding="async" />
         <div class="piece-text">
+          <div class="piece-meta">
+            <PieceTag category={p.category} />
+            <span class="piece-runtime mono">{p.runtime}</span>
+          </div>
           <h2>{p.title}</h2>
           <p>{p.rule}</p>
+          <p class="piece-demo"><span class="mono">Demonstrates</span> {p.demonstrates.join(', ')}</p>
           <span class="piece-date mono">{p.date}</span>
         </div>
       </a>
@@ -37,10 +37,38 @@ const pieces = [
   </section>
 </Base>
 
+{SHOW_FILTERS ? (
+  <script>
+    const chips = document.querySelectorAll<HTMLButtonElement>('.filters .chip');
+    const cards = document.querySelectorAll<HTMLElement>('.piece-card');
+    chips.forEach((chip) =>
+      chip.addEventListener('click', () => {
+        const want = chip.dataset.filter ?? 'all';
+        chips.forEach((c) => {
+          const on = c === chip;
+          c.classList.toggle('is-on', on);
+          c.setAttribute('aria-pressed', String(on));
+        });
+        cards.forEach((card) => {
+          card.hidden = want !== 'all' && card.dataset.category !== want;
+        });
+      }),
+    );
+  </script>
+) : null}
+
 <style>
   .intro { max-width: 1200px; margin: 0 auto; padding: 72px 24px 32px; }
   .intro h1 { font-size: clamp(36px, 5vw, 56px); margin-bottom: 16px; }
   .intro p { font-size: 18px; max-width: 58ch; }
+  .filters { max-width: 1200px; margin: 0 auto 20px; padding: 0 24px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    --tag: var(--accent);
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; padding: 8px 12px; border-radius: 999px;
+    border: 1px solid var(--border); background: transparent; color: var(--text-2); cursor: pointer;
+  }
+  .chip:hover { border-color: var(--border-hover); color: var(--text-1); }
+  .chip.is-on { border-color: var(--tag); color: var(--tag); }
   .pieces { max-width: 1200px; margin: 0 auto; padding: 0 24px 72px; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 520px), 1fr)); gap: 28px; }
   .piece-card {
     display: grid; overflow: hidden; border-radius: 14px; border: 1px solid var(--border);
@@ -48,8 +76,12 @@ const pieces = [
   }
   .piece-card:hover, .piece-card:focus-visible { border-color: var(--accent); }
   .piece-card img { display: block; width: 100%; height: auto; aspect-ratio: 1600 / 880; object-fit: cover; }
-  .piece-text { padding: 20px 22px 22px; }
+  .piece-text { padding: 18px 22px 22px; }
+  .piece-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .piece-runtime { font-size: 11px; color: var(--text-2); letter-spacing: 0.04em; }
   .piece-text h2 { font-size: clamp(22px, 2.4vw, 30px); margin-bottom: 8px; }
   .piece-text p { font-size: 16px; max-width: 70ch; }
+  .piece-demo { margin-top: 10px; font-size: 14px; color: var(--text-2); }
+  .piece-demo .mono { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-1); margin-right: 6px; }
   .piece-date { display: inline-block; margin-top: 12px; font-size: 12px; color: var(--accent); letter-spacing: 0.04em; }
 </style>
