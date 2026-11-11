@@ -19,5 +19,5 @@ test('the index links to the piece', async ({ page }) => {
   await page.goto('/projection-room/');
   await expect(page.locator('a.piece-card[href$="/spatial-join/"]')).toHaveCount(1);
   await expect(page.locator('a.piece-card[href$="/spatial-join/"] .piece-tag')).toHaveText('Engineering');
-  await expect(page.locator('.piece-card .piece-tag')).toHaveCount(2);
+  await expect(page.locator('.piece-card .piece-tag')).toHaveCount(3);
 });
