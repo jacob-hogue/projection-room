@@ -46,3 +46,9 @@ public/*/population_1950.csv
 pieces/*/film/public/
 
 public/*/states.topojson
+
+# Spatial join working files: the benchmark's pickle and rendered scenes
+pieces/*/data.pkl
+pieces/*/s[0-9]*.mp4
+pieces/*/tmp_s*.mp4
+pieces/*/still_*.png

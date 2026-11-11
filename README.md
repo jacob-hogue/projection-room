@@ -4,6 +4,7 @@ Interactive maps and short films by Jacob Hogue, published at [jacob-hogue.githu
 
 ## Pieces
 
+- `pieces/spatial-join/`: the spatial join. A million Uber pickups matched to New York's 263 taxi zones by brute force, an R-tree and four grid indexes (Geohash, S2, H3, A5), with a benchmark that compares them at equal cell size.
 - `pieces/dial-pulse/`: the dial-pulse map. Area codes of the lower 48 states, colored by how many clicks it took to dial them on a rotary phone, from the 1947 plan to 2025.
 
 ## Layout

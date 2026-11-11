@@ -1,0 +1,9 @@
+[
+  { "name": "Uber pickups", "detail": "Uber TLC FOIL response, pickups for September 2014, obtained from the NYC Taxi and Limousine Commission and published by FiveThirtyEight.", "href": "https://github.com/fivethirtyeight/uber-tlc-foil-response" },
+  { "name": "Taxi zones", "detail": "NYC Taxi and Limousine Commission taxi zones shapefile, 263 zones, from the copy in toddwschneider/nyc-taxi-data.", "href": "https://github.com/toddwschneider/nyc-taxi-data" },
+  { "name": "R-tree", "detail": "Antonin Guttman, \"R-trees: A Dynamic Index Structure for Spatial Searching,\" 1984, as summarized on Wikipedia.", "href": "https://en.wikipedia.org/wiki/R-tree" },
+  { "name": "Geohash", "detail": "Gustavo Niemeyer's 2008 latitude and longitude encoding, as described on Wikipedia.", "href": "https://en.wikipedia.org/wiki/Geohash" },
+  { "name": "S2", "detail": "Google's S2 Geometry library.", "href": "https://s2geometry.io/" },
+  { "name": "H3", "detail": "Uber's hexagonal hierarchical index.", "href": "https://h3geo.org/" },
+  { "name": "A5", "detail": "Felix Palmer's equal-area pentagonal index.", "href": "https://a5geo.org/" }
+]

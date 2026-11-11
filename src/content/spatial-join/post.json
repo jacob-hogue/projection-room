@@ -1,0 +1,130 @@
+[
+  {
+    "heading": "A question about where",
+    "paragraphs": [
+      "A receipt carries a customer number. Somewhere in a database, a customer record carries the same number. Matching the receipt to the customer means finding those two labels and lining them up. That operation is called a join, and computers are very good at it.",
+      "Now take a taxi pickup. It has a latitude and a longitude, enough to put a dot on a map, but nothing that says which neighborhood it belongs to. The neighborhood is stored separately as a shape. To connect the pickup to the neighborhood, the computer has to work out whether the dot falls inside that shape.",
+      "That's a spatial join: matching rows by where they are rather than by a label they share.",
+      "Numbers reported per neighborhood, per county or per delivery zone depend on this kind of match. It's one of the most common jobs in geographic information systems (GIS). The question is simple enough to ask, but answering it efficiently takes some care."
+    ]
+  },
+  {
+    "heading": "One point, one shape, one test",
+    "paragraphs": [
+      "Start with a single pickup and a single zone. The operation that tells us whether the pickup belongs to the zone is called a point-in-polygon test. It's older than most of the software that runs it.",
+      "Imagine drawing a straight line from the pickup out past the edge of the map. Count how many times it crosses the zone's boundary. An odd count means the point is inside. An even count means it's outside.",
+      "One test is cheap, though its cost depends on how many edges the shape has. Real boundaries have plenty. The 263 taxi zones used in this project contain 98,192 vertices between them.",
+      "We have a way to answer the question for one pickup and one zone. The larger problem is deciding how many times we need to ask it."
+    ]
+  },
+  {
+    "heading": "The test case",
+    "paragraphs": [
+      "For this project, the points are 1,028,136 Uber pickups in New York City from September 2014. FiveThirtyEight obtained them from the city's Taxi and Limousine Commission (TLC) through a freedom of information request and published them.",
+      "The shapes are the TLC's 263 taxi zones, the same zones the city uses to report yellow cab trips.",
+      "The task is to find which zone each pickup happened in. That includes recognizing when a pickup doesn't belong to any zone. There are 21,989 pickups in New Jersey or elsewhere outside the zone map. A correct method has to leave those unmatched."
+    ]
+  },
+  {
+    "heading": "Asking every zone",
+    "paragraphs": [
+      "The simplest approach needs no index. Take a pickup and test it against every zone in turn. For a pickup inside the map, that means getting 262 answers of no and one of yes.",
+      "The computer can't stop at the first yes. Shapes can overlap in a general spatial join, so a point may belong to more than one. It has to finish checking before moving to the next pickup.",
+      "A million pickups times 263 zones produces 270,399,768 tests. About one million say yes. The other 269 million are wasted work.",
+      "On one processor core, this took 5.5 seconds. That's manageable for this dataset, but the approach gets expensive quickly. Ten times the pickups against ten times the zones means a hundred times the work.",
+      "To make the join faster, we need a cheap way to rule out zones before testing their full boundaries."
+    ]
+  },
+  {
+    "heading": "A box around every zone",
+    "paragraphs": [
+      "The traditional tool for this is an R-tree, described by Antonin Guttman in 1984.",
+      "An R-tree starts by drawing the smallest upright rectangle around each zone. This is its bounding box. Nearby boxes are grouped inside larger boxes, like folders inside folders.",
+      "Checking whether a point falls inside a rectangle takes four comparisons. Searching these nested boxes lets the computer discard almost every zone without examining its actual outline. Only zones whose boxes contain the pickup get the full point-in-polygon test.",
+      "That reduced the work to 2,060,654 tests, about two per pickup instead of 263. The join finished in 0.93 seconds.",
+      "The boxes leave some unnecessary work. They overlap, and their corners contain space outside the zones they enclose. About half of those two million tests still return no.",
+      "There's also a practical constraint as the data grows. Every pickup has to search a tree that lives in memory on one machine. Splitting that search across many machines is awkward."
+    ]
+  },
+  {
+    "heading": "Turning location into a number",
+    "paragraphs": [
+      "A grid index gives us another way to narrow the search.",
+      "Cover the map with small cells and give each cell an ID number. Each pickup receives the ID of the cell it falls in. That can be done once and saved as a column alongside the pickup.",
+      "Next, cover the zones with the same cells. When a cell sits entirely inside a zone, label it with that zone. Every pickup carrying that cell's ID can then be matched to the zone by comparing integers. There's no need to examine the geometry.",
+      "Cells that cross a zone boundary need more care. A pickup in one of those cells still gets a point-in-polygon test, but only against the few zones touching that cell.",
+      "This turns much of the spatial join into an ordinary join on a number. Databases already do that well, and the work spreads easily across machines.",
+      "Four grid systems were tested. Geohash, published by Gustavo Niemeyer in 2008, divides latitude and longitude into rectangles. S2, from Google, uses squares projected from the faces of a cube. H3, from Uber, uses hexagons. A5, released by Felix Palmer in 2025, uses pentagons that all have the same area."
+    ]
+  },
+  {
+    "heading": "Cell size decides everything",
+    "paragraphs": [
+      "The first results showed that using a grid wasn't enough on its own.",
+      "With cells of about half a square kilometer, the grids required around four million tests. That was nearly twice the R-tree's work.",
+      "Manhattan explains much of the result. Most of the pickups are there, and its taxi zones are small. A cell larger than the zone beneath it can never fit entirely inside that zone. Almost every pickup still needs a geometry test. At that cell size, H3 could settle under 4 percent of pickups by number alone.",
+      "Smaller cells changed the result. At about a tenth of a square kilometer, the grids matched the R-tree. At the size of one city block, they needed fewer than one million tests. More than half of all pickups could be assigned without testing any geometry.",
+      "All four grids followed almost the same curve as the cells got smaller. The tradeoff was storage: smaller cells meant more of them to keep. H3 covered the zones with 1,354 cells at resolution 8 and 55,505 at resolution 10."
+    ]
+  },
+  {
+    "heading": "A fair comparison needs equal cells",
+    "paragraphs": [
+      "Cell size mattered enough to expose a problem with the first comparison.",
+      "Each grid offers a fixed set of size steps. Near city-block size, the closest available steps were 0.018 square kilometers for Geohash, 0.017 for S2, 0.015 for H3 and 0.031 for A5.",
+      "A5's cells were about twice the area of the others. It looked worst, but that result couldn't tell us much about pentagons. We were also measuring the effect of giving it larger cells.",
+      "To separate those effects, each grid was measured at several sizes and all four were compared at 0.02 square kilometers, about one Manhattan block. No grid has a step at exactly that size, so each value is interpolated between its two nearest steps.",
+      "At equal cell size, H3 needed 0.88 million tests, S2 0.92 million, Geohash 0.93 million and A5 0.95 million. All four were within about 8 percent of each other."
+    ]
+  },
+  {
+    "heading": "Turning the city",
+    "paragraphs": [
+      "Equal cell sizes removed one source of unfairness. The direction of the streets introduced another.",
+      "Manhattan's street grid runs about 29 degrees off true north, and zone boundaries follow those streets. Square cells might perform well because they happen to line up with the avenues, or poorly because they cut across them.",
+      "The check was to hold each grid still and rotate the city beneath it, six ways, from 0 to 75 degrees.",
+      "The square grids changed substantially. Geohash swung by 19 percent and S2 by 15 percent, both larger than the gap between the grids in the equal-size comparison. With the city turned 30 degrees, putting the avenues close to north and south, Geohash needed the fewest tests of any grid.",
+      "Hexagons and pentagons were steadier. H3 swung by 4 percent and A5 by 3 percent.",
+      "The R-tree changed most, ranging from 1.41 million tests to 2.25 million. Its bounding boxes grow and shrink as the shapes inside them turn.",
+      "Averaged across the six rotations, H3 needed the fewest tests. The order of the four grids followed the amount of edge each cell shape has for its area. A hexagon has the least, so fewer hexagons straddle a boundary. That advantage was real, but small."
+    ]
+  },
+  {
+    "heading": "The clock",
+    "paragraphs": [
+      "Counting geometry tests gives every method a common measure. To understand the practical benefit, we also need elapsed time.",
+      "Brute force took 5.51 seconds. The R-tree took 0.93. With cell IDs already stored, the four grids took between 0.15 and 0.22 seconds, about five times faster than the R-tree.",
+      "The differences between the grids were smaller than the variation from one run to the next. These timings therefore don't support ranking one grid above another.",
+      "All methods returned the same zone for all 1,028,136 pickups, including leaving the 21,989 pickups outside the map unmatched."
+    ]
+  },
+  {
+    "heading": "Choosing an index",
+    "paragraphs": [
+      "With the grids this close on speed, choosing among them depends on what the rest of the system needs.",
+      "An R-tree needs no setup and handles any shape. For a one-off question on one machine, it's the right tool.",
+      "H3 is the safe default among the grids. It has the widest tool support, and its results stay steady as the orientation of the data changes.",
+      "S2 and Geohash have properties that suit database range scans. Their cells fit exactly inside their parent cells, and their IDs sort by location. Their performance depends more on how the grid lines up with the data.",
+      "A5 is the newest option. Its cells all have the same area, which matters when comparing counts per cell across a wide region.",
+      "For any of these grids, cell size is the most important setting. Match it to the smallest shapes where the data is densest, then measure the result."
+    ]
+  },
+  {
+    "heading": "How it was measured",
+    "paragraphs": [
+      "Every method used the same pickups and zones, ran on one processor core, and used the same point-in-polygon test from Shapely 2.2 on GEOS 3.14. The R-tree implementation was Shapely's STRtree. Timings are the median of nine runs, except brute force, which ran once.",
+      "Coordinates were converted from latitude and longitude to kilometers on a flat local grid centered on New York. Cell shapes came from the real libraries: h3-py 4.5, pya5 1.0 and s2sphere 0.2.5. Geohash was computed directly.",
+      "There are limits to what these measurements show. Grid timings assume the cell ID is already stored, so they exclude the cost of computing it. Pickups were assigned to cells by testing them against each library's cell outlines rather than calling its own lookup.",
+      "The benchmark also runs in Python on a small cloud machine. The ratios should carry over to a database engine, but the seconds won't. And this is one city. Larger zones or more evenly spread points would change where the grids overtake the R-tree.",
+      "The benchmark code, the rotation check and the script that draws the film are in the repository."
+    ]
+  },
+  {
+    "heading": "Closing",
+    "paragraphs": [
+      "A spatial join asks a simple question. The slow approach answers it by asking every shape.",
+      "Both indexes reduce that work by finding a cheap reason to skip shapes before testing their boundaries. A bounding box rules out most zones. A numbered cell can avoid the geometry test altogether, provided it's small enough for the data.",
+      "Most of the effort here went into making the comparison fair. Accounting for cell size and orientation changed the result more than the choice of grid did."
+    ]
+  }
+]
