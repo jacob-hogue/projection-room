@@ -18,6 +18,6 @@ test('the page is title, film, stack and one post', async ({ page }) => {
 test('the index links to the piece', async ({ page }) => {
   await page.goto('/projection-room/');
   await expect(page.locator('a.piece-card[href$="/spatial-join/"]')).toHaveCount(1);
-  await expect(page.locator('a.piece-card[href$="/spatial-join/"] .piece-category')).toHaveText('Solution architecture');
+  await expect(page.locator('a.piece-card[href$="/spatial-join/"] .piece-category')).toHaveText('Engineering');
   await expect(page.locator('.piece-card .piece-category')).toHaveCount(2);
 });
