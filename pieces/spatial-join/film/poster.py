@@ -18,10 +18,10 @@ def still(fn, t, dy=0):
     return surf
 
 # Poster: the four grid systems with their colors explained, centered, no caption.
-still(R.s5, 22.0, 85).write_to_png(os.path.join(out, "poster.png"))
+still(R.scene_four_grids, 22.0, 85).write_to_png(os.path.join(out, "poster.png"))
 
 # Card: the test case, scaled to the index card's 1600 x 880.
-full = still(R.s1, 6.4, 30)
+full = still(R.scene_test_case, 6.4, 30)
 card = cairo.ImageSurface(cairo.FORMAT_RGB24, 1600, 880); c = cairo.Context(card)
 c.set_source_rgb(*R.BG); c.paint()
 k = 1600 / R.W

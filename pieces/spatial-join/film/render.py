@@ -4,6 +4,10 @@ Run from pieces/spatial-join after pipeline/bench.py and pipeline/fair.py:
   python film/render.py stills            a few full-size test frames
   python film/render.py video             one s<N>.mp4 per scene
   python film/render.py srt captions.srt  the caption file
+
+Scenes, in order: title, what a spatial join is, one pair at a time, the test case,
+brute force, R-tree, grid index, four grid systems, tests by cell size, head to head
+at equal cell size, the clock, choosing an index, closing card.
 """
 import math, pickle, subprocess, sys, os
 import numpy as np
@@ -165,8 +169,8 @@ def big_counter(c, label, value, y, col=INK, a=1.0, size=120):
     text(c, label.upper(), RX, y, 24, MUTE, a, True, track=3)
     digits(c, f"{int(value):,}", RX - 4, y + size + 8, size, col, a)
 
-# ------------------------------------------------------------------ scenes
-def s1(c, t):
+# ------------------------------------------------------------------ scenes on the real data
+def scene_test_case(c, t):
     z = sm(t, 3.0, 6.2)
     v = View((lerp(FULL[0], CORE[0], z), lerp(FULL[1], CORE[1], z), math.exp(lerp(math.log(FULL[2]), math.log(CORE[2]), z))), MAPR)
     c.save(); frame_clip(c, v)
@@ -182,10 +186,9 @@ def s1(c, t):
     text(c, "taxi zones", RX + 22 + digits(c, f"{M}", RX, 630, 54, TEAL, a2), 630, 40, MUTE, a2)
     text(c, "New York City, September 2014.", RX, 716, 28, DIM, sm(t, 2.4, 3.2))
     text(c, "Pickups: FiveThirtyEight. Zones: NYC TLC.", RX, 754, 28, DIM, sm(t, 2.4, 3.2))
-S1 = (6.5, s1, [(0.5, 6.1, "That works for a handful of points. Now a real case:\na million Uber pickups and 263 New York taxi zones.")])
+TEST_CASE = (6.5, scene_test_case, [(0.5, 6.1, "That works for a handful of points. Now a real case:\na million Uber pickups and 263 New York taxi zones.")])
 
 incore = lambda i: abs(px[i] - CORE[0]) < 9 and abs(py[i] - CORE[1]) < 9
-hl = [int(i) for i in samp[:800] if truth[i] >= 0 and incore(i)][:6]
 
 def ring(c, x, y, col, r=11, a=1.0):
     c.new_path(); c.arc(x, y, r, 0, 2 * math.pi); c.set_source_rgba(*col, a); c.set_line_width(3.5); c.stroke()
@@ -230,7 +233,7 @@ def tag(c, s, x, y, size=26, col=INK, a=1.0):
     rrect(c, x - w / 2 - 12, y - size - 6, w + 24, size + 20, 8); c.set_source_rgba(0, 0, 0, 0.78 * a); c.fill()
     text(c, s, x, y, size, col, a, True, align="c")
 
-def s2(c, t):
+def scene_brute_force(c, t):
     z = sm(t, F0, F0 + 3.0)
     view = (lerp(V1[0], FULL[0], z), lerp(V1[1], FULL[1], z), math.exp(lerp(math.log(V1[2]), math.log(FULL[2]), z)))
     v = View(view, MAPR)
@@ -320,7 +323,7 @@ def s2(c, t):
             text(c, f"Yes: about {YES / 1e6:.1f} million", RX + 22, yb + 132, 34, GREEN, a4, True)
             text(c, f"No: about {(N * M - YES) / 1e6:.1f} million", RX + BW, yb + 132, 34, CORAL, a4, True, align="r")
             text(c, f"{ST['nested']['time']:.1f} seconds on one core, nearly all of it wasted.", RX, yb + 206, 32, MUTE, sm(t, D0 + 4.4, D0 + 5.2))
-S2 = (50.6, s2, [(0.5, 6.2, "Start with one pickup. We want to know\nwhich taxi zone it is in."),
+BRUTE_FORCE = (50.6, scene_brute_force, [(0.5, 6.2, "Start with one pickup. We want to know\nwhich taxi zone it is in."),
                  (6.6, 14.3, "With no index, the computer has to ask every zone,\none at a time. Is this pickup inside you?"),
                  (14.6, 23.2, "It keeps asking after the first yes, because zones can\noverlap. Even the far side of the city gets a test."),
                  (23.5, 29.7, "That is 263 tests to place one pickup.\nOnly one of them says yes."),
@@ -333,7 +336,7 @@ for i in samp[400:3000]:
     if h in (2, 3) and truth[i] >= 0 and incore(i): rt_pts.append(int(i))
     if len(rt_pts) == 5: break
 
-def s3(c, t):
+def scene_rtree(c, t):
     v = View(CORE, MAPR)
     c.save(); frame_clip(c, v); base_full(c, v)
     active = None
@@ -370,13 +373,13 @@ def s3(c, t):
     text(c, f"{N * M / ST['rtree']['tests']:.0f}x fewer tests than brute force.", RX, 680, 34, MUTE, a)
     text(c, "Boxes overlap, so half the tests are still wasted,", RX, 730, 34, MUTE, a)
     text(c, "and every pickup still searches the tree of boxes.", RX, 776, 34, MUTE, a)
-S3 = (11.2, s3, [(0.5, 4.8, "An R-tree draws the smallest rectangle around each\nzone, then groups nearby rectangles into bigger ones."),
+RTREE = (11.2, scene_rtree, [(0.5, 4.8, "An R-tree draws the smallest rectangle around each\nzone, then groups nearby rectangles into bigger ones."),
                  (5.0, 10.8, "Checking a rectangle is cheap. A pickup only gets the\nfull test for boxes it lands in: about 2, not 263.")])
 
 def swatch(c, x, y, col, a):
     rrect(c, x, y - 26, 34, 34, 6); c.set_source_rgba(*col, 0.55 * a); c.fill()
 
-def s4(c, t):
+def scene_grid_index(c, t):
     z = sm(t, 0.5, 2.6)
     view = (lerp(CORE[0], ZOOM[0], z), lerp(CORE[1], ZOOM[1], z), math.exp(lerp(math.log(CORE[2]), math.log(ZOOM[2]), z)))
     v = View(view, MAPR)
@@ -400,20 +403,20 @@ def s4(c, t):
     digits(c, f"{round(ST['h3']['settled'] * 100)}%", RX - 4, 790, 120, TEAL, a)
     text(c, "of pickups settled by ID alone", RX + 290, 752, 34, MUTE, a)
     text(c, "H3 resolution 10, this dataset", RX + 290, 794, 28, DIM, a)
-S4 = (12.4, s4, [(0.5, 4.3, "Grid indexes turn the problem around. Lay cells\nover the map and stamp every pickup with a cell ID."),
+GRID_INDEX = (12.4, scene_grid_index, [(0.5, 4.3, "Grid indexes turn the problem around. Lay cells\nover the map and stamp every pickup with a cell ID."),
                  (4.5, 8.2, "A cell that sits fully inside one zone is settled\nby matching integers. No geometry at all."),
                  (8.4, 12.0, "Only pickups in cells that cross a boundary\nstill need a point-in-zone test.")])
 
 import json
 FA = json.load(open("data/fairness.json"))
 BLOCK = FA["target"]
-PAN = [("geohash", "Geohash", "Rectangles, 7 characters", ""), ("s2", "S2", "Squares, level 16", ""),
-       ("h3", "H3", "Hexagons, resolution 10", ""), ("a5", "A5", "Pentagons, resolution 15", "")]
+PAN = [("geohash", "Geohash", "Rectangles, 7 characters"), ("s2", "S2", "Squares, level 16"),
+       ("h3", "H3", "Hexagons, resolution 10"), ("a5", "A5", "Pentagons, resolution 15")]
 
-def s5(c, t):
+def scene_four_grids(c, t):
     header(c, 5, "Four grid systems")
     S = 420
-    for n, (key, name, sub, lvl) in enumerate(PAN):
+    for n, (key, name, sub) in enumerate(PAN):
         x = 60 + n * 460; y = 205
         a = sm(t, 0.4 + n * 0.5, 1.2 + n * 0.5)
         text(c, name, x, 152, 52, INK, a, True, fam="Inter Display")
@@ -433,13 +436,13 @@ def s5(c, t):
     a2 = sm(t, 12.0, 12.8)
     swatch(c, 60, 800, TEAL, a2); text(c, "Inside one zone: answered by cell number", 110, 800, 32, INK, a2)
     swatch(c, 980, 800, AMBER, a2); text(c, "Crosses a zone boundary: needs a test", 1030, 800, 32, INK, a2)
-S5 = (37.4, s5, [(0.5, 10.8, "The same few blocks of Manhattan under four grid systems.\nEach one tiles the map with a different shape."),
+FOUR_GRIDS = (37.4, scene_four_grids, [(0.5, 10.8, "The same few blocks of Manhattan under four grid systems.\nEach one tiles the map with a different shape."),
                  (11.6, 23.4, "Teal cells sit inside one zone and are answered by cell\nnumber. Amber cells cross a boundary and still need a test."),
                  (24.0, 36.9, "Grids only come in fixed cell sizes, so these four do not match.\nThat makes this a picture of the shapes, not a fair comparison.")])
 
 SER = [("geohash", "Geohash", AMBER), ("s2", "S2", (0.66, 0.60, 1.0)), ("h3", "H3", TEAL), ("a5", "A5", CORAL)]
 
-def sw(c, t):
+def scene_cell_size(c, t):
     header(c, 6, "A fair comparison")
     text(c, "How many tests does each grid need?", 90, 166, 50, INK, sm(t, 0.2, 0.8), True, fam="Inter Display")
     text(c, "Both axes are logarithmic. Each gridline is 10 times the last.", 90, 210, 28, DIM, sm(t, 1.2, 2.0))
@@ -508,7 +511,7 @@ def sw(c, t):
         text(c, "H3 at resolution 9", bx + 22, by + 44, 32, TEAL, ad, True)
         text(c, f"Cells of {e['cell_km2']:.3f} sq km", bx + 22, by + 88, 30, INK, ad)
         text(c, f"{e['tests'] / 1e6:.1f} million tests needed", bx + 22, by + 128, 30, INK, ad)
-SW = (53.2, sw, [(0.5, 10.6, "This chart asks one question of every grid: how many\npoint-in-zone tests does it need? Lower is better."),
+CELL_SIZE = (53.2, scene_cell_size, [(0.5, 10.6, "This chart asks one question of every grid: how many\npoint-in-zone tests does it need? Lower is better."),
                  (11.2, 19.6, "Each dot is one grid at one cell size.\nMoving right means smaller cells."),
                  (20.2, 30.0, "As cells shrink, every grid needs fewer tests,\nand all four follow almost the same line."),
                  (30.6, 41.6, "The dashed line is the R-tree. Grids with big cells sit\nabove it, which means more work than the R-tree."),
@@ -517,12 +520,12 @@ SW = (53.2, sw, [(0.5, 10.6, "This chart asks one question of every grid: how ma
 HH = sorted([(k, nm) for k, nm, _ in SER], key=lambda q: FA["grids"][q[0]]["tests"][0])
 ANG = FA["angles"]
 
-def sh(c, t):
+def scene_head_to_head(c, t):
     header(c, 7, "Head to head")
     text(c, "Tests needed when every grid uses city-block cells", 90, 170, 50, INK, sm(t, 0.2, 0.8), True, fam="Inter Display")
     X0, BW, MAXV = 330, 1090, 2.4e6
     rows = [(nm, TEAL, FA["grids"][k]["tests"], FA["shape"][k] / FA["shape"]["h3"]) for k, nm in HH] + [("R-tree", AMBER, FA["rtree"], None)]
-    aw = sm(t, 25.0, 26.2); ae = sm(t, 37.0, 38.0)
+    aw = sm(t, 25.0, 26.2)
     for n, (nm, col, vals, edge) in enumerate(rows):
         y = 240 + n * 92; v0 = vals[0]; mn, mx = min(vals), max(vals)
         g = sm(t, 0.8 + n * 0.3, 2.4 + n * 0.3)
@@ -568,7 +571,7 @@ def sh(c, t):
         c.restore(); border(c, v, ai)
         text(c, f"City turned {ang:.0f} degrees", ix + isz / 2, iy + isz + 40, 28, INK, ai, True, align="c")
         text(c, "The grid stays put", ix + isz / 2, iy + isz + 76, 26, MUTE, ai, align="c")
-SH = (49.2, sh, [(0.5, 10.8, "Now all four grids have cells the size of one city block.\nTheir results are within about 8 percent of each other."),
+HEAD_TO_HEAD = (49.2, scene_head_to_head, [(0.5, 10.8, "Now all four grids have cells the size of one city block.\nTheir results are within about 8 percent of each other."),
                  (11.5, 24.4, "One more check. Zone edges follow the street grid, so a grid\ncould get lucky by lining up with it. We turned the city six ways."),
                  (25.0, 36.5, "The thin lines show how far each result moved. Square cells\nswing by 15 to 19 percent. Hexagons and pentagons barely move."),
                  (37.0, 48.7, "H3 needs the fewest tests because a hexagon has the least\nedge for its area, so fewer cells cross a zone boundary.")])
@@ -577,7 +580,7 @@ _gt = sorted(ST[k]["time"] for k in ("geohash", "s2", "h3", "a5"))
 ST["grid"] = {"time": float(np.median(_gt))}
 BARS = [("Brute force", "nested", CORAL), ("R-tree", "rtree", AMBER), ("Grid index", "grid", TEAL)]
 
-def s6(c, t):
+def scene_clock(c, t):
     header(c, 8, "The clock")
     text(c, f"Join time for {N:,} pickups, one core", 90, 170, 50, INK, sm(t, 0.2, 0.8), True, fam="Inter Display")
     z = sm(t, 4.6, 6.4)
@@ -601,7 +604,7 @@ def s6(c, t):
     text(c, f"About {ST['rtree']['time'] / gm:.0f}x faster than the R-tree, {ST['nested']['time'] / gm:.0f}x faster than brute force.", 90, 670, 38, INK, an, True)
     text(c, f"Grid index: the middle of the four grids ({_gt[0]:.2f} to {_gt[-1]:.2f} s), with cell IDs already stored.", 90, 770, 28, DIM, 1)
     text(c, "Median of 9 runs, brute force once. Same point-in-zone test in every method.", 90, 810, 28, DIM, 1)
-S6 = (11.4, s6, [(0.5, 4.4, "Brute force takes over five seconds. The R-tree\nreturns the same answer in under one."),
+CLOCK = (11.4, scene_clock, [(0.5, 4.4, "Brute force takes over five seconds. The R-tree\nreturns the same answer in under one."),
                  (4.6, 11.0, "With cell IDs stored, a grid index finishes in about a fifth\nof a second. The four grids differ by less than timing noise.")])
 
 ROWS = [("R-tree", AMBER, "No setup, any shape, one machine. Hard to split across many."),
@@ -609,7 +612,7 @@ ROWS = [("R-tree", AMBER, "No setup, any shape, one machine. Hard to split acros
         ("S2 and Geohash", TEAL, "Small cells fit exactly inside big ones, and IDs sort by place."),
         ("A5", TEAL, "Every cell has the same area, so counts compare fairly. Newer.")]
 
-def s7(c, t):
+def scene_choosing(c, t):
     header(c, 9, "Choosing")
     text(c, "Pick the index for the workload", 90, 190, 64, INK, sm(t, 0.2, 0.8), True, fam="Inter Display")
     for n, (nm, col, ds) in enumerate(ROWS):
@@ -621,11 +624,11 @@ def s7(c, t):
     c.move_to(90, y - 62); c.line_to(W - 90, y - 62); c.set_source_rgba(0.24, 0.29, 0.35, a); c.set_line_width(2); c.stroke()
     text(c, f"Every method returned the same zone for all {N:,} pickups.", 90, y, 36, INK, a, True)
     text(c, "Data: Uber pickups, September 2014 (FiveThirtyEight). Zones: NYC TLC.", 90, y + 52, 30, MUTE, a)
-S7 = (9.6, s7, [(0.5, 4.6, "On speed the grids are close.\nChoose on what else you need from the index."),
+CHOOSING = (9.6, scene_choosing, [(0.5, 4.6, "On speed the grids are close.\nChoose on what else you need from the index."),
                 (4.8, 9.2, "Then tune the resolution and measure\non your own data.")])
 
 
-# ------------------------------------------------------------------ intro scenes
+# ------------------------------------------------------------------ opening and closing scenes
 VIOLET = (0.66, 0.60, 1.0)
 SD = [("North", TEAL, np.array([(0.5, 5.5), (3, 6.2), (5.5, 5.2), (9.5, 6.0), (9.5, 9.5), (0.5, 9.5)]), (5.0, 8.6)),
       ("West", AMBER, np.array([(0.5, 0.5), (4.6, 0.5), (5.2, 2.8), (5.5, 5.2), (3, 6.2), (0.5, 5.5)]), (2.0, 1.4)),
@@ -645,7 +648,7 @@ def crossings(p, poly_xy):
 SOWN = [next(i for i, d in enumerate(SD) if len(crossings(p, d[2])) % 2 == 1) for p in SP]
 SV = View((5, 5, 10.2), MAPR)
 
-def simple_map(c, a=1.0, hot=None, dim_pts=False):
+def simple_map(c, a=1.0, hot=None):
     c.save(); frame_clip(c, SV)
     for i, (nm, col, xy, lp) in enumerate(SD):
         poly(c, SV, np.vstack([xy, xy[:1]]))
@@ -663,14 +666,14 @@ def simple_pts(c, a=1.0, active=None, only=None):
         c.new_path(); c.arc(X, Y, 10, 0, 2 * math.pi); c.set_source_rgba(*INK, a); c.fill()
         text(c, f"P{i + 1}", X + 20, Y - 16, 28, INK, a, True)
 
-def sa(c, t):
+def scene_title(c, t):
     a = sm(t, 0.3, 1.1)
     text(c, "THE PROJECTION ROOM", W / 2, 330, 26, TEAL, a, True, align="c", track=4)
     text(c, "The Spatial Join", W / 2, 520, 150, INK, a, True, align="c", fam="Inter Display")
     text(c, "What it is, how it is usually done, and five ways to make it fast", W / 2, 620, 38, MUTE, sm(t, 0.9, 1.7), align="c")
-SA = (4.6, sa, [(0.5, 4.2, "Today, we will be discussing the spatial join.")])
+TITLE = (4.6, scene_title, [(0.5, 4.2, "Today, we will be discussing the spatial join.")])
 
-def sb(c, t):
+def scene_what_it_is(c, t):
     a = sm(t, 0.2, 1.0)
     T0, STEP = 5.6, 1.15
     k = int((t - T0) // STEP) if t >= T0 else -1
@@ -692,13 +695,13 @@ def sb(c, t):
         text(c, "?", RX + 300, y, 40, DIM, ta * (1 - done))
         nm, col = SD[SOWN[i]][0], SD[SOWN[i]][1]
         text(c, nm, RX + 300, y, 40, col, done, True)
-SB = (13.6, sb, [(0.5, 5.3, "In GIS, a join occurs when rows from two layers\nare matched by location instead of a shared key."),
+WHAT_IT_IS = (13.6, scene_what_it_is, [(0.5, 5.3, "In GIS, a join occurs when rows from two layers\nare matched by location instead of a shared key."),
                  (5.5, 13.2, "Here each point picks up the name of the district\nit falls inside. That is a spatial join.")])
 
 PT = 3
 ORDER = [0, 2, 1]
 
-def sc(c, t):
+def scene_one_pair(c, t):
     T0, STEP = 2.0, 2.6
     k = min(2, int((t - T0) // STEP)) if t >= T0 else -1
     cur = ORDER[k] if k >= 0 else None
@@ -728,10 +731,10 @@ def sc(c, t):
         text(c, SD[di][0], RX, y, 44, SD[di][1], a, True)
         text(c, f"{nc} crossing" + ("" if nc == 1 else "s"), RX + 200, y, 38, INK, a)
         text(c, "inside" if inside else "outside", RX + 520, y, 38, GREEN if inside else MUTE, a, inside)
-S_C = (12.4, sc, [(0.5, 5.6, "Traditionally, this is done by testing each point\nagainst each polygon, one pair at a time."),
+ONE_PAIR = (12.4, scene_one_pair, [(0.5, 5.6, "Traditionally, this is done by testing each point\nagainst each polygon, one pair at a time."),
                   (5.8, 12.0, "The test draws a ray from the point and counts the\nedges it crosses. An odd count means inside.")])
 
-def sz(c, t):
+def scene_closing(c, t):
     """Closing card. Same layout as the opening title card."""
     a = sm(t, 0.3, 1.1)
     text(c, "THE PROJECTION ROOM", W / 2, 330, 26, TEAL, a, True, align="c", track=4)
@@ -740,20 +743,25 @@ def sz(c, t):
     a2 = sm(t, 1.8, 2.6)
     text(c, "Jacob Hogue", W / 2, 740, 36, INK, a2, True, align="c")
     text(c, "jacob-hogue.github.io/projection-room", W / 2, 790, 28, MUTE, a2, align="c")
-SZ = (4.6, sz, [(0.5, 4.2, "That was the spatial join. Thank you for watching.")])
+CLOSING = (4.6, scene_closing, [(0.5, 4.2, "That was the spatial join. Thank you for watching.")])
 
-SCENES = [SA, SB, S_C, S1, S2, S3, S4, S5, SW, SH, S6, S7, SZ]
+SCENES = [TITLE, WHAT_IT_IS, ONE_PAIR, TEST_CASE, BRUTE_FORCE, RTREE, GRID_INDEX, FOUR_GRIDS,
+          CELL_SIZE, HEAD_TO_HEAD, CLOCK, CHOOSING, CLOSING]
 
-FIRST_DATA = 3                                   # scenes from here on use the slower pacing
-KOVER = {"sc": 1.5}
-KSLOW = {"s2": 1.2, "s7": 2.7, "s5": 1.0, "sw": 1.0, "sh": 1.0}
+# Pacing. Each scene is written on its own clock and then stretched for reading speed.
+# The three opening scenes hold captions at about 2.5 words per second; from the test case on,
+# about 2 words per second, with a pause before every caption change.
+FIRST_DATA = 3
+PACE_OPENING = {"scene_one_pair": 1.5}
+PACE_DATA = {"scene_brute_force": 1.2, "scene_choosing": 2.7, "scene_four_grids": 1.0,
+             "scene_cell_size": 1.0, "scene_head_to_head": 1.0}
 def pace(i, scene):
     dur, fn, caps = scene
     if i < FIRST_DATA:
-        if fn.__name__ in KOVER: return KOVER[fn.__name__]
+        if fn.__name__ in PACE_OPENING: return PACE_OPENING[fn.__name__]
         need = max((len(txt.split()) / 2.5 + 0.5) / (t1 - t0) for t0, t1, txt in caps)
         return min(2.1, max(1.4, need))
-    if fn.__name__ in KSLOW: return KSLOW[fn.__name__]
+    if fn.__name__ in PACE_DATA: return PACE_DATA[fn.__name__]
     need = max((len(txt.split()) / 2.0 + 0.8) / (t1 - t0) for t0, t1, txt in caps)
     return min(2.8, max(1.9, need))
 KS = [pace(i, sc) for i, sc in enumerate(SCENES)]
@@ -793,7 +801,7 @@ def draw(si, t):
 
 if __name__ == "__main__":
     if sys.argv[1] == "stills":
-        for si, t in [(12, 4.0)]:
+        for si, t in [(4, 26.0), (7, 30.0), (8, 47.0), (9, 30.0)]:
             draw(si, t).write_to_png(f"still_{si + 1}_{t}.png")
     elif sys.argv[1] == "srt":
         def ts(t):
