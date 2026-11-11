@@ -236,7 +236,7 @@ def scene_what(c, t):
     if ca > 0:
         box(c, RX, 350, 860, 330, ca)
         text(c, "ONE PARCEL RECORD", RX + 36, 404, 24, TEAL, ca, True, track=3)
-        for i, (k, val) in enumerate([("Parcel ID", "07-118-022"), ("Owner", "on file with the assessor"), ("Size", "0.24 acres")]):
+        for i, (k, val) in enumerate([("Parcel ID", "07-118-022"), ("Owner", "Jane Doe"), ("Size", "0.24 acres")]):
             text(c, k, RX + 36, 474 + i * 70, 30, MUTE, ca); text(c, val, RX + 240, 474 + i * 70, 36, INK, ca, True)
     for i, (name, job, *_r) in enumerate(OFFICES):
         a = sm(t, WS[1] + 0.5 + i * 0.9, WS[1] + 1.1 + i * 0.9)
