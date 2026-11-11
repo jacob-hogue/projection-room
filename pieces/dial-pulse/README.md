@@ -6,5 +6,5 @@ Data: North America Telephone Area Code Boundaries (UCLA Geoportal, 2015), NANPA
 
 ```sh
 cd pipeline && pip install -r requirements.txt && make all && make test && make poster
-cd ../film && npm install && npm run render
+cd .. && python film/render.py video film.mp4
 ```

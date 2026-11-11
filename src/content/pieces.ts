@@ -52,8 +52,8 @@ export const PIECES: Piece[] = [
     rule: 'In 1947 the biggest cities got the area codes that were fastest to dial. Every territory is colored by how many clicks it took.',
     date: 'November 2026',
     category: 'visualization',
-    demonstrates: ['D3 cartography', 'animated data storytelling', 'OKLCH color design', 'Python geodata pipelines', 'Remotion'],
-    runtime: '2:31',
+    demonstrates: ['cartography', 'animated data storytelling', 'Python geodata pipelines'],
+    runtime: '4:56',
   },
 ];
 

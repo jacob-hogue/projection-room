@@ -1,0 +1,107 @@
+1
+00:00:00,500 --> 00:00:04,200
+Today, we will be discussing the dial-pulse map.
+
+2
+00:00:05,100 --> 00:00:17,000
+On a rotary phone, you dialed each digit by turning
+a wheel and letting it spin back.
+
+3
+00:00:17,600 --> 00:00:29,500
+As it spun back, it sent clicks down the line.
+Dialing 2 sent two clicks.
+
+4
+00:00:30,100 --> 00:00:41,500
+Dialing 0 sent ten. The network called
+those clicks dial pulses.
+
+5
+00:00:43,000 --> 00:00:54,400
+An area code is three digits, so its cost is three
+numbers added together.
+
+6
+00:00:55,000 --> 00:01:06,400
+For New York's 212, that is 2 plus 1 plus 2.
+Five pulses.
+
+7
+00:01:07,000 --> 00:01:21,900
+South Dakota's 605 is 6 plus 10 plus 5. Twenty-one pulses,
+more than four times as long to dial.
+
+8
+00:01:23,400 --> 00:01:39,300
+In 1947 AT&T gave these 48 states 77 area codes.
+Each one is colored by its pulses.
+
+9
+00:01:39,900 --> 00:01:49,800
+Gold codes were quick to dial.
+Plum codes were slow.
+
+10
+00:01:51,300 --> 00:02:05,200
+The quickest code of all, 212, went to New York.
+It was the busiest phone market in the country.
+
+11
+00:02:05,800 --> 00:02:19,700
+Los Angeles got 213. Chicago got 312. Detroit got 313.
+Six, six and seven pulses.
+
+12
+00:02:21,200 --> 00:02:34,100
+Did places with more people get quicker codes?
+Each dot is one 1947 area code.
+
+13
+00:02:34,700 --> 00:02:47,600
+New York's 212 sits here: 5 pulses to dial,
+and 7.9 million people living there in 1950.
+
+14
+00:02:48,200 --> 00:03:04,100
+Codes of 5 to 9 pulses served a typical 2.7 million people.
+Codes of 18 to 21 pulses served 0.8 million.
+
+15
+00:03:04,700 --> 00:03:16,600
+The pattern is loose. North Carolina's 704 took 21 pulses
+and served 4.1 million people.
+
+16
+00:03:18,100 --> 00:03:31,500
+The middle digit carried a second message.
+A 0 meant one code covered the whole state.
+
+17
+00:03:32,100 --> 00:03:42,500
+A 1 meant the state was divided
+among several codes.
+
+18
+00:03:44,000 --> 00:04:02,900
+As phones multiplied, the codes ran short. The first fix was
+a split: cut a territory in two and give one part a new code.
+
+19
+00:04:03,500 --> 00:04:16,400
+By 1991 the map held 117 codes,
+all of them made by splitting.
+
+20
+00:04:17,000 --> 00:04:36,400
+In 1992 a second fix arrived, the overlay: a new code
+laid over the same ground. Overlays are striped here.
+
+21
+00:04:37,000 --> 00:04:50,400
+By 2025 these 48 states carried 367 codes on 237 territories.
+The last boundary split was in 2007.
+
+22
+00:04:51,900 --> 00:04:55,600
+That was the dial-pulse map. Thank you for watching.

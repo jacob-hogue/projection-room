@@ -1,10 +1,30 @@
 [
-  { "label": "Map graphics", "value": "D3 (d3-geo, TopoJSON), SVG" },
-  { "label": "Data pipeline", "value": "Python, GeoPandas, Shapely" },
-  { "label": "Site", "value": "Astro, TypeScript" },
-  { "label": "Video rendering", "value": "Remotion, React" },
-  { "label": "Color", "value": "OKLCH ramps built with culori" },
-  { "label": "Tests", "value": "Vitest, Playwright, pytest" },
-  { "label": "Hosting", "value": "GitHub Pages" },
-  { "label": "AI integration", "value": "Claude Code pair programming" }
+  {
+    "label": "Map graphics",
+    "value": "pycairo from TopoJSON, EPSG:5070"
+  },
+  {
+    "label": "Data pipeline",
+    "value": "Python, GeoPandas, Shapely"
+  },
+  {
+    "label": "Site",
+    "value": "Astro, TypeScript"
+  },
+  {
+    "label": "Video rendering",
+    "value": "Python, pycairo, FFmpeg"
+  },
+  {
+    "label": "Tests",
+    "value": "Vitest, Playwright, pytest"
+  },
+  {
+    "label": "Hosting",
+    "value": "GitHub Pages"
+  },
+  {
+    "label": "AI integration",
+    "value": "Claude Code pair programming"
+  }
 ]
