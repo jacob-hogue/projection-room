@@ -47,7 +47,11 @@ pieces/*/film/public/
 
 public/*/states.topojson
 
-# One Source piece data copied into public/
-public/*/towns.topojson
-public/*/parcels.topojson
-public/*/stats.json
+# Spatial join working files: the benchmark's pickle and rendered scenes
+pieces/*/data.pkl
+pieces/*/s[0-9]*.mp4
+pieces/*/tmp_s*.mp4
+pieces/*/still_*.png
+
+# Film working files
+pieces/*/film/tmp_*

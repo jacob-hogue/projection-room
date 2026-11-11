@@ -18,6 +18,7 @@ describe('the piece manifest', () => {
   test('pieceBySlug finds a piece and names the categories the index filters on', () => {
     expect(pieceBySlug('parcel-problem')?.category).toBe('architecture');
     expect(pieceBySlug('dial-pulse')?.category).toBe('visualization');
+    expect(pieceBySlug('spatial-join')?.category).toBe('engineering');
     expect(pieceBySlug('nope')).toBeUndefined();
     expect(CATEGORIES.visualization.label).toBe('Data visualization');
     expect(CATEGORIES.architecture.label).toBe('Solution architecture');

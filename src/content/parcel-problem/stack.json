@@ -1,10 +1,26 @@
 [
-  { "label": "Map graphics", "value": "D3 (d3-geo, TopoJSON), SVG" },
-  { "label": "Data pipeline", "value": "Python, GeoPandas, Shapely; MassGIS feature service" },
-  { "label": "Architecture shown", "value": "PostGIS, GeoParquet, PMTiles, ArcGIS hosted feature layer" },
-  { "label": "Site", "value": "Astro, TypeScript" },
-  { "label": "Video rendering", "value": "Remotion, React" },
-  { "label": "Tests", "value": "Vitest, pytest, Playwright" },
-  { "label": "Hosting", "value": "GitHub Pages" },
-  { "label": "AI integration", "value": "Claude Code pair programming" }
+  {
+    "label": "Video rendering",
+    "value": "Python, pycairo, FFmpeg"
+  },
+  {
+    "label": "Architecture shown",
+    "value": "ArcGIS Enterprise, ArcGIS Online, GeoParquet, PMTiles"
+  },
+  {
+    "label": "Site",
+    "value": "Astro, TypeScript"
+  },
+  {
+    "label": "Tests",
+    "value": "Vitest, Playwright"
+  },
+  {
+    "label": "Hosting",
+    "value": "GitHub Pages"
+  },
+  {
+    "label": "AI integration",
+    "value": "Claude Code pair programming"
+  }
 ]

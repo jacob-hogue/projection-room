@@ -1,0 +1,120 @@
+1
+00:00:00,500 --> 00:00:04,200
+Today, we will be discussing the parcel problem.
+
+2
+00:00:05,100 --> 00:00:18,500
+A parcel map shows every piece of land in a county,
+with a record of who owns it.
+
+3
+00:00:19,100 --> 00:00:31,000
+Five county offices use that map every day,
+each for a different job.
+
+4
+00:00:32,500 --> 00:00:45,900
+Each office keeps its own copy of the parcel map
+and refreshes it on its own schedule.
+
+5
+00:00:46,500 --> 00:00:57,900
+On Monday the assessor splits one lot in two.
+Only the assessor's copy shows it.
+
+6
+00:00:58,500 --> 00:01:14,900
+The other copies catch up days or weeks later.
+Until then, five maps give different answers.
+
+7
+00:01:15,500 --> 00:01:26,400
+Even the column that holds the parcel ID
+has a different name in every copy.
+
+8
+00:01:27,900 --> 00:01:40,300
+Each copy is a hosted layer: the online version
+of the map that web maps and apps read.
+
+9
+00:01:40,900 --> 00:01:54,800
+To refresh it, the office overwrites the whole layer.
+Every row is deleted and loaded again.
+
+10
+00:01:55,400 --> 00:02:09,300
+But only 312 parcels changed that day.
+The other 47,900 were rewritten for nothing.
+
+11
+00:02:09,900 --> 00:02:21,800
+And once field crews turn on offline sync,
+the layer refuses to be overwritten at all.
+
+12
+00:02:23,300 --> 00:02:33,200
+So there are three separate problems here.
+
+13
+00:02:33,800 --> 00:02:44,700
+Each one has a fix that GIS teams already use.
+
+14
+00:02:46,200 --> 00:02:57,600
+Start with one database that holds the official parcels.
+This is the source of record.
+
+15
+00:02:58,200 --> 00:03:12,100
+Staff edit it through one editing service,
+from a desk or from a phone in the field.
+
+16
+00:03:12,700 --> 00:03:25,600
+The database stamps every change with who made it
+and when. That stamp is called editor tracking.
+
+17
+00:03:27,100 --> 00:03:40,000
+Each night a job asks the database one question:
+what changed since the last run?
+
+18
+00:03:40,600 --> 00:03:54,500
+It checks those changes before anyone sees them.
+Row counts, shapes and column names must all pass.
+
+19
+00:03:55,100 --> 00:04:09,000
+Then it sends only those 312 changes to the hosted layer.
+Nothing is overwritten.
+
+20
+00:04:09,600 --> 00:04:23,500
+The same changes go into two files: one for analysts,
+and one for web maps outside ArcGIS.
+
+21
+00:04:25,000 --> 00:04:37,900
+Now every office reads from those outputs.
+Nobody keeps a copy of their own.
+
+22
+00:04:38,500 --> 00:04:54,900
+The assessor splits a lot on Monday afternoon.
+By Tuesday morning, all five maps show it.
+
+23
+00:04:56,400 --> 00:05:10,300
+Before: five copies and five refresh jobs.
+After: one source of record and one nightly job.
+
+24
+00:05:10,900 --> 00:05:22,300
+All five maps now show the same parcels,
+and each refresh moves 99 percent fewer rows.
+
+25
+00:05:23,800 --> 00:05:27,500
+That was the parcel problem. Thank you for watching.

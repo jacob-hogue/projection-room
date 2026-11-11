@@ -21,12 +21,12 @@ const filmExists = existsSync(filmPath);
 const filmSrc = filmExists ? `${base}parcel-problem/film.mp4?v=${Math.floor(statSync(filmPath).mtimeMs / 1000)}` : null;
 ---
 <Base title={title} description={rule}>
-  <PieceHeader slug="parcel-problem" facts={['Parcels: MassGIS, read November 10, 2026', '351 towns, 2,558,082 parcels', 'November 2026']} />
+  <PieceHeader slug="parcel-problem" facts={['Example county, illustrative numbers', '48,212 parcels, 312 edited a day', 'November 2026']} />
   <FilmSection
     src={filmSrc}
     poster={`${base}parcel-problem/poster.png`}
     title={`${title}, the film`}
-    posterAlt="Massachusetts with every town tinted by the share of its parcels edited since 2023, the freshest towns in bright green, beside a rail of statewide counts."
+    posterAlt="An architecture diagram: three editors feed one editing service, which writes to one parcel database labeled source of record."
     downloadName="the-parcel-problem.mp4"
   />
   <TechStack items={stack} />

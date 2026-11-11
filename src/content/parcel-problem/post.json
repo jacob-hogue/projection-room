@@ -1,38 +1,61 @@
 [
   {
-    "heading": "Five copies of one map",
+    "heading": "One lot becomes two",
     "paragraphs": [
-      "Ask a GIS team where the parcel map lives and you will often get more than one answer. The assessor has a copy because they maintain it. Planning has a copy because they needed one in a hurry. Public works, dispatch and the open data portal each have theirs, refreshed on their own schedules, sometimes by a script and sometimes by a person at a desk at the end of the day.",
-      "The county in the first half of this film is fictional, and so are its numbers. Three things about it are assumptions worth naming. Its web maps run on ArcGIS Online, so each office's copy is a hosted layer, the online copy that a web map reads. Each office refreshes that copy by overwriting the whole layer, which is the usual way to update one. And three offices edit parcels while the rest only read. None of this ties the design to one vendor; on another stack the outputs change and the shape does not. The pattern itself is not fictional. The key field ends up with a different name in every office. The counts drift a few hundred parcels apart. And when two maps disagree, there is no clear way to say which one is right, because nobody ever decided which one was the source."
+      "On Monday afternoon, an assessor splits one lot into two. The parcel map, which shows every piece of land in a county and records who owns it, should now show both lots.",
+      "Five county offices use that map every day. The assessor sets property values, and planning reviews building permits. Public works maintains roads and pipes. Dispatch sends fire crews and ambulances, while the open data portal publishes the map to the public.",
+      "In the example county in “The Parcel Problem,” there are 48,212 parcels. The numbers are illustrative, but the question is concrete: when a parcel changes, which map shows it?"
     ]
   },
   {
-    "heading": "Three problems, three fixes",
+    "heading": "Five copies, five schedules",
     "paragraphs": [
-      "It helps to split the mess into parts. The first problem is ownership: five copies and none of them authoritative. The second is the refresh itself. A nightly overwrite replaces every row in a hosted layer to carry a few hundred changes, it fails when sync is turned on, and the storage behind the layer grows a little with every run. The third is that the applications that only need to read parcels sit on the same layer that staff edit all day, so every edit is a risk to the readers and every reader is load on the editors.",
-      "None of these needs new technology. One database becomes the source of record, with editor tracking and a GlobalID on every row. Everyone who edits parcels does it through one feature service that sits on that database: the assessor from desktop GIS, planning from a web editor, and field crews from Field Maps, offline when they need to be, syncing back when they have a signal. That takes an enterprise geodatabase with the parcels registered for branch versioning, system GlobalIDs, replica tracking and editor tracking, and a service published with editing and sync turned on. Each offline area then gets its own branch version, which is where the review happens: the assessor reconciles and posts it in ArcGIS Pro, and only then do the field edits reach the default version everyone reads. Survey123 can edit the same service for inspections, but it writes to the default version directly, so it suits attribute updates rather than geometry under review. The service has to run on the source database itself, which is why the scenario assumes ArcGIS Enterprise for editing; with ArcGIS Online alone, a field-editing layer would be one more copy to sync. A scheduled job moves only the rows that changed. And the readers get their own outputs, written once a night, that nobody edits."
+      "Each office keeps its own copy. The assessor edits its map directly. Open data copies it nightly, dispatch weekly, and planning monthly. Public works updates its copy by hand.",
+      "Immediately after Monday’s split, only the assessor’s map shows it. Thirty days later, four maps show the change. One still doesn’t.",
+      "Even the parcel ID, the value that identifies a piece of land, has a different column name in each copy: Parcel_ID, ParcelNumber, PID, PARCEL_NO, and MapLot. Moving records between copies means accounting for those differences as well as their update schedules."
     ]
   },
   {
-    "heading": "What the job does each night",
+    "heading": "A refresh replaces too much",
     "paragraphs": [
-      "The job runs in four steps. It asks the database which rows have changed since the last run, which the edit tracking answers directly. It checks those rows: do the counts add up, is every polygon valid, does the schema still match what the readers expect. If a check fails, the run stops and the reason goes in the log.",
-      "If the checks pass, the changes are published three ways. The hosted feature layer receives them as edits, so nothing is overwritten and sync keeps working. The same rows are written into a GeoParquet file for anyone doing analysis, and a PMTiles file for anyone drawing a map, each stamped with the run date. Every web map, portal and department application points at one of those three outputs. The run log records what moved, how long it took, and which files are current.",
-      "In an Esri shop each step maps to something documented. Finding the changes is the feature service's Extract Changes operation, which hands back everything edited since a stored generation number; editor-tracking dates do the same job less precisely. Pushing edits to the ArcGIS Online layer is applyEdits through the ArcGIS API for Python, or the Append tool's update-existing-features option, or Data Pipelines set to add and update; none of them overwrites. Esri's no-code route is a distributed collaboration that copies the layer from Enterprise to Online on a schedule of one to twenty-four hours, which is worth knowing before writing a script. PMTiles are for the open web stack; ArcGIS clients do not read them natively, so an Esri-only county would publish a hosted vector tile layer in their place."
+      "Each copy is a hosted layer in ArcGIS Online, the online copy of a map that web maps and apps read.",
+      "The usual refresh overwrites the whole layer. It deletes and reloads every row, with each row representing a parcel. To carry a typical day’s 312 changes, it rewrites 47,900 unchanged rows too.",
+      "That approach also runs into a restriction. Offline sync, which lets field crews edit without a signal and send their work back later, prevents a hosted layer from being overwritten.",
+      "There are separate problems here. The county needs one official record instead of competing copies. Refreshes need to send only changes. Readers also need their own read-only outputs rather than sharing a layer with editors."
     ]
   },
   {
-    "heading": "The real data at the end",
+    "heading": "One place to edit",
     "paragraphs": [
-      "The second half of the film uses real data. Massachusetts publishes one standardized parcel layer for all 351 cities and towns: each town delivers its assessor parcels to the MassGIS standard, and MassGIS assembles, checks and publishes them as one layer and one feature service. How MassGIS runs that behind the scenes is not public and is not what this film describes. What the public data shows is the result: one schema statewide and a last-edit date on every one of 2,558,082 parcels (fee and tax polygons, the two types that make up the taxable map, counted on the day the data was read).",
-      "That date is what the statewide map shows. Nearly four parcels in five still carry an edit date before 2015, which is roughly when the statewide standard settled, so towns that have touched their parcels since 2023 stand out. Zoom into Westborough and the same date sits on every parcel: 7,164 of them, with edits from 2012 to 2026, and 730 touched since the start of 2023. The town has not been chosen for any reason other than a readable mix of old and new edits."
+      "The design starts with one database of record, the place that holds the official parcels.",
+      "Staff reach it through one editing service, the connection that accepts their changes, on ArcGIS Enterprise, the platform hosting that service. The assessor works at a desk. Planning uses a web browser. Field crews use Field Maps, a phone app for map work, offline when needed.",
+      "The database records who made each change and when. Those stamps are called editor tracking.",
+      "Offline field edits arrive in their own branch version, a separate set of edits held for review. The assessor reviews them before they join the main record. Working without a signal doesn’t create another independent official map."
     ]
   },
   {
-    "heading": "How the film was made",
+    "heading": "Only the changes move",
     "paragraphs": [
-      "A small Python pipeline asks the MassGIS feature service for statistics grouped by town, which keeps the download to a few hundred kilobytes instead of the eight-gigabyte statewide file, and pulls one town's polygons in pages of two thousand. GeoPandas and Shapely tidy the geometry, and the TopoJSON tools write small files the browser can draw.",
-      "The film itself is a React project rendered with Remotion. Every frame is a pure function of time, so any second of it can be rendered on its own for a check. The diagram is data: every arrow is derived from the two cards it joins. The map is drawn with D3 from the same files, with the towns tinted by the share of parcels edited since 2023 and the parcels by their last-edit year."
+      "At 2:00 am each night, an automated job uses the editor tracking stamps to find changes since its last run.",
+      "It checks row counts, whether parcel shapes are valid, and whether column names match what the outputs expect. Then it publishes only the changes.",
+      "For the typical day shown, that means applying edits to 312 parcels, or 0.6 percent of the rows, in the hosted layer. Nothing is overwritten.",
+      "The same changes go into a GeoParquet file, a format that stores geographic records so analysts can query them directly. They also go into a PMTiles file, a format containing map tiles that web maps outside ArcGIS can draw.",
+      "Every office reads from these outputs instead of maintaining its own copy. Monday afternoon’s lot split appears on all five maps by Tuesday morning."
+    ]
+  },
+  {
+    "heading": "How I made the video",
+    "paragraphs": [
+      "I drew every frame in Python, a programming language, using pycairo, a drawing library. FFmpeg, a video processing tool, encoded one file per scene. Those files were joined without re-encoding, so joining them didn’t require another pass converting the frames into video.",
+      "The 48,212 dots, the block of 24 lots, and the diagram are drawn from the same numbers the captions quote. The drawings and captions use the same inputs."
+    ]
+  },
+  {
+    "heading": "Closing",
+    "paragraphs": [
+      "Copies to keep in step fall from 5 to 0. Rows rewritten per refresh fall from 48,212 to 312, and places where a parcel can be edited fall from 5 to 1.",
+      "The result comes from separating editing from reading and giving changes a defined path between them.",
+      "A lot changes once in the official record. After review where needed and the nightly checks, every office can read that change without maintaining another map."
     ]
   }
 ]

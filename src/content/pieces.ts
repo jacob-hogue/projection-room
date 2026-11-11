@@ -31,11 +31,20 @@ export const PIECES: Piece[] = [
   {
     slug: 'parcel-problem',
     title: 'The Parcel Problem',
-    rule: 'Problem: a county keeps five copies of its parcel data. Solution: one shared database with a nightly update that every map reads from.',
+    rule: 'A county keeps five copies of its parcel map, and they disagree. One database of record and a nightly job that sends only what changed put every office back on the same map.',
     date: 'November 2026',
     category: 'architecture',
-    demonstrates: ['system design', 'ArcGIS Enterprise and Online', 'PostGIS', 'change-based publishing', 'GeoParquet and PMTiles'],
-    runtime: '3:42',
+    demonstrates: ['system design', 'ArcGIS Enterprise and Online', 'change-based publishing', 'GeoParquet and PMTiles'],
+    runtime: '5:28',
+  },
+  {
+    slug: 'spatial-join',
+    title: 'The spatial join',
+    rule: 'A million Uber pickups, 263 New York taxi zones, and the question of which zone each pickup was in. Six ways to answer it, compared fairly.',
+    date: 'November 2026',
+    category: 'engineering',
+    demonstrates: ['spatial indexing', 'fair benchmarking', 'R-tree, Geohash, S2, H3 and A5', 'Python'],
+    runtime: '7:06',
   },
   {
     slug: 'dial-pulse',

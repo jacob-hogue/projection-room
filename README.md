@@ -9,7 +9,8 @@ Short videos by [Jacob Hogue](https://jacob-hogue.github.io) on maps, data visua
 | No. | Title |
 |---|---|
 | 01 | [The dial-pulse map](https://jacob-hogue.github.io/projection-room/dial-pulse/) |
-| 02 | [The Parcel Problem](https://jacob-hogue.github.io/projection-room/parcel-problem/) |
+| 02 | [The spatial join](https://jacob-hogue.github.io/projection-room/spatial-join/) |
+| 03 | [The Parcel Problem](https://jacob-hogue.github.io/projection-room/parcel-problem/) |
 
 ## Build
 
@@ -20,4 +21,4 @@ npm run preview
 npm test
 ```
 
-Each piece keeps its data pipeline in `pieces/<piece>/pipeline/` and its film in `pieces/<piece>/film/`.
+Each piece keeps its pipeline and film in `pieces/<piece>/`.

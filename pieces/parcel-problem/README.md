@@ -1,10 +1,10 @@
 # The Parcel Problem
 
-A county keeps five copies of its parcel map. One database and a nightly update bring them together. Watch at [jacob-hogue.github.io/projection-room/parcel-problem](https://jacob-hogue.github.io/projection-room/parcel-problem/).
-
-Data: MassGIS Standardized Assessors' Parcels (feature service) and MassGIS town boundaries.
+A county keeps five copies of its parcel map, and they disagree. One database of record and a nightly job that sends only what changed put every office back on the same map. Watch at [jacob-hogue.github.io/projection-room/parcel-problem](https://jacob-hogue.github.io/projection-room/parcel-problem/).
 
 ```sh
-cd pipeline && pip install -r requirements.txt && make all && make test
-cd ../film && npm install && npm run render
+pip install pycairo numpy
+python film/render.py stills
+python film/render.py video film.mp4
+python film/render.py srt film/captions.srt
 ```

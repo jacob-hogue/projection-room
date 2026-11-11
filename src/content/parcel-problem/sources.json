@@ -1,20 +1,5 @@
 [
   {
-    "name": "Parcels",
-    "detail": "MassGIS Standardized Assessors' Parcels, read from the Massachusetts Property Tax Parcels feature service on November 10, 2026. Counts, fiscal years and last-edit dates grouped by town; Westborough polygons in full.",
-    "href": "https://www.mass.gov/info-details/massgis-data-property-tax-parcels"
-  },
-  {
-    "name": "The MassGIS parcel standard",
-    "detail": "MassGIS Standard for Digital Parcels and Related Data Sets, version 3: what each town delivers and how MassGIS publishes it.",
-    "href": "https://www.mass.gov/info-details/massgis-standard-for-digital-parcels-and-related-data-sets"
-  },
-  {
-    "name": "Town boundaries",
-    "detail": "MassGIS Community Boundaries (Towns) from Survey Points.",
-    "href": "https://www.mass.gov/info-details/massgis-data-municipalities"
-  },
-  {
     "name": "The overwrite problem",
     "detail": "Esri Community threads on keeping hosted feature layers in step with a database, and on sync-enabled layers that refuse an overwrite.",
     "href": "https://community.esri.com/t5/arcgis-online-questions/sync-hosted-feature-services-to-postgres-database/td-p/1069257"

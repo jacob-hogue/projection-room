@@ -1,0 +1,8 @@
+[
+  { "label": "Benchmark", "value": "Python, Shapely 2.2 on GEOS 3.14, NumPy" },
+  { "label": "Grid libraries", "value": "h3-py, pya5, s2sphere" },
+  { "label": "Video rendering", "value": "pycairo, FFmpeg" },
+  { "label": "Site", "value": "Astro, TypeScript" },
+  { "label": "Hosting", "value": "GitHub Pages" },
+  { "label": "AI integration", "value": "Claude pair programming" }
+]
