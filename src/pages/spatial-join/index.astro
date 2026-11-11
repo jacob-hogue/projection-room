@@ -1,0 +1,48 @@
+---
+import { existsSync, statSync } from 'node:fs';
+import { join } from 'node:path';
+import Base from '../../layouts/Base.astro';
+import FilmSection from '../../components/FilmSection.astro';
+import Post from '../../components/Post.astro';
+import TechStack from '../../components/TechStack.astro';
+import post from '../../content/spatial-join/post.json';
+import sources from '../../content/spatial-join/sources.json';
+import stack from '../../content/spatial-join/stack.json';
+
+const base = import.meta.env.BASE_URL;
+const title = 'The spatial join';
+const rule = 'A million Uber pickups, 263 New York taxi zones, and the question of which zone each pickup was in. Brute force runs 270 million tests. A grid index with city-block cells needs under one million.';
+const filmPath = join(process.cwd(), 'public', 'spatial-join', 'film.mp4');
+const filmExists = existsSync(filmPath);
+// The version changes with every render, so browsers never resume an old copy under the same URL.
+const filmSrc = filmExists ? `${base}spatial-join/film.mp4?v=${Math.floor(statSync(filmPath).mtimeMs / 1000)}` : null;
+---
+<Base title={title} description={rule}>
+  <section class="opening">
+    <h1>{title}</h1>
+    <p class="rule">{rule}</p>
+    <ul class="facts mono">
+      <li>Solution architecture</li>
+      <li>Pickups: Uber, September 2014</li>
+      <li>Zones: NYC TLC taxi zones</li>
+      <li>November 2026</li>
+    </ul>
+  </section>
+  <FilmSection
+    src={filmSrc}
+    poster={`${base}spatial-join/poster.png`}
+    title={`${title}, the film`}
+    posterAlt="The same few blocks of Manhattan under four grid systems, Geohash, S2, H3 and A5. Cells inside one taxi zone are teal and cells that cross a zone boundary are amber."
+    downloadName="the-spatial-join.mp4"
+  />
+  <TechStack items={stack} />
+  <Post sections={post} sources={sources} />
+</Base>
+
+<style>
+  .opening { max-width: 1200px; margin: 0 auto; padding: 56px 24px 20px; }
+  .opening h1 { font-size: clamp(34px, 5vw, 60px); margin-bottom: 14px; }
+  .rule { font-size: clamp(17px, 1.6vw, 21px); color: var(--text-2); line-height: 1.5; max-width: 60ch; }
+  .facts { display: flex; flex-wrap: wrap; gap: 8px 28px; list-style: none; margin-top: 16px; font-size: 12px; color: var(--text-2); letter-spacing: 0.02em; }
+  .facts li::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-right: 8px; vertical-align: middle; }
+</style>

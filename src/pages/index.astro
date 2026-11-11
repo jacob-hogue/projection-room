@@ -3,7 +3,18 @@ import Base from '../layouts/Base.astro';
 const base = import.meta.env.BASE_URL;
 const pieces = [
   {
+    slug: 'spatial-join',
+    category: 'Solution architecture',
+    contents: '7 min film and written post',
+    title: 'The spatial join',
+    rule: 'A million Uber pickups, 263 New York taxi zones, and the question of which zone each pickup was in. Six ways to answer it, compared fairly.',
+    date: 'November 2026',
+    poster: `${base}spatial-join/card.png`,
+  },
+  {
     slug: 'dial-pulse',
+    category: 'Data visualization',
+    contents: '2.5 min film and written post',
     title: 'The dial-pulse map',
     rule: 'In 1947 the biggest cities got the area codes that were fastest to dial. Every territory is colored by how many clicks it took.',
     date: 'November 2026',
@@ -21,9 +32,11 @@ const pieces = [
       <a class="piece-card" href={`${base}${p.slug}/`}>
         <img src={p.poster} alt="" width="1600" height="880" loading="lazy" decoding="async" />
         <div class="piece-text">
+          <span class="piece-category mono">{p.category}</span>
           <h2>{p.title}</h2>
           <p>{p.rule}</p>
           <span class="piece-date mono">{p.date}</span>
+          <span class="piece-contents mono">{p.contents}</span>
         </div>
       </a>
     ))}
@@ -44,5 +57,11 @@ const pieces = [
   .piece-text { padding: 20px 22px 22px; }
   .piece-text h2 { font-size: clamp(22px, 2.4vw, 30px); margin-bottom: 8px; }
   .piece-text p { font-size: 16px; max-width: 70ch; }
+  .piece-category {
+    display: inline-block; margin-bottom: 12px; padding: 3px 10px; border-radius: 999px;
+    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--accent); background: var(--accent-dim);
+  }
   .piece-date { display: inline-block; margin-top: 12px; font-size: 12px; color: var(--accent); letter-spacing: 0.04em; }
+  .piece-contents { display: inline-block; margin-top: 12px; margin-left: 18px; font-size: 12px; color: var(--text-2); letter-spacing: 0.02em; }
 </style>
