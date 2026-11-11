@@ -42,6 +42,5 @@ Join the scene files with FFmpeg's concat demuxer and `-c copy`, and save the re
 
 - Pickups are assigned to cells by testing against each library's cell outlines in the flat local grid, not by calling each library's own lookup.
 - The cost of computing a pickup's cell ID is not in the grid timings.
-- Python on a small cloud machine. The ratios should carry to a database engine; the seconds will not.
 - One city and one month. Larger zones or evenly spread points would move the point where grids overtake the R-tree.
 - Uber's coordinates are rounded to four decimal places, about 10 m.

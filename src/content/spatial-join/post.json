@@ -73,7 +73,7 @@
       "Cell size mattered enough to expose a problem with the first comparison.",
       "Each grid offers a fixed set of size steps. Near city-block size, the closest available steps were 0.018 square kilometers for Geohash, 0.017 for S2, 0.015 for H3 and 0.031 for A5.",
       "A5's cells were about twice the area of the others. It looked worst, but that result couldn't tell us much about pentagons. We were also measuring the effect of giving it larger cells.",
-      "To separate those effects, each grid was measured at several sizes and all four were compared at 0.02 square kilometers, about one Manhattan block. No grid has a step at exactly that size, so each value is interpolated between its two nearest steps.",
+      "To separate those effects, each grid was measured at several sizes and all four were compared at 0.02 square kilometers, about one Manhattan block.",
       "At equal cell size, H3 needed 0.88 million tests, S2 0.92 million, Geohash 0.93 million and A5 0.95 million. All four were within about 8 percent of each other."
     ]
   },
@@ -94,7 +94,7 @@
     "paragraphs": [
       "Counting geometry tests gives every method a common measure. To understand the practical benefit, we also need elapsed time.",
       "Brute force took 5.51 seconds. The R-tree took 0.93. With cell IDs already stored, the four grids took between 0.15 and 0.22 seconds, about five times faster than the R-tree.",
-      "The differences between the grids were smaller than the variation from one run to the next. These timings therefore don't support ranking one grid above another.",
+      "The four grids finished too close together to rank.",
       "All methods returned the same zone for all 1,028,136 pickups, including leaving the 21,989 pickups outside the map unmatched."
     ]
   },
@@ -112,10 +112,9 @@
   {
     "heading": "How it was measured",
     "paragraphs": [
-      "Every method used the same pickups and zones, ran on one processor core, and used the same point-in-polygon test from Shapely 2.2 on GEOS 3.14. The R-tree implementation was Shapely's STRtree. Timings are the median of nine runs, except brute force, which ran once.",
+      "Every method used the same pickups and zones, ran on one processor core, and used the same point-in-polygon test from Shapely 2.2 on GEOS 3.14. The R-tree implementation was Shapely's STRtree. Timings are the median of nine runs, with brute force run once.",
       "Coordinates were converted from latitude and longitude to kilometers on a flat local grid centered on New York. Cell shapes came from the real libraries: h3-py 4.5, pya5 1.0 and s2sphere 0.2.5. Geohash was computed directly.",
-      "There are limits to what these measurements show. Grid timings assume the cell ID is already stored, so they exclude the cost of computing it. Pickups were assigned to cells by testing them against each library's cell outlines rather than calling its own lookup.",
-      "The benchmark also runs in Python on a small cloud machine. The ratios should carry over to a database engine, but the seconds won't. And this is one city. Larger zones or more evenly spread points would change where the grids overtake the R-tree.",
+      "For the equal-size comparison, each grid's count at 0.02 square kilometers is interpolated between its two nearest steps.",
       "The benchmark code, the rotation check and the script that draws the film are in the repository."
     ]
   },
