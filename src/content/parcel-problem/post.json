@@ -28,16 +28,16 @@
     "heading": "One place to edit",
     "paragraphs": [
       "The design starts with one database of record, the place that holds the official parcels.",
-      "Staff reach it through one editing service, the connection that accepts their changes, on ArcGIS Enterprise, the platform hosting that service. The assessor works at a desk. Planning uses a web browser. Field crews use Field Maps, a phone app for map work, offline when needed.",
+      "Staff reach it through one editing service on ArcGIS Enterprise. The service is a door into the database, not another copy, so there is nothing to sync between them. The assessor works at a desk. Planning and public works use a web browser. Field crews use Field Maps, a phone app for map work, offline when needed.",
       "The database records who made each change and when. Those stamps are called editor tracking.",
-      "Offline field edits arrive in their own branch version, a separate set of edits held for review. The assessor reviews them before they join the main record. Working without a signal doesn’t create another independent official map."
+      "Each office edits in its own version, a private draft of the record that nobody else sees yet. A field crew with no signal edits on the phone, and when the signal returns those edits sync into a draft too. The assessor's office reconciles each draft against the record and posts it. A parcel changed in two drafts is flagged for a person to decide, so one office never silently overwrites another. Only posted edits become the record."
     ]
   },
   {
     "heading": "Only the changes move",
     "paragraphs": [
-      "At 2:00 am each night, an automated job uses the editor tracking stamps to find changes since its last run.",
-      "It checks row counts, whether parcel shapes are valid, and whether column names match what the outputs expect. Then it publishes only the changes.",
+      "At 2:00 am each night, an automated job asks the database what was added, edited or deleted since its last run.",
+      "It checks row counts, whether parcel shapes are valid, and whether column names match what the outputs expect. If a check fails, the run stops and yesterday's outputs stay live. Otherwise it publishes only the changes.",
       "For the typical day shown, that means applying edits to 312 parcels, or 0.6 percent of the rows, in the hosted layer. Nothing is overwritten.",
       "The same changes go into a GeoParquet file, a format that stores geographic records so analysts can query them directly. They also go into a PMTiles file, a format containing map tiles that web maps outside ArcGIS can draw.",
       "Every office reads from these outputs instead of maintaining its own copy. Monday afternoon’s lot split appears on all five maps by Tuesday morning."

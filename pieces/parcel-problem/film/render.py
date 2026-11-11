@@ -6,7 +6,7 @@ Run from pieces/parcel-problem:
   python film/render.py srt captions.srt  the caption file
 
 Scenes, in order: title, what a parcel map is, five copies, how a copy is refreshed,
-three problems, one source of record, the nightly job, everyone reads the same map,
+three problems, one source of record, review before it counts, the nightly job, everyone reads the same map,
 before and after, closing card.
 
 Inter is loaded from FONT_DIR for this process when it is not installed. FFMPEG names the encoder.
@@ -153,18 +153,19 @@ for by0, by1 in [(0.04, 0.38), (0.46, 0.80)]:
 TARGET = 8                                   # the lot the assessor splits
 BLOCK_H = 0.84
 
-def block(c, x, y, w, n=24, split=0.0, mark=None, a=1.0, lw=2.0):
+def block(c, x, y, w, n=24, split=0.0, mark=None, a=1.0, lw=2.0, lot=None):
     """The block of 24 lots. split draws the new lot line across the target lot;
     mark tints the target: 'new' teal, 'ok' green, 'stale' amber."""
     if a <= 0.003: return
     pad = 0.035 * w; iw = w - 2 * pad
+    lot = TARGET if lot is None else lot
     box(c, x, y, w, 0.76 * iw + 2 * pad, a, r=12)
     for i, (x0, y0, x1, y1) in enumerate(LOTS[:n]):
         X0 = x + pad + x0 * iw; X1 = x + pad + x1 * iw; Y0 = y + pad + (y0 - 0.04) * iw; Y1 = y + pad + (y1 - 0.04) * iw
         g = 0.02 * ((i * 7) % 5)
         c.rectangle(X0, Y0, X1 - X0, Y1 - Y0)
         c.set_source_rgba(0.085 + g, 0.115 + g, 0.155 + g, a); c.fill_preserve()
-        if i == TARGET and mark:
+        if i == lot and mark:
             col = {"new": TEAL, "ok": GREEN, "stale": AMBER}[mark]
             c.set_source_rgba(*col, 0.42 * a); c.fill_preserve()
         c.set_source_rgba(0.50, 0.58, 0.68, 0.9 * a); c.set_line_width(lw); c.stroke()
@@ -355,9 +356,9 @@ def cylinder(c, x, y, w, h, a=1.0, col=TEAL):
     c.set_source_rgba(*col, a); c.set_line_width(3); c.stroke()
     c.restore()
 
-EDITORS = [("Assessor", "at a desk"), ("Planning", "in a web browser"), ("Field crew", "on a phone, offline")]
+EDITORS = [("Assessor", "at a desk"), ("Planning", "in a web browser"), ("Public works", "in a web browser"), ("Field crew", "on a phone, offline")]
 S_DUR, S_CAPS, SS = beats(["Start with one database that holds the official parcels.\nThis is the source of record.",
-                           "Staff edit it through one editing service,\nfrom a desk or from a phone in the field.",
+                           "Staff edit it through one editing service. It is a door\ninto the database, not another copy.",
                            "The database stamps every change with who made it\nand when. That stamp is called editor tracking."], (1.5, 3.0, 2.0))
 def source_diagram(c, t, t_db, t_ed, x0=0, y0=0, live=1.0):
     db = sm(t, t_db, t_db + 0.8)
@@ -370,10 +371,10 @@ def source_diagram(c, t, t_db, t_ed, x0=0, y0=0, live=1.0):
     text(c, "one door for every edit", 720 + x0, 506 + y0, 28, MUTE, sv, align="c")
     arrow(c, 880 + x0, 430 + y0, 1002 + x0, 430 + y0, sm(t, t_ed + 0.6, t_ed + 1.2), MUTE, sv)
     for i, (who, how) in enumerate(EDITORS):
-        a = sm(t, t_ed + 1.2 + i * 0.6, t_ed + 1.8 + i * 0.6); y = 250 + y0 + i * 132
-        box(c, 110 + x0, y, 340, 96, a)
-        text(c, who, 134 + x0, y + 42, 34, INK, a, True); text(c, how, 134 + x0, y + 78, 28, MUTE, a)
-        arrow(c, 450 + x0, y + 48, 552 + x0, 430 + y0 + (i - 1) * 40, sm(t, t_ed + 1.6 + i * 0.6, t_ed + 2.2 + i * 0.6), MUTE, a)
+        a = sm(t, t_ed + 1.2 + i * 0.5, t_ed + 1.8 + i * 0.5); y = 236 + y0 + i * 102
+        box(c, 110 + x0, y, 340, 88, a)
+        text(c, who, 134 + x0, y + 38, 32, INK, a, True); text(c, how, 134 + x0, y + 72, 28, MUTE, a)
+        arrow(c, 450 + x0, y + 44, 552 + x0, 430 + y0 + (i - 1.5) * 30, sm(t, t_ed + 1.6 + i * 0.5, t_ed + 2.2 + i * 0.5), MUTE, a)
 
 def scene_source(c, t):
     header(c, 5, "One source of record", sm(t, 0.2, 0.9))
@@ -390,12 +391,55 @@ def scene_source(c, t):
             text(c, k, x, 790, 28, MUTE, aa); text(c, v, x, 834, 36, INK, aa, True)
 SOURCE = (S_DUR, scene_source, S_CAPS)
 
-J_DUR, J_CAPS, JS = beats(["Each night a job asks the database one question:\nwhat changed since the last run?",
-                           "It checks those changes before anyone sees them.\nRow counts, shapes and column names must all pass.",
+DRAFTS = [("Planning draft", TARGET), ("Public works draft", TARGET), ("Field crew draft", 16)]
+V_DUR, V_CAPS, VS = beats(["Each office edits in its own version: a private draft\nthat nobody else sees yet.",
+                           "A field crew with no signal edits on the phone.\nWhen the signal returns, those edits sync into a draft too.",
+                           "The assessor's office checks each draft against the record.\nA parcel changed in two drafts is flagged for a person to decide.",
+                           "Only posted edits become the record."], (2.5, 3.0, 3.5, 3.5))
+def scene_review(c, t):
+    header(c, 6, "Review before it counts", sm(t, 0.2, 0.9))
+    flag = sm(t, VS[2] + 1.6, VS[2] + 2.3); posted = sm(t, VS[3] + 0.6, VS[3] + 1.4)
+    for i, (name, lot) in enumerate(DRAFTS):
+        y = 130 + i * 246
+        a = sm(t, VS[0] + 0.4 + i * 0.7, VS[0] + 1.0 + i * 0.7) if i < 2 else sm(t, VS[1] + 0.3, VS[1] + 0.9)
+        conflict = i < 2 and flag > 0.5 and posted < 0.5
+        mark = "ok" if posted > 0.5 else "stale" if conflict else "new"
+        block(c, 110, y, 230, mark=mark, a=a, lot=lot)
+        text(c, name, 110, y + block_h(230) + 34, 30, INK, a, True)
+        if i == 2:
+            off = 1 - sm(t, VS[1] + 3.2, VS[1] + 3.8)
+            text(c, "offline, on the phone" if off > 0.5 else "synced", 360, y + block_h(230) + 34, 28, AMBER if off > 0.5 else TEAL, a)
+            go = sm(t, VS[1] + 3.8, VS[1] + 4.6)
+        else:
+            go = sm(t, VS[0] + 1.6 + i * 0.7, VS[0] + 2.3 + i * 0.7)
+        arrow(c, 350, y + 90, 552, 450 + (i - 1) * 60, go, MUTE, a)
+    g = sm(t, VS[0] + 0.3, VS[0] + 1.0); hot = t >= VS[2] and posted < 1
+    box(c, 560, 300, 400, 300, g, TEAL if hot else LINE, (0.03, 0.10, 0.10) if hot else PANEL, 3 if hot else 2)
+    text(c, "Reconcile", 760, 420, 44, INK, g, True, align="c"); text(c, "and post", 760, 472, 44, INK, g, True, align="c")
+    text(c, "assessor's office", 760, 526, 28, TEAL if hot else MUTE, g, align="c")
+    cylinder(c, 1100, 250, 340, 400, g)
+    text(c, "Parcels", 1270, 452, 54, INK, g, True, align="c", fam="Inter Display")
+    text(c, "source of record", 1270, 500, 30, TEAL, g, True, align="c")
+    arrow(c, 960, 450, 1092, 450, posted, GREEN, 1.0, 4)
+    fa = flag * (1 - sm(t, VS[3] + 0.2, VS[3] + 0.7))
+    if fa > 0:
+        box(c, 560, 660, 880, 96, fa, AMBER, (0.12, 0.09, 0.02))
+        text(c, "Flagged: parcel 07-118-022 changed in two drafts", 590, 720, 32, AMBER, fa, True)
+    pa = sm(t, VS[3] + 1.4, VS[3] + 2.0)
+    if pa > 0:
+        box(c, 560, 660, 880, 96, pa, GREEN, (0.03, 0.10, 0.05))
+        text(c, "Posted: three drafts, one record", 590, 720, 32, GREEN, pa, True)
+    da = sm(t, VS[0] + 1.2, VS[0] + 1.9)
+    text(c, "Version", 1490, 320, 34, TEAL, da, True)
+    for i, l in enumerate(["A private draft", "of the record."]): text(c, l, 1490, 372 + i * 42, 32, MUTE, da)
+REVIEW = (V_DUR, scene_review, V_CAPS)
+
+J_DUR, J_CAPS, JS = beats(["Each night a job asks the database one question:\nwhat was added, edited or deleted since the last run?",
+                           "It checks those changes before anyone sees them. If a check\nfails, the run stops and yesterday's outputs stay live.",
                            "Then it sends only those 312 changes to the hosted layer.\nNothing is overwritten.",
                            "The same changes go into two files: one for analysts,\nand one for web maps outside ArcGIS."], (3.0, 3.0, 4.5, 3.0))
 def scene_job(c, t):
-    header(c, 6, "The nightly job", sm(t, 0.2, 0.9))
+    header(c, 7, "The nightly job", sm(t, 0.2, 0.9))
     grid_frame(c, sm(t, 0.3, 1.0))
     dots(c, (0.62, 0.68, 0.76), 0.6 * sm(t, 0.4, 1.4))
     found = sm(t, JS[0] + 0.8, JS[0] + 3.6); sent = sm(t, JS[2] + 0.5, JS[2] + 1.5)
@@ -412,10 +456,10 @@ def scene_job(c, t):
         a = sm(t, JS[0] + 0.6, JS[0] + 1.2) * o1
         w = digits(c, f"{int(CHANGED * found)}", RX - 3, 690, 120, TEAL, a)
         text(c, f"of {PARCELS:,} parcels changed", RX + w + 24, 650, 36, MUTE, a)
-        text(c, "found from the editor tracking stamps", RX + w + 24, 694, 28, DIM, a)
+        text(c, "added, edited or deleted", RX + w + 24, 694, 28, DIM, a)
     elif step == 2:
         for i, (k, v) in enumerate([("Row counts", "nothing lost or doubled"), ("Shapes", "every parcel outline is valid"), ("Column names", "the same ones the apps expect")]):
-            a = sm(t, JS[1] + 0.5 + i * 0.3, JS[1] + 1.1 + i * 0.3) * o2; y = 590 + i * 92
+            a = sm(t, JS[1] + 0.5 + i * 0.3, JS[1] + 1.1 + i * 0.3) * o2; y = 580 + i * 88
             text(c, k, RX, y, 38, INK, a, True); text(c, v, RX, y + 38, 28, MUTE, a)
             tick(c, RX + 830, y - 4, sm(t, JS[1] + 1.8 + i * 0.9, JS[1] + 2.3 + i * 0.9) * o2)
     else:
@@ -441,9 +485,9 @@ JOB = (J_DUR, scene_job, J_CAPS)
 R_DUR, R_CAPS, RS = beats(["Now every office reads from those outputs.\nNobody keeps a copy of their own.",
                            "The assessor splits a lot on Monday afternoon.\nBy Tuesday morning, all five maps show it."], (3.5, 6.0))
 def scene_readers(c, t):
-    header(c, 7, "Everyone reads the same map", sm(t, 0.2, 0.9))
+    header(c, 8, "Everyone reads the same map", sm(t, 0.2, 0.9))
     sp0 = RS[1] + 0.6; night = RS[1] + 3.0; land = RS[1] + 4.6
-    for i, (lab, sub, x) in enumerate([("Source of record", "edited by staff", 250), ("Nightly job", "2:00 am", 770), ("Read-only outputs", "nobody edits these", 1290)]):
+    for i, (lab, sub, x) in enumerate([("Source of record", "posted edits only", 250), ("Nightly job", "2:00 am", 770), ("Read-only outputs", "nobody edits these", 1290)]):
         a = sm(t, 0.5 + i * 0.7, 1.1 + i * 0.7)
         hot = (i == 0 and sp0 <= t < night) or (i == 1 and night <= t < land) or (i == 2 and t >= land)
         box(c, x, 150, 380, 120, a, TEAL if hot else LINE, (0.03, 0.10, 0.10) if hot else PANEL, 3 if hot else 2)
@@ -471,7 +515,7 @@ BA = [("Copies to keep in step", "5", "0"), ("Rows rewritten per refresh", f"{PA
 B_DUR, B_CAPS, BS = beats(["Before: five copies and five refresh jobs.\nAfter: one source of record and one nightly job.",
                            "All five maps now show the same parcels,\nand each refresh moves 99 percent fewer rows."], (3.5, 1.0))
 def scene_result(c, t):
-    header(c, 8, "Before and after", sm(t, 0.2, 0.9))
+    header(c, 9, "Before and after", sm(t, 0.2, 0.9))
     text(c, "Before and after", 130, 215, 62, INK, sm(t, 0.3, 1.0), True, fam="Inter Display")
     a0 = sm(t, 0.8, 1.5)
     text(c, "BEFORE", 1250, 300, 26, CORAL, a0, True, align="r", track=3); text(c, "AFTER", 1430, 300, 26, TEAL, a0, True, track=3)
@@ -493,7 +537,7 @@ def scene_closing(c, t):
     text(c, "jacob-hogue.github.io/projection-room", W / 2, 720, 28, DIM, sm(t, 1.4, 2.2), align="c")
 CLOSING = (4.6, scene_closing, [(0.5, 4.2, "That was the parcel problem. Thank you for watching.")])
 
-SCENES = [TITLE, WHAT, COPIES, OVERWRITE, THREE, SOURCE, JOB, READERS, RESULT, CLOSING]
+SCENES = [TITLE, WHAT, COPIES, OVERWRITE, THREE, SOURCE, REVIEW, JOB, READERS, RESULT, CLOSING]
 
 def draw(si, t):
     dur, fn, caps = SCENES[si]
@@ -512,8 +556,9 @@ if __name__ == "__main__":
         out = sys.argv[2] if len(sys.argv) > 2 else "."
         picks = [(0, 3.0), (1, WS[0] + 6.0), (1, W_DUR - 1.5), (2, CS[1] + 4.0), (2, CS[2] + 9.0), (2, C_DUR - 1.5),
                  (3, OS[1] + 4.0), (3, OS[2] + 6.0), (3, O_DUR - 1.5), (4, T_DUR - 1.5), (5, SS[1] + 5.0), (5, S_DUR - 1.5),
-                 (6, JS[0] + 5.0), (6, JS[1] + 5.0), (6, JS[2] + 6.0), (6, J_DUR - 1.5), (7, RS[0] + 5.0), (7, R_DUR - 1.5),
-                 (8, B_DUR - 1.5), (9, 3.0)]
+                 (6, VS[1] + 5.5), (6, VS[2] + 5.0), (6, V_DUR - 1.5),
+                 (7, JS[0] + 5.0), (7, JS[1] + 5.0), (7, JS[2] + 6.0), (7, J_DUR - 1.5), (8, RS[0] + 5.0), (8, R_DUR - 1.5),
+                 (9, B_DUR - 1.5), (10, 3.0)]
         for si, t in picks:
             draw(si, t).write_to_png(os.path.join(out, f"still_{si + 1:02d}_{t:05.1f}.png"))
         print(len(picks), "stills; total", round(sum(s[0] for s in SCENES), 1), "s")
